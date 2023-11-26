@@ -27,7 +27,7 @@ literal_type is_literal(std::string s) {
 	static const std::regex integer_r(R"([0-9]{1,}(UL|ul|L|l|I|i|U|u|s|S)?)");
 	if (std::regex_match(s, integer_r)) return literal_type::integer;
 
-	static const std::regex real_r(R"(([0-9]{1,}.[0-9]*)(e(\+|-)?[0-9]{1,})?(d|D|f|F)?)");
+	static const std::regex real_r(R"(([0-9]{1,}\.[0-9]*)(e(\+|-)?[0-9]{1,})?(d|D|f|F)?)");
 	if (std::regex_match(s, real_r)) return literal_type::real;
 
 	static const std::regex symbol_r(R"(\'(.|\\n|\\t|\\0)\')");

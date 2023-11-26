@@ -19,6 +19,7 @@ double
 float
 int
 long
-usigned
+unsigned
 void
 short
+string
