@@ -20,6 +20,7 @@ float
 int
 long
 unsigned
+string
 void
 short
 
