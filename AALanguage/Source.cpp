@@ -30,7 +30,7 @@ literal_type is_literal(std::string s) {
 	static const std::regex real_r(R"(([0-9]{1,}\.[0-9]*)(e(\+|-)?[0-9]{1,})?(d|D|f|F)?)");
 	if (std::regex_match(s, real_r)) return literal_type::real;
 
-	static const std::regex symbol_r(R"(\'(.|\\n|\\t|\\0)\')");
+	static const std::regex symbol_r(R"(\'(.|\\n|\\t|\\0|\\'|\\")\')");
 	if (std::regex_match(s, symbol_r)) return literal_type::symbol;
 
 	static const std::regex string_r(R"(".*")");
