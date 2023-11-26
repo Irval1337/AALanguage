@@ -65,8 +65,8 @@ bool is_comment(std::string s) {
 token_type get_token_type(Trie* service_trie, std::string s) {
 	if (is_comment(s)) return token_type::comment;
 	if (is_service(service_trie, s)) return token_type::service;
-	if (is_identifier(s)) return token_type::identifier;
 	if (is_literal(s) != literal_type::none) return token_type::literal;
+	if (is_identifier(s)) return token_type::identifier;
 	if (is_operation(s)) return token_type::operation;
 	if (is_punctuation(s)) return token_type::punctuation;
 	if (is_comma(s)) return token_type::comma;
