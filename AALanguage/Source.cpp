@@ -74,35 +74,37 @@ token_type get_token_type(Trie* service_trie, std::string s) {
 	return token_type::unknown;
 }
 
+int line = 1;
+
 void print_token(Trie* service_trie, std::string buffer) {
 	if (buffer.empty()) return;
 	auto type = get_token_type(service_trie, buffer);
 	switch (type) {
 	case service:
-		std::cout << "(service, \"" << buffer << "\")\n";
+		std::cout << "(service, \"" << buffer << "\", line " << line << ")\n";
 		break;
 	case identifier:
-		std::cout << "(identifier, \"" << buffer << "\")\n";
+		std::cout << "(identifier, \"" << buffer << "\", line " << line << ")\n";
 		break;
 	case literal:
-		std::cout << "(literal, \"" << buffer << "\")\n";
+		std::cout << "(literal, \"" << buffer << "\", line " << line << ")\n";
 		break;
 	case operation:
-		std::cout << "(operation, \"" << buffer << "\")\n";
+		std::cout << "(operation, \"" << buffer << "\", line " << line << ")\n";
 		break;
 	case punctuation:
-		std::cout << "(punctuation, \"" << buffer << "\")\n";
+		std::cout << "(punctuation, \"" << buffer << "\", line " << line << ")\n";
 		break;
 	case comma:
-		std::cout << "(comma, \"" << buffer << "\")\n";
+		std::cout << "(comma, \"" << buffer << "\", line " << line << ")\n";
 		break;
 	case brace:
-		std::cout << "(brace, \"" << buffer << "\")\n";
+		std::cout << "(brace, \"" << buffer << "\", line " << line << ")\n";
 		break;
 	case comment:
 		break;
 	case unknown:
-		std::cout << "(unknown, \"" << buffer << "\")\n";
+		std::cout << "(unknown, \"" << buffer << "\", line " << line << ")\n";
 		exit(0);
 		break;
 	}
@@ -122,6 +124,7 @@ int main() {
 	std::cin >> code_path;
 
 	file = std::ifstream(code_path);
+
 	str.clear();
 
 	std::string buffer = "";
@@ -134,6 +137,7 @@ int main() {
 			print_token(service_trie, buffer);
 			prev = token_type::unknown;
 			buffer.clear();
+			if (c == '\n') ++line;
 			continue;
 		}
 		buffer.push_back(c);
