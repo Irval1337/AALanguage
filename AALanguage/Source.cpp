@@ -34,7 +34,6 @@ void plus_expression(LexicalAnalyzer& lex);
 void multiply_expression(LexicalAnalyzer& lex);
 void unary_expression(LexicalAnalyzer& lex);
 void construct_expression(LexicalAnalyzer& lex);
-void function_result(LexicalAnalyzer& lex);
 void field(LexicalAnalyzer& lex);
 
 void semicolon(LexicalAnalyzer& lex) {
@@ -158,7 +157,7 @@ void function(LexicalAnalyzer& lex) {
 		if (current_token.value != "}")
 			statement(lex);
 		if (current_token.value != "}")
-			throw std::exception("Invalid token: '{' expected");
+			throw std::exception("Invalid token: '}' expected");
 		current_token = lex.get_token();
 	} else {
 		parameter_list(lex);
@@ -273,7 +272,7 @@ void comparison_expression(LexicalAnalyzer& lex) {
 
 void bitwise_shift_expression(LexicalAnalyzer& lex) {
 	plus_expression(lex);
-	while (current_token.value == ">>" || current_token.value == "<<") {
+	while (current_token.value == ">>" || current_token.value == "<<") {void field(LexicalAnalyzer& lex);
 		current_token = lex.get_token();
 		plus_expression(lex);
 	}
@@ -296,24 +295,57 @@ void multiply_expression(LexicalAnalyzer& lex) {
 }
 
 void unary_expression(LexicalAnalyzer& lex) {
-	construct_expression(lex);
 	while (current_token.value == "+" || current_token.value == "-" || current_token.value == "!" || current_token.value == "~" ||
 		current_token.value == "++" || current_token.value == "--") {
 		current_token = lex.get_token();
-		construct_expression(lex);
 	}
+	construct_expression(lex);
 }
 
 void construct_expression(LexicalAnalyzer& lex) {
-	if (current_token.type == LexicalAnalyzer::token_type::identifier) {
-		current_token = lex.get_token();
-		return;
-	}
 	if (current_token.type == LexicalAnalyzer::token_type::literal) {
 		current_token = lex.get_token();
 		return;
 	}
+	if (current_token.value == "(") {
+		current_token = lex.get_token();
+		expression(lex);
+		if (current_token.value != ")")
+			throw std::exception("Invalid token: ')' expected");
+		current_token = lex.get_token();
+		return;
+	}
+	field(lex);
+}
 
+void field(LexicalAnalyzer& lex) {
+	if (current_token.type != LexicalAnalyzer::token_type::identifier)
+		throw std::exception("Invalid token: identifier expected");
+	current_token = lex.get_token();
+	while (current_token.value == "[" || current_token.value == "." || current_token.value == "(") {
+		if (current_token.value == "[") {
+			current_token = lex.get_token();
+			expression(lex);
+			if (current_token.value != "]")
+				throw std::exception("Invalid token: ']' expected");
+			current_token = lex.get_token();
+
+		} else if (current_token.value == ".") {
+			current_token = lex.get_token();
+			if (current_token.type != LexicalAnalyzer::token_type::identifier)
+				throw std::exception("Invalid token: identifier expected");
+			current_token = lex.get_token();
+		} else {
+			current_token = lex.get_token();
+			while (current_token.value == ",") {
+				current_token = lex.get_token();
+				expression(lex);
+			}
+			if (current_token.value != ")")
+				throw std::exception("Invalid token: ')' expected");
+			current_token = lex.get_token();
+		}
+	}
 }
 
 void parameter_list(LexicalAnalyzer& lex) {
@@ -325,7 +357,8 @@ void parameter_list(LexicalAnalyzer& lex) {
 }
 
 void statement(LexicalAnalyzer& lex) {
-
+	expression(lex);
+	semicolon(lex);
 }
 
 int main() {

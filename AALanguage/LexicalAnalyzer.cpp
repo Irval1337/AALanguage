@@ -111,6 +111,7 @@ LexicalAnalyzer::LexicalAnalyzer(std::string path) {
 	token_type prev = token_type::unknown;
 	bool prev_quotation = false, prev_single = false;
 	while (file >> std::noskipws >> c) {
+		if (c == '\t') c = ' ';
 		if (c == ' ' || c == '\n') {
 			if (prev == token_type::comment && c == ' ') continue;
 			print_token(service_trie, buffer);
