@@ -84,8 +84,8 @@ Token LexicalAnalyzer::get_token() {
 }
 
 Token LexicalAnalyzer::prev_token() {
-	if (curr_ == 0) return tokens_[0];
-	return tokens_[--curr_];
+	if (curr_ <= 1) return tokens_[0];
+	return tokens_[--curr_ - 1];
 }
 
 bool LexicalAnalyzer::get_ok() const {
@@ -112,7 +112,12 @@ LexicalAnalyzer::LexicalAnalyzer(std::string path) {
 	bool prev_quotation = false, prev_single = false;
 	while (file >> std::noskipws >> c) {
 		if (c == '\t') c = ' ';
-		if (c == ' ' || c == '\n') {
+
+		if (c == ' ' && !prev_quotation && !prev_single || c == '\n' || buffer.empty() && (is_punctuation(std::string(1, c)) ||
+			c == ',' || c == '(' || c == ')')) {
+			if (buffer.empty() && (is_punctuation(std::string(1, c)) || c == ',' || c == '(' || c == ')'))
+				buffer.push_back(c);
+			if (c == '\n') prev_quotation = prev_single = false;
 			if (prev == token_type::comment && c == ' ') continue;
 			print_token(service_trie, buffer);
 			prev = token_type::unknown;
@@ -124,6 +129,7 @@ LexicalAnalyzer::LexicalAnalyzer(std::string path) {
 		auto type = get_token_type(service_trie, buffer);
 		auto char_type = get_token_type(service_trie, std::string(1, c));
 		if (type == token_type::unknown) {
+			if (prev_quotation || prev_single) continue;
 			if (char_type == token_type::operation || char_type == token_type::punctuation || char_type == token_type::comma ||
 				char_type == token_type::comment || char_type == token_type::brace) {
 				buffer.pop_back();
@@ -137,18 +143,20 @@ LexicalAnalyzer::LexicalAnalyzer(std::string path) {
 				buffer = std::string(1, c);
 			} else {
 				if (c == '"') {
-					if (!prev_quotation) {
-						prev_quotation = true;
-					}
+					prev_quotation = !prev_quotation;
 				} else if (c == '\'') {
-					if (!prev_single) {
-						prev_single = true;
-					}
+					prev_single = !prev_single;
 				}
 				if (prev_quotation || prev_single) continue;
 				print_token(service_trie, buffer);
 				exit(0);
 			}
+		} else if (prev_quotation || prev_single) {
+			prev_quotation = prev_single = false;
+			print_token(service_trie, buffer);
+			prev = token_type::unknown;
+			buffer.clear();
+			continue;
 		}
 		prev = get_token_type(service_trie, buffer);
 	}
