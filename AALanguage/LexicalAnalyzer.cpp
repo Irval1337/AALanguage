@@ -31,8 +31,9 @@ LexicalAnalyzer::literal_type LexicalAnalyzer::is_literal(std::string s) {
 
 bool LexicalAnalyzer::is_operation(std::string s) {
 	return s == "[" || s == "]" || s == "." || s == "++" || s == "--" || s == "+" || s == "-" || s == "!" || s == "~" || s == "*" || s == "/" || s == "%" ||
-		s == ">>" || s == "<<" || s == ">" || s == ">=" || s == "<" || s == "<=" || s == "==" || s == "!=" || s == "&" || s == "^" || s == "|" ||
-		s == "&&" || s == "**" || s == "||" || s == "=" || s == "+=" || s == "-=" || s == "*=" || s == "/=" || s == "%=";
+		s == ">>" || s == "<<" || s == ">" || s == ">=" || s == "<" || s == "<=" || s == "==" || s == "!=" || s == "&" || s == "^" || s == "|" || s == "->" ||
+		s == "&&" || s == "**" || s == "||" || s == "=" || s == "+=" || s == "-=" || s == "*=" || s == "/=" || s == "%=" || s == ">>=" || s == "<<=" ||
+		s == "&=" || s == "^=" || s == "|=" || s == "->=" || s == "~=";
 }
 
 bool LexicalAnalyzer::is_punctuation(std::string s) {
@@ -69,6 +70,7 @@ void LexicalAnalyzer::print_token(Trie* service_trie, std::string buffer) {
 	auto type = LexicalAnalyzer::get_token_type(service_trie, buffer);
 	if (type == unknown) {
 		std::cout << "(unknown, \"" << buffer << "\", line " << line_ << ")\n";
+		ok_ = false;
 		exit(0);
 	}
 	tokens_.push_back(Token(type, buffer, line_));
@@ -79,6 +81,15 @@ Token LexicalAnalyzer::get_token() {
 		return Token(unknown, "", -1);
 	}
 	return tokens_[curr_++];
+}
+
+Token LexicalAnalyzer::prev_token() {
+	if (curr_ == 0) return tokens_[0];
+	return tokens_[--curr_];
+}
+
+bool LexicalAnalyzer::get_ok() const {
+	return ok_;
 }
 
 LexicalAnalyzer::LexicalAnalyzer(std::string path) {
