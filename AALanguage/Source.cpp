@@ -13,12 +13,13 @@ void var_definition(LexicalAnalyzer& lex);
 void var_definitions(LexicalAnalyzer& lex);
 void type(LexicalAnalyzer& lex);
 void default_type(LexicalAnalyzer& lex);
-void function_or_var_definitions(LexicalAnalyzer& lex);
-void function(LexicalAnalyzer& lex);
+void function_or_var_definitions(LexicalAnalyzer& lex, bool is_struct = false);
+void function(LexicalAnalyzer& lex, bool is_struct = false);
 void expression(LexicalAnalyzer& lex);
 void parameter_list(LexicalAnalyzer& lex);
 void statement(LexicalAnalyzer& lex);
 void semicolon(LexicalAnalyzer& lex);
+void may_be_semicolon(LexicalAnalyzer& lex);
 
 void assignment_expression(LexicalAnalyzer& lex);
 void logical_or_expression(LexicalAnalyzer& lex);
@@ -60,9 +61,17 @@ void semicolon(LexicalAnalyzer& lex) {
 		throw std::exception("Invalid end of line: ';' expected");
 	}
 	current_token = lex.get_token();
+	may_be_semicolon(lex);
+}
+
+void may_be_semicolon(LexicalAnalyzer& lex) {
+	while (current_token.value == ";") {
+		current_token = lex.get_token();
+	}
 }
 
 void program(LexicalAnalyzer& lex) {
+	may_be_semicolon(lex);
 	preprocessor(lex);
 	if (current_token.line == -1) return;
 	program_body(lex);
@@ -73,7 +82,9 @@ void preprocessor(LexicalAnalyzer& lex) {
 		current_token = lex.get_token();
 		namespace_definition(lex);
 		semicolon(lex);
+		may_be_semicolon(lex);
 	}
+	may_be_semicolon(lex);
 }
 
 void namespace_definition(LexicalAnalyzer& lex) {
@@ -94,10 +105,12 @@ void program_body(LexicalAnalyzer& lex) {
 	if (current_token.value == "struct") {
 		struct_statement(lex);
 		semicolon(lex);
+		may_be_semicolon(lex);
 		program_body(lex);
 		return;
 	}
 	function_or_var_definitions(lex);
+	may_be_semicolon(lex);
 	program_body(lex);
 }
 
@@ -132,6 +145,7 @@ void var_definitions(LexicalAnalyzer& lex) {
 		}
 	}
 	semicolon(lex);
+	may_be_semicolon(lex);
 }
 
 void type(LexicalAnalyzer& lex) {
@@ -153,8 +167,12 @@ void default_type(LexicalAnalyzer& lex) {
 	current_token = lex.get_token();
 }
 
-void function(LexicalAnalyzer& lex) {
+void function(LexicalAnalyzer& lex, bool is_struct) {
 	if (current_token.value == "void")
+		current_token = lex.get_token();
+	else if (is_struct && current_token.value == "constructor")
+		current_token = lex.get_token();
+	else if (is_struct && current_token.value == "destructor")
 		current_token = lex.get_token();
 	else
 		default_type(lex);
@@ -177,6 +195,7 @@ void function(LexicalAnalyzer& lex) {
 		if (current_token.value != "}")
 			throw std::exception("Invalid token: '}' expected");
 		current_token = lex.get_token();
+		may_be_semicolon(lex);
 	} else {
 		parameter_list(lex);
 		was_parameters = true;
@@ -184,13 +203,21 @@ void function(LexicalAnalyzer& lex) {
 	}
 }
 
-void function_or_var_definitions(LexicalAnalyzer& lex) {
+void function_or_var_definitions(LexicalAnalyzer& lex, bool is_struct) {
 	if (current_token.value == "const") {
 		var_definitions(lex);
 		return;
 	}
+	if (current_token.value == "constructor") {
+		function(lex, is_struct);
+		return;
+	}
+	if (current_token.value == "destructor") {
+		function(lex, is_struct);
+		return;
+	}
 	if (current_token.value == "void") {
-		function(lex);
+		function(lex, is_struct);
 		return;
 	}
 	default_type(lex);
@@ -200,7 +227,7 @@ void function_or_var_definitions(LexicalAnalyzer& lex) {
 	if (current_token.value == "(") {
 		current_token = lex.prev_token();
 		current_token = lex.prev_token();
-		function(lex);
+		function(lex, is_struct);
 	} else if (current_token.value == "=" || current_token.value == "," || current_token.value == ";") {
 		current_token = lex.prev_token();
 		current_token = lex.prev_token();
@@ -498,7 +525,7 @@ void struct_statement(LexicalAnalyzer& lex) {
 		throw std::exception("Invalid token: '{' expected");
 	current_token = lex.get_token();
 	while (current_token.value != "}" && current_token.line != -1) {
-		function_or_var_definitions(lex);
+		function_or_var_definitions(lex, true);
 	}
 	if (current_token.value != "}")
 		throw std::exception("Invalid token: '}' expected");
@@ -513,32 +540,39 @@ void statement(LexicalAnalyzer& lex) {
 		if (current_token.value != "}")
 			throw std::exception("Invalid token: '}' expected");
 		current_token = lex.get_token();
+		may_be_semicolon(lex);
 		return;
 	}
 	if (current_token.value == "if") {
 		if_statement(lex);
+		may_be_semicolon(lex);
 		return;
 	}
 	if (current_token.value == "goto" || current_token.value == "break" || current_token.value == "continue") {
 		goto_statement(lex);
 		semicolon(lex);
+		may_be_semicolon(lex);
 		return;
 	}
 	if (current_token.value == "return") {
 		return_statement(lex);
 		semicolon(lex);
 		return;
+		may_be_semicolon(lex);
 	}
 	if (current_token.value == "while") {
 		while_statement(lex);
+		may_be_semicolon(lex);
 		return;
 	}
 	if (current_token.value == "for") {
 		for_statement(lex);
+		may_be_semicolon(lex);
 		return;
 	}
 	if (current_token.value == "switch") {
 		switch_statement(lex);
+		may_be_semicolon(lex);
 		return;
 	}
 	if (current_token.type == LexicalAnalyzer::token_type::service) {
@@ -558,13 +592,15 @@ void statement(LexicalAnalyzer& lex) {
 			current_token = lex.prev_token();
 			expression(lex);
 			semicolon(lex);
+			may_be_semicolon(lex);
 		}
 	} else {
 		if (current_token.value != ";") {
 			expression(lex);
 			semicolon(lex);
+			may_be_semicolon(lex);
 		} else {
-			current_token = lex.get_token();
+			may_be_semicolon(lex);
 		}
 	}
 }
