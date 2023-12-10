@@ -10,12 +10,12 @@ void preprocessor(LexicalAnalyzer& lex);
 void namespace_definition(LexicalAnalyzer& lex);
 void program_body(LexicalAnalyzer& lex);
 void var_definition(LexicalAnalyzer& lex);
-void var_definitions(LexicalAnalyzer& lex);
+void var_definitions(LexicalAnalyzer& lex, bool need_semicolon = true);
 void type(LexicalAnalyzer& lex);
 void default_type(LexicalAnalyzer& lex);
 void function_or_var_definitions(LexicalAnalyzer& lex, bool is_struct = false);
 void function(LexicalAnalyzer& lex, bool is_struct = false);
-void expression(LexicalAnalyzer& lex);
+void expression(LexicalAnalyzer& lex, bool is_vars = false);
 void parameter_list(LexicalAnalyzer& lex);
 void statement(LexicalAnalyzer& lex);
 void semicolon(LexicalAnalyzer& lex);
@@ -119,33 +119,62 @@ void var_definition(LexicalAnalyzer& lex) {
 	if (current_token.type != LexicalAnalyzer::token_type::identifier)
 		throw std::exception("Invalid token: identifier expected");
 	current_token = lex.get_token();
+	if (current_token.value == "[") {
+		current_token = lex.get_token();
+		if (current_token.type != LexicalAnalyzer::token_type::literal)
+			throw std::exception("Invalid token: literal expected");
+		current_token = lex.get_token();
+		if (current_token.value != "]")
+			throw std::exception("Invalid token: ']' expected");
+		current_token = lex.get_token();
+	}
 	if (current_token.value == "=") {
 		current_token = lex.get_token();
-		expression(lex);
+		expression(lex, true);
 	}
 }
 
-void var_definitions(LexicalAnalyzer& lex) {
+void var_definitions(LexicalAnalyzer& lex, bool need_semicolon) {
 	type(lex);
 	if (current_token.type != LexicalAnalyzer::token_type::identifier)
 		throw std::exception("Invalid token: identifier expected");
 	current_token = lex.get_token();
+	if (current_token.value == "[") {
+		current_token = lex.get_token();
+		if (current_token.type != LexicalAnalyzer::token_type::literal)
+			throw std::exception("Invalid token: literal expected");
+		current_token = lex.get_token();
+		if (current_token.value != "]")
+			throw std::exception("Invalid token: ']' expected");
+		current_token = lex.get_token();
+	}
 	if (current_token.value == "=") {
 		current_token = lex.get_token();
-		expression(lex);
+		expression(lex, true);
 	}
 	while (current_token.value == ",") {
 		current_token = lex.get_token();
 		if (current_token.type != LexicalAnalyzer::token_type::identifier)
 			throw std::exception("Invalid token: identifier expected");
 		current_token = lex.get_token();
+		if (current_token.value == "[") {
+			current_token = lex.get_token();
+			if (current_token.type != LexicalAnalyzer::token_type::literal)
+				throw std::exception("Invalid token: literal expected");
+			current_token = lex.get_token();
+			if (current_token.value != "]")
+				throw std::exception("Invalid token: ']' expected");
+			current_token = lex.get_token();
+		}
 		if (current_token.value == "=") {
 			current_token = lex.get_token();
 			expression(lex);
 		}
 	}
-	semicolon(lex);
-	may_be_semicolon(lex);
+	if (need_semicolon) {
+		semicolon(lex);
+		may_be_semicolon(lex);
+	}
 }
 
 void type(LexicalAnalyzer& lex) {
@@ -236,9 +265,9 @@ void function_or_var_definitions(LexicalAnalyzer& lex, bool is_struct) {
 		throw std::exception("Invalid token: '=', ',', ';' or '(' expected");
 }
 
-void expression(LexicalAnalyzer& lex) {
+void expression(LexicalAnalyzer& lex, bool is_vars) {
 	assignment_expression(lex);
-	while (current_token.value == ",") {
+	while (!is_vars && current_token.value == ",") {
 		current_token = lex.get_token();
 		assignment_expression(lex);
 	}
@@ -470,7 +499,29 @@ void for_statement(LexicalAnalyzer& lex) {
 		throw std::exception("Invalid token: '(' expected");
 	current_token = lex.get_token();
 	if (current_token.value != ";") {
-		expression(lex);
+		if (current_token.type == LexicalAnalyzer::token_type::service) {
+			for (int i = 0; i < service_types.size(); ++i) {
+				if (service_types[i] == current_token.value) {
+					var_definitions(lex, false);
+					break;
+				}
+			}
+		}
+		else if (current_token.value == "const")
+			var_definitions(lex, false);
+		else {
+			if (current_token.type == LexicalAnalyzer::token_type::identifier) {
+				current_token = lex.get_token();
+				if (current_token.type == LexicalAnalyzer::token_type::identifier) {
+					current_token = lex.prev_token();
+					var_definitions(lex, false);
+			
+				} else {
+					current_token = lex.prev_token();
+					expression(lex);
+				}
+			}
+		}
 	}
 	semicolon(lex);
 	if (current_token.value != ";") {
@@ -499,6 +550,7 @@ void switch_statement(LexicalAnalyzer& lex) {
 	current_token = lex.get_token();
 	if (current_token.value != "{")
 		throw std::exception("Invalid token: '{' expected");
+	current_token = lex.get_token();
 	while (current_token.value == "case" || current_token.value == "default") {
 		current_token = lex.get_token();
 		if (current_token.type != LexicalAnalyzer::token_type::literal)
@@ -582,6 +634,10 @@ void statement(LexicalAnalyzer& lex) {
 				return;
 			}
 		}
+	}
+	if (current_token.value == "const") {
+		var_definitions(lex);
+		return;
 	}
 	if (current_token.type == LexicalAnalyzer::token_type::identifier) {
 		current_token = lex.get_token();
