@@ -18,7 +18,7 @@ void function(LexicalAnalyzer& lex, bool is_struct = false);
 void expression(LexicalAnalyzer& lex, bool is_vars = false);
 void parameter_list(LexicalAnalyzer& lex);
 void statement(LexicalAnalyzer& lex);
-void semicolon(LexicalAnalyzer& lex);
+void semicolon(LexicalAnalyzer& lex, bool is_important = false);
 void may_be_semicolon(LexicalAnalyzer& lex);
 
 void assignment_expression(LexicalAnalyzer& lex);
@@ -48,7 +48,7 @@ void struct_statement(LexicalAnalyzer& lex);
 std::vector<std::string> service_types = { "bool", "char", "uchar", "double", "udouble", "float", "ufloat", "int", "uint", "long",
 		"ulong", "short", "ushort", "string" };
 
-void semicolon(LexicalAnalyzer& lex) {
+void semicolon(LexicalAnalyzer& lex, bool is_important) {
 	if (current_token.line == -1)
 		throw std::exception("Invalid end of line: ';' expected");
 	if (current_token.value != ";")
@@ -61,7 +61,9 @@ void semicolon(LexicalAnalyzer& lex) {
 		throw std::exception("Invalid end of line: ';' expected");
 	}
 	current_token = lex.get_token();
-	may_be_semicolon(lex);
+	if (!is_important) {
+		may_be_semicolon(lex);
+	}
 }
 
 void may_be_semicolon(LexicalAnalyzer& lex) {
@@ -523,11 +525,11 @@ void for_statement(LexicalAnalyzer& lex) {
 			}
 		}
 	}
-	semicolon(lex);
+	semicolon(lex, true);
 	if (current_token.value != ";") {
 		expression(lex);
 	}
-	semicolon(lex);
+	semicolon(lex, true);
 	if (current_token.value != ")") {
 		expression(lex);
 	}

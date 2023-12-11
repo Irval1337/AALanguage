@@ -113,6 +113,11 @@ LexicalAnalyzer::LexicalAnalyzer(std::string path) {
 	while (file >> std::noskipws >> c) {
 		if (c == '\t') c = ' ';
 
+		if (buffer == "\"")
+			prev_quotation = true;
+		if (buffer == "\'")
+			prev_single = true;
+
 		if (c == ' ' && !prev_quotation && !prev_single || c == '\n' || buffer.empty() && (is_punctuation(std::string(1, c)) ||
 			c == ',' || c == '(' || c == ')')) {
 			if (buffer.empty() && (is_punctuation(std::string(1, c)) || c == ',' || c == '(' || c == ')'))
