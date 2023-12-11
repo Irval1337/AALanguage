@@ -403,7 +403,7 @@ void field(LexicalAnalyzer& lex) {
 	while (current_token.value == "[" || current_token.value == "." || current_token.value == "(") {
 		if (current_token.value == "[") {
 			current_token = lex.get_token();
-			expression(lex);
+			expression(lex, true);
 			if (current_token.value != "]")
 				throw std::exception("Invalid token: ']' expected");
 			current_token = lex.get_token();
@@ -416,11 +416,11 @@ void field(LexicalAnalyzer& lex) {
 		} else {
 			current_token = lex.get_token();
 			if (current_token.value != ")") {
-				expression(lex);
+				expression(lex, true);
 			}
 			while (current_token.value == ",") {
 				current_token = lex.get_token();
-				expression(lex);
+				expression(lex, true);
 			}
 			if (current_token.value != ")")
 				throw std::exception("Invalid token: ')' expected");
