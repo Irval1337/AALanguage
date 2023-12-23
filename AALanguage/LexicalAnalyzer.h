@@ -18,6 +18,7 @@ public:
 	Token get_token();
 	Token prev_token();
 	bool get_ok() const;
+	literal_type is_literal(std::string s);
 
 	LexicalAnalyzer(std::string path);
 private:
@@ -28,7 +29,6 @@ private:
 
 	bool is_service(Trie* service_trie, std::string s);
 	bool is_identifier(std::string s);
-	literal_type is_literal(std::string s);
 	bool is_operation(std::string s);
 	bool is_punctuation(std::string s);
 	bool is_comma(std::string s);

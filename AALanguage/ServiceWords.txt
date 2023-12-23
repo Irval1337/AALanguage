@@ -10,10 +10,8 @@ while
 for
 case
 switch
-struct
 bool
 char
-uchar
 const
 default
 double
@@ -28,5 +26,4 @@ void
 short
 ushort
 string
-constructor
-destructor
+byte
