@@ -71,38 +71,38 @@ ExprType string_to_type(std::string str) {
 std::string type_to_string(Type type) {
 	switch (type.expr_type) {
 	case Bool:
-		return (std::string)"bool" + (type.is_array ? "[]" : "");
+		return (std::string)"bool" + (type.is_array ? "[" + std::to_string(type.array_size) + "]" : "");
 	case Char:
-		return (std::string)"char" + (type.is_array ? "[]" : "");
+		return (std::string)"char" + (type.is_array ? "[" + std::to_string(type.array_size) + "]" : "");
 	case Double:
-		return (std::string)"double" + (type.is_array ? "[]" : "");
+		return (std::string)"double" + (type.is_array ? "[" + std::to_string(type.array_size) + "]" : "");
 	case UDouble:
-		return (std::string)"udouble" + (type.is_array ? "[]" : "");
+		return (std::string)"udouble" + (type.is_array ? "[" + std::to_string(type.array_size) + "]" : "");
 	case Float:
-		return (std::string)"float" + (type.is_array ? "[]" : "");
+		return (std::string)"float" + (type.is_array ? "[" + std::to_string(type.array_size) + "]" : "");
 	case UFloat:
-		return (std::string)"ufloat" + (type.is_array ? "[]" : "");
+		return (std::string)"ufloat" + (type.is_array ? "[" + std::to_string(type.array_size) + "]" : "");
 	case Int:
-		return (std::string)"int" + (type.is_array ? "[]" : "");
+		return (std::string)"int" + (type.is_array ? "[" + std::to_string(type.array_size) + "]" : "");
 	case UInt:
-		return (std::string)"uint" + (type.is_array ? "[]" : "");
+		return (std::string)"uint" + (type.is_array ? "[" + std::to_string(type.array_size) + "]" : "");
 	case Long:
-		return (std::string)"long" + (type.is_array ? "[]" : "");
+		return (std::string)"long" + (type.is_array ? "[" + std::to_string(type.array_size) + "]" : "");
 	case ULong:
-		return (std::string)"ulong" + (type.is_array ? "[]" : "");
+		return (std::string)"ulong" + (type.is_array ? "[" + std::to_string(type.array_size) + "]" : "");
 	case Short:
-		return (std::string)"short" + (type.is_array ? "[]" : "");
+		return (std::string)"short" + (type.is_array ? "[" + std::to_string(type.array_size) + "]" : "");
 	case UShort:
-		return (std::string)"ushort" + (type.is_array ? "[]" : "");
+		return (std::string)"ushort" + (type.is_array ? "[" + std::to_string(type.array_size) + "]" : "");
 	case Byte:
-		return (std::string)"byte" + (type.is_array ? "[]" : "");
+		return (std::string)"byte" + (type.is_array ? "[" + std::to_string(type.array_size) + "]" : "");
 	case String:
-		return (std::string)"string" + (type.is_array ? "[]" : "");
+		return (std::string)"string" + (type.is_array ? "[" + std::to_string(type.array_size) + "]" : "");
 	case Void:
-		return (std::string)"void" + (type.is_array ? "[]" : "");
+		return (std::string)"void" + (type.is_array ? "[" + std::to_string(type.array_size) + "]" : "");
 	case Unknown:
 	default:
-		return (std::string)"unknown" + (type.is_array ? "[]" : "");
+		return (std::string)"unknown" + (type.is_array ? "[" + std::to_string(type.array_size) + "]" : "");
 	}
 }
 
@@ -159,32 +159,37 @@ void create_function(std::string name, Type type, int pref) {
 }
 
 Function get_function(std::string name, std::vector<Type> params) {
-	Function f = Function(name, Type(), params);
-	Function res = f;
-	if (funcs.count(f) == 0) {
-		for (auto& u : funcs) {
-			if (u.first.name != name) continue;
-			if (params.size() < u.first.not_default_pref) continue;
-			if (params.size() > u.first.identifiers.size()) continue;
-			bool flag = true;
-			for (int i = 0; i < params.size(); ++i) {
-				if (!(params[i] == u.first.identifiers[i])) {
+	std::vector<std::pair<int, Function>> functions;
+	for (auto& u : funcs) {
+		int curr_level = 0;
+		if (u.first.name != name) continue;
+		if (params.size() < u.first.not_default_pref) continue;
+		if (params.size() > u.first.identifiers.size()) continue;
+		bool flag = true;
+		for (int i = 0; i < params.size(); ++i) {
+			if (!(params[i] == u.first.identifiers[i])) {
+				if (!is_convertible(params[i], u.first.identifiers[i])) {
 					flag = false;
 					break;
+				} else {
+					curr_level = 1;
 				}
-			}
-
-			if (flag) {
-				if (!(res == f))
-					throw std::exception((name + " function call is ambiguous").c_str());
-				res = u.first;
 			}
 		}
 
-		if (res == f)
-			throw std::exception(("Function '" + f.name + "' was not declared in the current scope").c_str());
+		if (flag) {
+			functions.push_back({ curr_level, u.first });
+		}
 	}
-	return funcs.find(res)->first;
+	if (functions.empty()) {
+		throw std::exception(("Function '" + name + "' was not declared in the current scope").c_str());
+	}
+	std::sort(functions.begin(), functions.end(), [&](std::pair<int, Function> f, std::pair<int, Function> s) {
+		return f.first < s.first;
+	});
+	if (functions.size() == 1 || functions[1].first > functions[0].first)
+		return functions[0].second;
+	throw std::exception((name + " function call is ambiguous").c_str());
 }
 
 void program(LexicalAnalyzer& lex);
@@ -792,8 +797,31 @@ Type literal_to_type(LexicalAnalyzer& lex) {
 	case LexicalAnalyzer::literal_type::logical:
 		return Type(ExprType::Bool, false, false);
 	case LexicalAnalyzer::literal_type::integer:
+		if (current_token.value.find("ul") != current_token.value.npos || current_token.value.find("UL") != current_token.value.npos)
+			return Type(ExprType::ULong, false, false);
+		if (current_token.value.find("l") != current_token.value.npos || current_token.value.find("L") != current_token.value.npos)
+			return Type(ExprType::Long, false, false);
+		if (current_token.value.find("i") != current_token.value.npos || current_token.value.find("I") != current_token.value.npos)
+			return Type(ExprType::Int, false, false);
+		if (current_token.value.find("u") != current_token.value.npos || current_token.value.find("U") != current_token.value.npos || 
+			current_token.value.find("ui") != current_token.value.npos || current_token.value.find("UI") != current_token.value.npos)
+			return Type(ExprType::UInt, false, false);
+		if (current_token.value.find("s") != current_token.value.npos || current_token.value.find("S") != current_token.value.npos)
+			return Type(ExprType::Short, false, false);
+		if (current_token.value.find("us") != current_token.value.npos || current_token.value.find("US") != current_token.value.npos)
+			return Type(ExprType::UShort, false, false);
+		if (current_token.value.find("b") != current_token.value.npos || current_token.value.find("B") != current_token.value.npos)
+			return Type(ExprType::Byte, false, false);
 		return Type(ExprType::Int, false, false);
 	case LexicalAnalyzer::literal_type::real:
+		if (current_token.value.find("d") != current_token.value.npos || current_token.value.find("D") != current_token.value.npos)
+			return Type(ExprType::Double, false, false);
+		if (current_token.value.find("ud") != current_token.value.npos || current_token.value.find("UD") != current_token.value.npos)
+			return Type(ExprType::UDouble, false, false);
+		if (current_token.value.find("f") != current_token.value.npos || current_token.value.find("F") != current_token.value.npos)
+			return Type(ExprType::Float, false, false);
+		if (current_token.value.find("uf") != current_token.value.npos || current_token.value.find("UF") != current_token.value.npos)
+			return Type(ExprType::UFloat, false, false);
 		return Type(ExprType::Float, false, false);
 	case LexicalAnalyzer::literal_type::symbol:
 		return Type(ExprType::Char, false, false);
@@ -1174,26 +1202,32 @@ void statement(LexicalAnalyzer& lex, bool prev_table) {
 	}
 }
 
-int main() {
+int main(int argc, char* argv[]) {
 	std::string path;
-	std::cin >> path;
+	if (argc != 2) {
+		std::cin >> path;
+	} else {
+		path = argv[1];
+	}
+	
 	LexicalAnalyzer lex(path);
 
-	std::cout << "The lexical analysis was successful\n";
+	printf("\x1B[32mThe lexical analysis was successful\n\033[0m");
 
 	try {
 		current_token = lex.get_token();
 		program(lex);
 
 		if (current_token.line != -1) {
-			std::cout << "Unexpected end of file";
+			printf("\x1B[31mUnexpected end of file\n\033[0m");
 			exit(0);
 		}
-		std::cout << "The syntactic & semantic analysis was successful";
+		printf("\x1B[32mThe syntactic & semantic analysis was successful\n\033[0m");
 	} catch (std::exception ex) {
-		std::cout << ex.what();
+		printf(("\x1B[31m" + std::string(ex.what())).c_str());
 		if (current_token.line != -1) {
 			std::cout << " (" << current_token.line << " line)";
 		}
+		printf("\033[0m");
 	}
 }

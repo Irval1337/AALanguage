@@ -14,10 +14,10 @@ bool LexicalAnalyzer::is_identifier(std::string s) {
 LexicalAnalyzer::literal_type LexicalAnalyzer::is_literal(std::string s) {
 	if (s == "true" || s == "false") return literal_type::logical;
 
-	static const std::regex integer_r(R"([0-9]{1,}(UL|ul|L|l|I|i|U|u|s|S)?)");
+	static const std::regex integer_r(R"([0-9]{1,}(UL|ul|L|l|I|i|U|u|s|S|us|US|b|B|ui|UI)?)");
 	if (std::regex_match(s, integer_r)) return literal_type::integer;
 
-	static const std::regex real_r(R"(([0-9]{1,}\.[0-9]*)(e(\+|-)?[0-9]{1,})?(d|D|f|F)?)");
+	static const std::regex real_r(R"(([0-9]{1,}\.[0-9]*)(e(\+|-)?[0-9]{1,})?(d|D|f|F|ud|UD|uf|UF)?)");
 	if (std::regex_match(s, real_r)) return literal_type::real;
 
 	static const std::regex symbol_r(R"(\'(.|\\n|\\t|\\0|\\'|\\")\')");
@@ -69,7 +69,7 @@ void LexicalAnalyzer::print_token(Trie* service_trie, std::string buffer) {
 	if (buffer.empty()) return;
 	auto type = LexicalAnalyzer::get_token_type(service_trie, buffer);
 	if (type == unknown) {
-		std::cout << "(unknown, \"" << buffer << "\", line " << line_ << ")\n";
+		printf(("\x1B[31m(unknown, \"" + buffer + "\", line " + std::to_string(line_) + ")\n\033[0m").c_str());
 		ok_ = false;
 		exit(0);
 	}
