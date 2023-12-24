@@ -12,9 +12,11 @@ TableIdentifiers* tid = new TableIdentifiers();
 TableIdentifiers* global_tid = new TableIdentifiers();
 std::unordered_map<Function, TableIdentifiers*, FunctionHasher> funcs;
 Type current_function;
+int break_level = 0;
+int continue_level = 0;
 
-bool is_convertible(Type first, Type second) {
-	if (first.is_array != second.is_array || first.array_size != second.array_size) return false;
+bool is_convertible(Type first, Type second, bool is_func = false) {
+	if (first.is_array != second.is_array || !is_func && first.array_size != second.array_size) return false;
 	switch (first.expr_type) {
 	case Bool:
 		return second.expr_type == ExprType::Bool;
@@ -167,13 +169,17 @@ Function get_function(std::string name, std::vector<Type> params) {
 		if (params.size() > u.first.identifiers.size()) continue;
 		bool flag = true;
 		for (int i = 0; i < params.size(); ++i) {
-			if (!(params[i] == u.first.identifiers[i])) {
-				if (!is_convertible(params[i], u.first.identifiers[i])) {
+			if (params[i].expr_type != u.first.identifiers[i].expr_type) {
+				if (!is_convertible(params[i], u.first.identifiers[i], true)) {
 					flag = false;
 					break;
 				} else {
 					curr_level = 1;
 				}
+			}
+			if (params[i].is_array != u.first.identifiers[i].is_array) {
+				flag = false;
+				break;
 			}
 		}
 
@@ -859,8 +865,8 @@ void field(LexicalAnalyzer& lex) {
 		ident = get_identifier(name);
 	while (current_token.value == "[" || current_token.value == "(") { // TODO: field .
 		if (current_token.value == "[") {
-			if (!ident->type.is_array)
-				throw std::exception("Cannot apply operator [] to anything other than an array");
+			if (!ident->type.is_array && ident->type.expr_type != ExprType::String)
+				throw std::exception("Cannot apply operator [] to anything other than an array or string");
 			current_token = lex.get_token();
 			expression(lex, true);
 			if (!is_convertible(exprs.top().first, Type(ExprType::Long, false, false)))
@@ -868,8 +874,23 @@ void field(LexicalAnalyzer& lex) {
 			exprs.pop();
 			if (current_token.value != "]")
 				throw std::exception("Invalid token: ']' expected");
-			exprs.push({ Type(ident->type.expr_type, false, false), true });
 			current_token = lex.get_token();
+			if (current_token.value != "[") {
+				exprs.push({ Type(ident->type.is_array ? ident->type.expr_type : ExprType::Char, false, false), true });
+			} else if (ident->type.expr_type != ExprType::String)
+				throw std::exception("Cannot apply operator [] to anything other than an array or string");
+			else {
+				current_token = lex.get_token();
+				expression(lex, true);
+				if (!is_convertible(exprs.top().first, Type(ExprType::Long, false, false)))
+					throw std::exception("Cannot access index that is not an integer");
+				exprs.pop();
+				if (current_token.value != "]")
+					throw std::exception("Invalid token: ']' expected");
+				current_token = lex.get_token();
+				exprs.push({ Type(ExprType::Char, false, false), true });
+			}
+			
 			return;
 		} /*else if (current_token.value == ".") {
 			current_token = lex.get_token();
@@ -969,8 +990,12 @@ void if_statement(LexicalAnalyzer& lex) {
 
 void goto_statement(LexicalAnalyzer& lex) {
 	if (current_token.value == "break") {
+		if (break_level == 0)
+			throw std::exception("It is not possible to call break in the current context");
 		current_token = lex.get_token();
 	} else if (current_token.value == "continue") {
+		if (continue_level == 0)
+			throw std::exception("It is not possible to call continue in the current context");
 		current_token = lex.get_token();
 	} /*else if (current_token.value == "goto") { TODO: add goto
 		current_token = lex.get_token();
@@ -998,6 +1023,8 @@ void return_statement(LexicalAnalyzer& lex) {
 }
 
 void while_statement(LexicalAnalyzer& lex) {
+	++continue_level;
+	++break_level;
 	if (current_token.value != "while")
 		throw std::exception("Invalid token: 'while' expected");
 	current_token = lex.get_token();
@@ -1012,9 +1039,13 @@ void while_statement(LexicalAnalyzer& lex) {
 		throw std::exception("Invalid token: ')' expected");
 	current_token = lex.get_token();
 	statement(lex);
+	--continue_level;
+	--break_level;
 }
 
 void for_statement(LexicalAnalyzer& lex) {
+	++continue_level;
+	++break_level;
 	create_table();
 	if (current_token.value != "for")
 		throw std::exception("Invalid token: 'for' expected");
@@ -1064,6 +1095,8 @@ void for_statement(LexicalAnalyzer& lex) {
 		throw std::exception("Invalid token: ')' expected");
 	current_token = lex.get_token();
 	statement(lex, true);
+	--continue_level;
+	--break_level;
 }
 
 void switch_statement(LexicalAnalyzer& lex) {
@@ -1084,6 +1117,7 @@ void switch_statement(LexicalAnalyzer& lex) {
 		throw std::exception("Invalid token: '{' expected");
 	current_token = lex.get_token();
 	while (current_token.value == "case" || current_token.value == "default") {
+		++break_level;
 		if (current_token.value == "default") {
 			current_token = lex.get_token();
 			if (cases.count("default") != 0)
@@ -1115,6 +1149,7 @@ void switch_statement(LexicalAnalyzer& lex) {
 			current_token = lex.get_token();
 		}
 		statement(lex);
+		--break_level;
 	}
 	if (current_token.value != "}")
 		throw std::exception("Invalid token: '}' expected");
@@ -1222,7 +1257,7 @@ int main(int argc, char* argv[]) {
 			printf("\x1B[31mUnexpected end of file\n\033[0m");
 			exit(0);
 		}
-		printf("\x1B[32mThe syntactic & semantic analysis was successful\n\033[0m");
+		printf("\x1B[32mThe syntactic & semantic analysis was successful\033[0m");
 	} catch (std::exception ex) {
 		printf(("\x1B[31m" + std::string(ex.what())).c_str());
 		if (current_token.line != -1) {

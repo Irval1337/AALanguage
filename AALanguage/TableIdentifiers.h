@@ -72,7 +72,7 @@ struct Function {
 		if (identifiers.size() != f.identifiers.size()) return false;
 		bool flag = true;
 		for (int i = 0; i < identifiers.size(); ++i) {
-			flag &= identifiers[i] == f.identifiers[i];
+			flag &= identifiers[i].expr_type == f.identifiers[i].expr_type && identifiers[i].is_array == f.identifiers[i].is_array;
 		}
 		
 		return name == f.name && flag;
@@ -84,8 +84,7 @@ public:
 	std::size_t operator()(const Function& f) const {
 		std::size_t seed = f.identifiers.size();
 		for (auto& i : f.identifiers) {
-			seed ^= std::hash<int>{}((int)i.expr_type + (i.is_const << 6) + (i.is_array << 8) + 
-				(i.array_size << 10)) + 0x9e3779b9 + (seed << 6) + (seed >> 2);
+			seed ^= std::hash<int>{}((int)i.expr_type  + (i.is_array << 8) + (i.array_size << 10)) + 0x9e3779b9 + (seed << 6) + (seed >> 2);
 		}
 		return std::hash<std::string>{}(f.name) ^ (seed + 0x9e3779b9 + (seed << 6) + (seed >> 2));
 	}

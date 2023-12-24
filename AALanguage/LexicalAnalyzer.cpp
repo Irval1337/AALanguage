@@ -73,6 +73,7 @@ void LexicalAnalyzer::print_token(Trie* service_trie, std::string buffer) {
 		ok_ = false;
 		exit(0);
 	}
+	if (type == comment) return;
 	tokens_.push_back(Token(type, buffer, line_));
 }
 
