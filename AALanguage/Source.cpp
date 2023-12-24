@@ -783,6 +783,8 @@ void unary_expression(LexicalAnalyzer& lex) {
 				throw std::exception(("Cannot apply " + operations[i] + " operator to " + type_to_string(curr.first)).c_str());
 			if (!curr.second)
 				throw std::exception(("Cannot apply " + operations[i] + " operator to rvalue").c_str());
+			if (curr.first.is_const)
+				throw std::exception(("Cannot apply " + operations[i] + " operator to const").c_str());
 		}
 	}
 	exprs.push(curr);
@@ -944,12 +946,12 @@ void goto_statement(LexicalAnalyzer& lex) {
 		current_token = lex.get_token();
 	} else if (current_token.value == "continue") {
 		current_token = lex.get_token();
-	} else if (current_token.value == "goto") {
+	} /*else if (current_token.value == "goto") { TODO: add goto
 		current_token = lex.get_token();
 		if (current_token.type != LexicalAnalyzer::token_type::identifier)
 			throw std::exception("Invalid token: 'identifier' expected");
 		current_token = lex.get_token();
-	} else
+	} */else
 		throw std::exception("Invalid token: 'break', 'continue' or 'goto' expected");
 }
 
