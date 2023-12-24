@@ -4,16 +4,20 @@
 #include <exception>
 #include <stack>
 #include "TableIdentifiers.h"
+#include <unordered_set>
 
 Token current_token;
-std::stack<std::pair<ExprType, bool>> exprs;
+std::stack<std::pair<Type, bool>> exprs;
 TableIdentifiers* tid = new TableIdentifiers();
+TableIdentifiers* global_tid = new TableIdentifiers();
 std::unordered_map<Function, TableIdentifiers*, FunctionHasher> funcs;
+Type current_function;
 
-bool is_convertible(ExprType first, ExprType second) {
-	switch (first) {
+bool is_convertible(Type first, Type second) {
+	if (first.is_array != second.is_array || first.array_size != second.array_size) return false;
+	switch (first.expr_type) {
 	case Bool:
-		return second == ExprType::Bool;
+		return second.expr_type == ExprType::Bool;
 	case Char:
 	case Double:
 	case UDouble:
@@ -26,20 +30,20 @@ bool is_convertible(ExprType first, ExprType second) {
 	case Short:
 	case UShort:
 	case Byte:
-		return second != ExprType::Bool && second != ExprType::String && second != ExprType::Void && second != ExprType::Unknown;
+		return second.expr_type != ExprType::Bool && second.expr_type != ExprType::String && second.expr_type != ExprType::Void && second.expr_type != ExprType::Unknown;
 	case String:
-		return second == ExprType::String;
+		return second.expr_type == ExprType::String;
 	case Void:
 	case Unknown:
-		return second == ExprType::Unknown;
+		return second.expr_type == ExprType::Unknown;
 	default:
 		break;
 	}
 }
 
-ExprType calc_expr_type(ExprType first, ExprType second) {
-	if (!is_convertible(first, second)) return ExprType::Unknown;
-	if (type_prior[first] >= type_prior[second])
+Type calc_expr_type(Type first, Type second) {
+	if (!is_convertible(first, second)) return Type();
+	if (type_prior[first.expr_type] >= type_prior[second.expr_type])
 		return first;
 	else
 		return second;
@@ -64,47 +68,52 @@ ExprType string_to_type(std::string str) {
 	return ExprType::Unknown;
 }
 
-std::string type_to_string(ExprType type) {
-	switch (type) {
+std::string type_to_string(Type type) {
+	switch (type.expr_type) {
 	case Bool:
-		return "bool";
+		return (std::string)"bool" + (type.is_array ? "[]" : "");
 	case Char:
-		return "char";
+		return (std::string)"char" + (type.is_array ? "[]" : "");
 	case Double:
-		return "double";
+		return (std::string)"double" + (type.is_array ? "[]" : "");
 	case UDouble:
-		return "udouble";
+		return (std::string)"udouble" + (type.is_array ? "[]" : "");
 	case Float:
-		return "float";
+		return (std::string)"float" + (type.is_array ? "[]" : "");
 	case UFloat:
-		return "ufloat";
+		return (std::string)"ufloat" + (type.is_array ? "[]" : "");
 	case Int:
-		return "int";
+		return (std::string)"int" + (type.is_array ? "[]" : "");
 	case UInt:
-		return "uint";
+		return (std::string)"uint" + (type.is_array ? "[]" : "");
 	case Long:
-		return "long";
+		return (std::string)"long" + (type.is_array ? "[]" : "");
 	case ULong:
-		return "ulong";
+		return (std::string)"ulong" + (type.is_array ? "[]" : "");
 	case Short:
-		return "short";
+		return (std::string)"short" + (type.is_array ? "[]" : "");
 	case UShort:
-		return "ushort";
+		return (std::string)"ushort" + (type.is_array ? "[]" : "");
 	case Byte:
-		return "byte";
+		return (std::string)"byte" + (type.is_array ? "[]" : "");
 	case String:
-		return "string";
+		return (std::string)"string" + (type.is_array ? "[]" : "");
 	case Void:
-		return "void";
+		return (std::string)"void" + (type.is_array ? "[]" : "");
 	case Unknown:
 	default:
-		return "unknown";
+		return (std::string)"unknown" + (type.is_array ? "[]" : "");
 	}
 }
 
-void add_identifier(Identifier* ident) {
-	if (tid->identifiers.count(ident->name) != 0) throw std::exception(("Identifier '" + ident->name + "' was already declared in the current scope").c_str());
-	tid->identifiers[ident->name] = ident;
+void add_identifier(Identifier* ident, bool is_global = false) {
+	if (!is_global) {
+		if (tid->identifiers.count(ident->name) != 0) throw std::exception(("Identifier '" + ident->name + "' was already declared in the current scope").c_str());
+		tid->identifiers[ident->name] = ident;
+	} else {
+		if (global_tid->identifiers.count(ident->name) != 0) throw std::exception(("Identifier '" + ident->name + "' was already declared in the current scope").c_str());
+		global_tid->identifiers[ident->name] = ident;
+	}
 }
 
 Identifier* get_identifier(std::string name) {
@@ -115,8 +124,11 @@ Identifier* get_identifier(std::string name) {
 		}
 		ptr = ptr->parent;
 	}
-	throw std::exception(("Identifier '" + name + "' was not declared in the current scope").c_str());
-	return nullptr;
+	if (global_tid->identifiers.count(name) == 0) {
+		throw std::exception(("Identifier '" + name + "' was not declared in the current scope").c_str());
+		return nullptr;
+	}
+	return global_tid->identifiers[name];
 }
 
 void del_table() {
@@ -134,25 +146,45 @@ void create_table(bool new_func = false) {
 	tid = next;
 }
 
-void create_function(std::string name, ExprType type) {
-	std::vector<Identifier*> idents;
+void create_function(std::string name, Type type, int pref) {
+	std::vector<Type> idents;
 	for (auto& u : tid->identifiers) {
-		idents.push_back(u.second);
+		idents.push_back(u.second->type);
 	}
-	Function f = Function(name, type, idents);
+	Function f = Function(name, type, idents, pref);
 	if (funcs.count(f) != 0)
 		throw std::exception(("Function '" + f.name + "' was already declared in the current scope").c_str());
 	funcs[f] = tid;
+	current_function = type;
 }
 
-Function get_function(std::string name, std::vector<Identifier*> params) {
-	Function f = Function(name, ExprType::Void, params);
-	if (funcs.count(f) == 0)
-		throw std::exception(("Function '" + f.name + "' was not declared in the current scope").c_str());
-	auto res = funcs.find(f)->first;
-	for (int i = 0; i < params.size(); ++i)
-		delete params[i];
-	return res;
+Function get_function(std::string name, std::vector<Type> params) {
+	Function f = Function(name, Type(), params);
+	Function res = f;
+	if (funcs.count(f) == 0) {
+		for (auto& u : funcs) {
+			if (u.first.name != name) continue;
+			if (params.size() < u.first.not_default_pref) continue;
+			if (params.size() > u.first.identifiers.size()) continue;
+			bool flag = true;
+			for (int i = 0; i < params.size(); ++i) {
+				if (!(params[i] == u.first.identifiers[i])) {
+					flag = false;
+					break;
+				}
+			}
+
+			if (flag) {
+				if (!(res == f))
+					throw std::exception((name + " function call is ambiguous").c_str());
+				res = u.first;
+			}
+		}
+
+		if (res == f)
+			throw std::exception(("Function '" + f.name + "' was not declared in the current scope").c_str());
+	}
+	return funcs.find(res)->first;
 }
 
 void program(LexicalAnalyzer& lex);
@@ -160,10 +192,10 @@ void preprocessor(LexicalAnalyzer& lex);
 void namespace_definition(LexicalAnalyzer& lex);
 void program_body(LexicalAnalyzer& lex);
 void var_definition(LexicalAnalyzer& lex);
-void var_definitions(LexicalAnalyzer& lex, bool need_semicolon = true);
+void var_definitions(LexicalAnalyzer& lex, bool need_semicolon = true, bool is_program = false);
 void type(LexicalAnalyzer& lex);
 void default_type(LexicalAnalyzer& lex);
-void function_or_var_definitions(LexicalAnalyzer& lex, bool is_struct = false);
+void function_or_var_definitions(LexicalAnalyzer& lex, bool is_program = false);
 void function(LexicalAnalyzer& lex, bool is_struct = false);
 void expression(LexicalAnalyzer& lex, bool is_vars = false);
 void parameter_list(LexicalAnalyzer& lex);
@@ -196,6 +228,9 @@ void switch_statement(LexicalAnalyzer& lex);
 
 std::vector<std::string> service_types = { "bool", "char", "byte", "double", "udouble", "float", "ufloat", "int", "uint", "long",
 		"ulong", "short", "ushort", "string" };
+
+int function_params_pref = 0;
+bool is_in_function_header = false, was_function_assign = false;
 
 void semicolon(LexicalAnalyzer& lex, bool is_important) {
 	if (current_token.line == -1)
@@ -253,7 +288,7 @@ void namespace_definition(LexicalAnalyzer& lex) {
 
 void program_body(LexicalAnalyzer& lex) {
 	if (current_token.line == -1) return;
-	function_or_var_definitions(lex);
+	function_or_var_definitions(lex, true);
 	may_be_semicolon(lex);
 	program_body(lex);
 }
@@ -272,6 +307,7 @@ void var_definition(LexicalAnalyzer& lex) {
 		throw std::exception("Invalid token: identifier expected");
 	std::string name = current_token.value;
 	current_token = lex.get_token();
+	Identifier* ident = nullptr;
 	if (current_token.value == "[") {
 		current_token = lex.get_token();
 		if (lex.is_literal(current_token.value) != lex.integer)
@@ -282,20 +318,31 @@ void var_definition(LexicalAnalyzer& lex) {
 			throw std::exception("Invalid token: ']' expected");
 		current_token = lex.get_token();
 
-		add_identifier(new Identifier(name, curr_type, is_const, true, size));
+		ident = new Identifier(name, Type(curr_type, is_const, true, size));
+		add_identifier(ident);
 	} else {
-		add_identifier(new Identifier(name, curr_type, is_const, false));
+		ident = new Identifier(name, Type(curr_type, is_const, false));
+		add_identifier(ident);
 	}
 	if (current_token.value == "=") {
 		current_token = lex.get_token();
 		expression(lex, true);
-		if (!is_convertible(exprs.top().first, curr_type))
-			throw std::exception(("Cannot convert " + type_to_string(exprs.top().first) + " to " + type_to_string(curr_type)).c_str());
+		if (!is_convertible(exprs.top().first, ident->type))
+			throw std::exception(("Cannot convert " + type_to_string(exprs.top().first) + " to " + type_to_string(ident->type)).c_str());
 		exprs.pop();
+
+		if (is_in_function_header) {
+			if (!was_function_assign)
+				was_function_assign = true;
+		}
+	} else if (is_in_function_header) {
+		if (was_function_assign)
+			throw std::exception("Parameters with default values cannot be followed by standard ones");
+		++function_params_pref;
 	}
 }
 
-void var_definitions(LexicalAnalyzer& lex, bool need_semicolon) {
+void var_definitions(LexicalAnalyzer& lex, bool need_semicolon, bool is_program) {
 	bool is_const = current_token.value == "const";
 	ExprType curr_type;
 	if (is_const) {
@@ -309,6 +356,7 @@ void var_definitions(LexicalAnalyzer& lex, bool need_semicolon) {
 		throw std::exception("Invalid token: identifier expected");
 	std::string name = current_token.value;
 	current_token = lex.get_token();
+	Identifier* ident = nullptr;
 	if (current_token.value == "[") {
 		current_token = lex.get_token();
 		if (lex.is_literal(current_token.value) != lex.integer)
@@ -319,16 +367,18 @@ void var_definitions(LexicalAnalyzer& lex, bool need_semicolon) {
 			throw std::exception("Invalid token: ']' expected");
 		current_token = lex.get_token();
 
-		add_identifier(new Identifier(name, curr_type, is_const, true, size));
+		ident = new Identifier(name, Type(curr_type, is_const, true, size));
+		add_identifier(ident, is_program);
 	} else {
-		add_identifier(new Identifier(name, curr_type, is_const, false));
+		ident = new Identifier(name, Type(curr_type, is_const, false));
+		add_identifier(ident, is_program);
 	}
 	if (current_token.value == "=") {
 		current_token = lex.get_token();
 		expression(lex, true);
 
-		if (!is_convertible(exprs.top().first, curr_type))
-			throw std::exception(("Cannot convert " + type_to_string(exprs.top().first) + " to " + type_to_string(curr_type)).c_str());
+		if (!is_convertible(exprs.top().first, ident->type))
+			throw std::exception(("Cannot convert " + type_to_string(exprs.top().first) + " to " + type_to_string(ident->type)).c_str());
 		exprs.pop();
 	}
 	while (current_token.value == ",") {
@@ -347,16 +397,18 @@ void var_definitions(LexicalAnalyzer& lex, bool need_semicolon) {
 				throw std::exception("Invalid token: ']' expected");
 			current_token = lex.get_token();
 
-			add_identifier(new Identifier(name, curr_type, is_const, true, size));
+			ident = new Identifier(name, Type(curr_type, is_const, true, size));
+			add_identifier(ident, is_program);
 		} else {
-			add_identifier(new Identifier(name, curr_type, is_const, false));
+			ident = new Identifier(name, Type(curr_type, is_const, false));
+			add_identifier(ident, is_program);
 		}
 		if (current_token.value == "=") {
 			current_token = lex.get_token();
 			expression(lex, true);
 
-			if (!is_convertible(exprs.top().first, curr_type))
-				throw std::exception(("Cannot convert " + type_to_string(exprs.top().first) + " to " + type_to_string(curr_type)).c_str());
+			if (!is_convertible(exprs.top().first, ident->type))
+				throw std::exception(("Cannot convert " + type_to_string(exprs.top().first) + " to " + type_to_string(ident->type)).c_str());
 			exprs.pop();
 		}
 	}
@@ -388,10 +440,28 @@ void function(LexicalAnalyzer& lex, bool is_struct) {
 		current_token = lex.get_token();
 	else
 		default_type(lex);
+
+	Type func_type;
+	func_type.expr_type = curr_type;
 	if (current_token.type != LexicalAnalyzer::token_type::identifier)
 		throw std::exception("Invalid token: identifier expected");
 	std::string name = current_token.value;
 	current_token = lex.get_token();
+
+	if (current_token.value == "[" && curr_type != ExprType::Void) {
+		current_token = lex.get_token();
+		if (lex.is_literal(current_token.value) != lex.integer)
+			throw std::exception("Invalid token: integer literal expected");
+		int size = std::stoi(current_token.value);
+		current_token = lex.get_token();
+		if (current_token.value != "]")
+			throw std::exception("Invalid token: ']' expected");
+		current_token = lex.get_token();
+
+		func_type.is_array = true;
+		func_type.array_size = size;
+	}
+
 	if (current_token.value != "(")
 		throw std::exception("Invalid token: '(' expected");
 	current_token = lex.get_token();
@@ -400,7 +470,7 @@ void function(LexicalAnalyzer& lex, bool is_struct) {
 	bool was_parameters = false;
 	check_function_brace:
 	if (current_token.value == ")" || was_parameters) {
-		create_function(name, curr_type);
+		create_function(name, func_type, function_params_pref);
 		current_token = lex.get_token();
 		if (current_token.value != "{")
 			throw std::exception("Invalid token: '{' expected");
@@ -418,27 +488,37 @@ void function(LexicalAnalyzer& lex, bool is_struct) {
 	}
 }
 
-void function_or_var_definitions(LexicalAnalyzer& lex, bool is_struct) {
+void function_or_var_definitions(LexicalAnalyzer& lex, bool is_program) {
 	if (current_token.value == "const") {
-		var_definitions(lex);
+		var_definitions(lex, true, is_program);
 		return;
 	}
 	if (current_token.value == "void") {
-		function(lex, is_struct);
+		function(lex);
 		return;
 	}
 	default_type(lex);
 	if (current_token.type != LexicalAnalyzer::token_type::identifier)
 		throw std::exception("Invalid token: identifier expected");
 	current_token = lex.get_token();
-	if (current_token.value == "(") {
+	std::string str = current_token.value;
+	if (current_token.value == "[") {
+		current_token = lex.get_token();
+		current_token = lex.get_token();
+		current_token = lex.get_token();
+		str = current_token.value;
 		current_token = lex.prev_token();
 		current_token = lex.prev_token();
-		function(lex, is_struct);
-	} else if (current_token.value == "=" || current_token.value == "," || current_token.value == ";") {
+		current_token = lex.prev_token();
+	}
+	if (str == "(") {
 		current_token = lex.prev_token();
 		current_token = lex.prev_token();
-		var_definitions(lex);
+		function(lex);
+	} else if (str == "=" || str == "," || str == ";") {
+		current_token = lex.prev_token();
+		current_token = lex.prev_token();
+		var_definitions(lex, true, is_program);
 	} else
 		throw std::exception("Invalid token: '=', ',', ';' or '(' expected");
 }
@@ -452,22 +532,23 @@ void expression(LexicalAnalyzer& lex, bool is_vars) {
 	}
 }
 
-bool check_operation(ExprType first, ExprType second, std::string operation) {
+bool check_operation(Type f, Type s, std::string operation) {
+	auto first = f.expr_type, second = s.expr_type;
 	if (operation == "+")
-		return first != ExprType::Bool && is_convertible(first, second);
+		return first != ExprType::Bool && is_convertible(f, s);
 	if (operation == "-" || operation == "*" || operation == "/" || operation == ">>" || operation == "<<" || operation == "<" || operation == "<=" ||
 		operation == ">" || operation == ">=")
-		return first != ExprType::Bool && first != ExprType::String && is_convertible(first, second);
+		return first != ExprType::Bool && first != ExprType::String && is_convertible(f, s);
 	if (operation == "%")
 		return first != ExprType::Bool && first != ExprType::String && first != ExprType::Float && first != ExprType::UFloat && 
 		first != ExprType::Double && first != ExprType::UDouble && second != ExprType::Float && second != ExprType::UFloat &&
-		second != ExprType::Double && second != ExprType::UDouble && is_convertible(first, second);
+		second != ExprType::Double && second != ExprType::UDouble && is_convertible(f, s);
 	if (operation == "&" || operation == "^" || operation == "|" || operation == "->" || operation == "~")
-		return first != ExprType::String && is_convertible(first, second);
+		return first != ExprType::String && is_convertible(f, s);
 	if (operation == "=" || operation == "==" || operation == "!=")
-		return is_convertible(first, second);
+		return is_convertible(f, s);
 	if (operation == "||" || operation == "&&")
-		return first == ExprType::Bool && is_convertible(first, second);
+		return first == ExprType::Bool && is_convertible(f, s);
 	return false;
 }
 
@@ -484,6 +565,8 @@ void assignment_expression(LexicalAnalyzer& lex) {
 			operation = operation.substr(0, operation.size() - 1);
 		if (!exprs.top().second)
 			throw std::exception("Cannot apply assignment operator to rvalue");
+		if (exprs.top().first.is_const)
+			throw std::exception("Cannot apply assignment operator to const");
 		auto prev = exprs.top().first;
 		exprs.pop();
 		current_token = lex.get_token();
@@ -506,8 +589,9 @@ void logical_or_expression(LexicalAnalyzer& lex) {
 		logical_and_expression(lex);
 		if (!check_operation(prev, exprs.top().first, "||"))
 			throw std::exception(("Cannot apply || operator with " + type_to_string(prev) + " and " + type_to_string(exprs.top().first)).c_str());
+		auto curr = exprs.top();
 		exprs.pop();
-		exprs.push({ ExprType::Bool, false });
+		exprs.push({ Type(ExprType::Bool, false, false), false });
 	}
 }
 
@@ -520,8 +604,9 @@ void logical_and_expression(LexicalAnalyzer& lex) {
 		bitwise_or_expression(lex);
 		if (!check_operation(prev, exprs.top().first, "&&"))
 			throw std::exception(("Cannot apply && operator with " + type_to_string(prev) + " and " + type_to_string(exprs.top().first)).c_str());
+		auto curr = exprs.top();
 		exprs.pop();
-		exprs.push({ ExprType::Bool, false });
+		exprs.push({ Type(ExprType::Bool, false, false), false });
 	}
 }
 
@@ -598,7 +683,7 @@ void equality_expression(LexicalAnalyzer& lex) {
 				" and " + type_to_string(exprs.top().first)).c_str());
 		auto curr = exprs.top();
 		exprs.pop();
-		exprs.push({ calc_expr_type(prev, curr.first), false });
+		exprs.push({ Type(ExprType::Bool, false, false), false});
 	}
 }
 
@@ -615,7 +700,7 @@ void comparison_expression(LexicalAnalyzer& lex) {
 				" and " + type_to_string(exprs.top().first)).c_str());
 		auto curr = exprs.top();
 		exprs.pop();
-		exprs.push({ calc_expr_type(prev, curr.first), false });
+		exprs.push({ Type(ExprType::Bool, false, false), false });
 	}
 }
 
@@ -681,16 +766,20 @@ void unary_expression(LexicalAnalyzer& lex) {
 	auto curr = exprs.top();
 	exprs.pop();
 	for (int i = operations.size() - 1; i >= 0; --i) {
+		if (curr.first.is_array)
+			throw std::exception(("Cannot apply " + operations[i] + " operator to " + type_to_string(curr.first)).c_str());
 		if (operations[i] == "+" || operations[i] == "-" || operations[i] == "~") {
-			if (curr.first == ExprType::String || curr.first == ExprType::Bool || curr.first == ExprType::Unknown || curr.first == ExprType::Void)
+			if (curr.first.expr_type == ExprType::String || curr.first.expr_type == ExprType::Bool || curr.first.expr_type == ExprType::Unknown || 
+				curr.first.expr_type == ExprType::Void)
 				throw std::exception(("Cannot apply " + operations[i] + " operator to " + type_to_string(curr.first)).c_str());
 			curr.second = false;
 		} else if (operations[i] == "!") {
-			if (curr.first != ExprType::Bool)
+			if (curr.first.expr_type != ExprType::Bool)
 				throw std::exception(("Cannot apply " + operations[i] + " operator to " + type_to_string(curr.first)).c_str());
 			curr.second = false;
 		} else {
-			if (curr.first == ExprType::String || curr.first == ExprType::Bool || curr.first == ExprType::Unknown || curr.first == ExprType::Void)
+			if (curr.first.expr_type == ExprType::String || curr.first.expr_type == ExprType::Bool || curr.first.expr_type == ExprType::Unknown || 
+				curr.first.expr_type == ExprType::Void)
 				throw std::exception(("Cannot apply " + operations[i] + " operator to " + type_to_string(curr.first)).c_str());
 			if (!curr.second)
 				throw std::exception(("Cannot apply " + operations[i] + " operator to rvalue").c_str());
@@ -699,28 +788,26 @@ void unary_expression(LexicalAnalyzer& lex) {
 	exprs.push(curr);
 }
 
+Type literal_to_type(LexicalAnalyzer& lex) {
+	switch (lex.is_literal(current_token.value)) {
+	case LexicalAnalyzer::literal_type::logical:
+		return Type(ExprType::Bool, false, false);
+	case LexicalAnalyzer::literal_type::integer:
+		return Type(ExprType::Int, false, false);
+	case LexicalAnalyzer::literal_type::real:
+		return Type(ExprType::Float, false, false);
+	case LexicalAnalyzer::literal_type::symbol:
+		return Type(ExprType::Char, false, false);
+	case LexicalAnalyzer::literal_type::string:
+		return Type(ExprType::String, false, false);
+	default:
+		return Type(ExprType::Unknown, false, false);
+	}
+}
+
 void construct_expression(LexicalAnalyzer& lex) {
 	if (current_token.type == LexicalAnalyzer::token_type::literal) {
-		switch (lex.is_literal(current_token.value)) {
-		case LexicalAnalyzer::literal_type::logical:
-			exprs.push({ ExprType::Bool, false });
-			break;
-		case LexicalAnalyzer::literal_type::integer:
-			exprs.push({ ExprType::Int, false });
-			break;
-		case LexicalAnalyzer::literal_type::real:
-			exprs.push({ ExprType::Float, false });
-			break;
-		case LexicalAnalyzer::literal_type::symbol:
-			exprs.push({ ExprType::Char, false });
-			break;
-		case LexicalAnalyzer::literal_type::string:
-			exprs.push({ ExprType::String, false });
-			break;
-		default:
-			exprs.push({ ExprType::Unknown, false });
-			break;
-		}
+		exprs.push({ literal_to_type(lex), false });
 		current_token = lex.get_token();
 		return;
 	}
@@ -742,19 +829,19 @@ void field(LexicalAnalyzer& lex) {
 	current_token = lex.get_token();
 	Identifier* ident = nullptr;
 	if (current_token.value == "[")
-		ident = get_identifier(current_token.value);
+		ident = get_identifier(name);
 	while (current_token.value == "[" || current_token.value == "(") { // TODO: field .
 		if (current_token.value == "[") {
-			if (!ident->is_array)
+			if (!ident->type.is_array)
 				throw std::exception("Cannot apply operator [] to anything other than an array");
 			current_token = lex.get_token();
 			expression(lex, true);
-			if (!is_convertible(exprs.top().first, ExprType::Long))
+			if (!is_convertible(exprs.top().first, Type(ExprType::Long, false, false)))
 				throw std::exception("Cannot access index that is not an integer");
 			exprs.pop();
 			if (current_token.value != "]")
 				throw std::exception("Invalid token: ']' expected");
-			exprs.push({ ident->type, true });
+			exprs.push({ Type(ident->type.expr_type, false, false), true });
 			current_token = lex.get_token();
 			return;
 		} /*else if (current_token.value == ".") {
@@ -764,16 +851,16 @@ void field(LexicalAnalyzer& lex) {
 			current_token = lex.get_token();
 		} */ else { // TODO: check function
 			current_token = lex.get_token();
-			std::vector<Identifier*> idents;
+			std::vector<Type> idents;
 			if (current_token.value != ")") {
 				expression(lex, true);
-				idents.push_back(new Identifier(std::string(""), exprs.top().first, false, false));
+				idents.push_back(exprs.top().first);
 				exprs.pop();
 			}
 			while (current_token.value == ",") {
 				current_token = lex.get_token();
 				expression(lex, true);
-				idents.push_back(new Identifier(std::string(""), exprs.top().first, false, false));
+				idents.push_back(exprs.top().first);
 				exprs.pop();
 			}
 			if (current_token.value != ")")
@@ -781,7 +868,22 @@ void field(LexicalAnalyzer& lex) {
 			current_token = lex.get_token();
 
 			auto func = get_function(name, idents);
-			exprs.push({ func.type, false });
+
+			if (current_token.value == "[") {
+				if (!func.type.is_array)
+					throw std::exception("Cannot apply operator [] to anything other than an array");
+				current_token = lex.get_token();
+				expression(lex, true);
+				if (!is_convertible(exprs.top().first, Type(ExprType::Long, false, false)))
+					throw std::exception("Cannot access index that is not an integer");
+				exprs.pop();
+				if (current_token.value != "]")
+					throw std::exception("Invalid token: ']' expected");
+				exprs.push({ Type(func.type.expr_type, false, false), true });
+				current_token = lex.get_token();
+			}
+			else
+				exprs.push({ func.type, false });
 			return;
 		}
 	}
@@ -791,11 +893,15 @@ void field(LexicalAnalyzer& lex) {
 }
 
 void parameter_list(LexicalAnalyzer& lex) {
+	is_in_function_header = true;
+	was_function_assign = false;
+	function_params_pref = 0;
 	var_definition(lex);
 	while (current_token.value == ",") {
 		current_token = lex.get_token();
 		var_definition(lex);
 	}
+	is_in_function_header = false;
 }
 
 void if_statement(LexicalAnalyzer& lex) {
@@ -806,6 +912,9 @@ void if_statement(LexicalAnalyzer& lex) {
 		throw std::exception("Invalid token: '(' expected");
 	current_token = lex.get_token();
 	expression(lex);
+	if (exprs.top().first.expr_type != ExprType::Bool || exprs.top().first.is_array)
+		throw std::exception(("Invalid expression type. bool expected, but found " + type_to_string(exprs.top().first)).c_str());
+	exprs.pop();
 	if (current_token.value != ")")
 		throw std::exception("Invalid token: ')' expected");
 	current_token = lex.get_token();
@@ -820,6 +929,9 @@ void if_statement(LexicalAnalyzer& lex) {
 			throw std::exception("Invalid token: '(' expected");
 		current_token = lex.get_token();
 		expression(lex);
+		if (exprs.top().first.expr_type != ExprType::Bool || exprs.top().first.is_array)
+			throw std::exception(("Invalid expression type. bool expected, but found " + type_to_string(exprs.top().first)).c_str());
+		exprs.pop();
 		if (current_token.value != ")")
 			throw std::exception("Invalid token: ')' expected");
 		current_token = lex.get_token();
@@ -845,8 +957,16 @@ void return_statement(LexicalAnalyzer& lex) {
 	if (current_token.value != "return")
 		throw std::exception("Invalid token: 'return' expected");
 	current_token = lex.get_token();
-	if (current_token.value != ";")
+	if (current_token.value != ";") {
 		expression(lex);
+		auto type = exprs.top().first;
+		exprs.pop();
+		if (!is_convertible(type, current_function))
+			throw std::exception(("Cannot cast " + type_to_string(type) + " type to " + type_to_string(current_function)).c_str());
+	} else {
+		if (!is_convertible(Type(ExprType::Void, false, false), current_function))
+			throw std::exception("The function requires a return value.");
+	}
 }
 
 void while_statement(LexicalAnalyzer& lex) {
@@ -857,6 +977,9 @@ void while_statement(LexicalAnalyzer& lex) {
 		throw std::exception("Invalid token: '(' expected");
 	current_token = lex.get_token();
 	expression(lex);
+	if (exprs.top().first.expr_type != ExprType::Bool || exprs.top().first.is_array)
+		throw std::exception(("Invalid expression type. bool expected, but found " + type_to_string(exprs.top().first)).c_str());
+	exprs.pop();
 	if (current_token.value != ")")
 		throw std::exception("Invalid token: ')' expected");
 	current_token = lex.get_token();
@@ -892,6 +1015,7 @@ void for_statement(LexicalAnalyzer& lex) {
 				} else {
 					current_token = lex.prev_token();
 					expression(lex);
+					exprs.pop();
 				}
 			}
 		}
@@ -899,10 +1023,14 @@ void for_statement(LexicalAnalyzer& lex) {
 	semicolon(lex, true);
 	if (current_token.value != ";") {
 		expression(lex);
+		if (exprs.top().first.expr_type != ExprType::Bool || exprs.top().first.is_array)
+			throw std::exception(("Invalid expression type. bool expected, but found " + type_to_string(exprs.top().first)).c_str());
+		exprs.pop();
 	}
 	semicolon(lex, true);
 	if (current_token.value != ")") {
 		expression(lex);
+		exprs.pop();
 	}
 	if (current_token.value != ")")
 		throw std::exception("Invalid token: ')' expected");
@@ -918,6 +1046,9 @@ void switch_statement(LexicalAnalyzer& lex) {
 		throw std::exception("Invalid token: '(' expected");
 	current_token = lex.get_token();
 	expression(lex);
+	Type curr_type = exprs.top().first;
+	exprs.pop();
+	std::unordered_set<std::string> cases;
 	if (current_token.value != ")")
 		throw std::exception("Invalid token: ')' expected");
 	current_token = lex.get_token();
@@ -925,13 +1056,36 @@ void switch_statement(LexicalAnalyzer& lex) {
 		throw std::exception("Invalid token: '{' expected");
 	current_token = lex.get_token();
 	while (current_token.value == "case" || current_token.value == "default") {
-		current_token = lex.get_token();
-		if (current_token.type != LexicalAnalyzer::token_type::literal)
-			throw std::exception("Invalid token: 'literal' expected");
-		current_token = lex.get_token();
-		if (current_token.value != ":")
-			throw std::exception("Invalid token: ':' expected");
-		current_token = lex.get_token();
+		if (current_token.value == "default") {
+			current_token = lex.get_token();
+			if (cases.count("default") != 0)
+				throw std::exception("The default case has already been described above");
+			cases.insert("default");
+			if (current_token.value != ":")
+				throw std::exception("Invalid token: ':' expected");
+			current_token = lex.get_token();
+		} else {
+			current_token = lex.get_token();
+			if (current_token.type != LexicalAnalyzer::token_type::literal)
+				throw std::exception("Invalid token: 'literal' expected");
+
+			std::string val = current_token.value;
+			if ((val[0] >= '0' && val[0] <= '9') || val[0] == '-' || val[0] == '+') {
+				while (val.back() < '0' || val.back() > '9')
+					val.pop_back();
+				val = std::to_string(std::stold(val));
+			}
+			if (cases.count(val) != 0)
+				throw std::exception(("The case " + current_token.value + " has already been described above").c_str());
+			if (!is_convertible(literal_to_type(lex), curr_type))
+				throw std::exception(("Cannot cast " + type_to_string(literal_to_type(lex)) + " type to " + type_to_string(curr_type)).c_str());
+
+			cases.insert(val);
+			current_token = lex.get_token();
+			if (current_token.value != ":")
+				throw std::exception("Invalid token: ':' expected");
+			current_token = lex.get_token();
+		}
 		statement(lex);
 	}
 	if (current_token.value != "}")
@@ -1011,6 +1165,7 @@ void statement(LexicalAnalyzer& lex, bool prev_table) {
 	} else {
 		if (current_token.value != ";") {
 			expression(lex);
+			exprs.pop();
 			semicolon(lex);
 			may_be_semicolon(lex);
 		} else {
