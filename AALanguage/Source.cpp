@@ -927,7 +927,7 @@ void field(LexicalAnalyzer& lex) {
 				exprs.pop();
 				if (current_token.value != "]")
 					throw std::exception("Invalid token: ']' expected");
-				exprs.push({ Type(func.type.expr_type, false, false), true });
+				exprs.push({ Type(func.type.expr_type, false, false), false });
 				current_token = lex.get_token();
 			}
 			else
