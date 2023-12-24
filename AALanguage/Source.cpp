@@ -319,10 +319,8 @@ void var_definition(LexicalAnalyzer& lex) {
 		current_token = lex.get_token();
 
 		ident = new Identifier(name, Type(curr_type, is_const, true, size));
-		add_identifier(ident);
 	} else {
 		ident = new Identifier(name, Type(curr_type, is_const, false));
-		add_identifier(ident);
 	}
 	if (current_token.value == "=") {
 		current_token = lex.get_token();
@@ -340,6 +338,7 @@ void var_definition(LexicalAnalyzer& lex) {
 			throw std::exception("Parameters with default values cannot be followed by standard ones");
 		++function_params_pref;
 	}
+	add_identifier(ident);
 }
 
 void var_definitions(LexicalAnalyzer& lex, bool need_semicolon, bool is_program) {
@@ -368,10 +367,8 @@ void var_definitions(LexicalAnalyzer& lex, bool need_semicolon, bool is_program)
 		current_token = lex.get_token();
 
 		ident = new Identifier(name, Type(curr_type, is_const, true, size));
-		add_identifier(ident, is_program);
 	} else {
 		ident = new Identifier(name, Type(curr_type, is_const, false));
-		add_identifier(ident, is_program);
 	}
 	if (current_token.value == "=") {
 		current_token = lex.get_token();
@@ -381,6 +378,7 @@ void var_definitions(LexicalAnalyzer& lex, bool need_semicolon, bool is_program)
 			throw std::exception(("Cannot convert " + type_to_string(exprs.top().first) + " to " + type_to_string(ident->type)).c_str());
 		exprs.pop();
 	}
+	add_identifier(ident, is_program);
 	while (current_token.value == ",") {
 		current_token = lex.get_token();
 		if (current_token.type != LexicalAnalyzer::token_type::identifier)
@@ -398,10 +396,8 @@ void var_definitions(LexicalAnalyzer& lex, bool need_semicolon, bool is_program)
 			current_token = lex.get_token();
 
 			ident = new Identifier(name, Type(curr_type, is_const, true, size));
-			add_identifier(ident, is_program);
 		} else {
 			ident = new Identifier(name, Type(curr_type, is_const, false));
-			add_identifier(ident, is_program);
 		}
 		if (current_token.value == "=") {
 			current_token = lex.get_token();
@@ -411,6 +407,7 @@ void var_definitions(LexicalAnalyzer& lex, bool need_semicolon, bool is_program)
 				throw std::exception(("Cannot convert " + type_to_string(exprs.top().first) + " to " + type_to_string(ident->type)).c_str());
 			exprs.pop();
 		}
+		add_identifier(ident, is_program);
 	}
 	if (need_semicolon) {
 		semicolon(lex);
