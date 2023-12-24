@@ -918,10 +918,7 @@ void if_statement(LexicalAnalyzer& lex) {
 		throw std::exception("Invalid token: ')' expected");
 	current_token = lex.get_token();
 	statement(lex);
-	if (current_token.value == "else") {
-		current_token = lex.get_token();
-		statement(lex);
-	} else if (current_token.value == "elif") {
+	while (current_token.value == "elif") {
 		current_token = lex.get_token();
 
 		if (current_token.value != "(")
@@ -933,6 +930,10 @@ void if_statement(LexicalAnalyzer& lex) {
 		exprs.pop();
 		if (current_token.value != ")")
 			throw std::exception("Invalid token: ')' expected");
+		current_token = lex.get_token();
+		statement(lex);
+	}
+	if (current_token.value == "else") {
 		current_token = lex.get_token();
 		statement(lex);
 	}
@@ -1188,7 +1189,7 @@ int main() {
 			std::cout << "Unexpected end of file";
 			exit(0);
 		}
-		std::cout << "The syntactic analysis was successful";
+		std::cout << "The syntactic & semantic analysis was successful";
 	} catch (std::exception ex) {
 		std::cout << ex.what();
 		if (current_token.line != -1) {
