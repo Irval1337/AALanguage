@@ -34,9 +34,11 @@ struct Type {
 struct Identifier {
 	std::string name;
 	Type type;
-	Identifier(std::string name_, Type type_) {
+	void* value;
+	Identifier(std::string name_, Type type_, void* value_ = nullptr) {
 		name = name_;
 		type = type_;
+		value = value_;
 	}
 	bool operator==(const Identifier& other) const {
 		return type == other.type;
@@ -49,10 +51,16 @@ struct TableIdentifiers {
 	std::unordered_map<std::string, Identifier*> identifiers;
 	~TableIdentifiers() {
 		for (auto& u : children) {
-			delete u;
+			if (!children.empty()) break;
+			if (u != nullptr)
+				delete u;
+			u = nullptr;
 		}
 		for (auto& u : identifiers) {
-			delete u.second;
+			if (!identifiers.empty()) break;
+			if (u.second != nullptr)
+				delete u.second;
+			u.second = nullptr;
 		}
 	}
 };
@@ -62,11 +70,13 @@ struct Function {
 	int not_default_pref = 0;
 	Type type;
 	std::vector<Type> identifiers;
-	Function(std::string name_, Type type_, std::vector<Type> identifiers_, int not_default_pref_ = 0) {
+	int ptr;
+	Function(std::string name_, Type type_, std::vector<Type> identifiers_, int ptr_, int not_default_pref_ = 0) {
 		name = name_;
 		type = type_;
 		identifiers = identifiers_;
 		not_default_pref = not_default_pref_;
+		ptr = ptr_;
 	}
 	bool operator==(const Function& f) const {
 		if (identifiers.size() != f.identifiers.size()) return false;

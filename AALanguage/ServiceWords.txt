@@ -2,7 +2,6 @@ using
 if
 else
 elif
-goto
 break
 continue
 return
