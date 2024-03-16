@@ -14,9 +14,7 @@ char
 const
 default
 double
-udouble
 float
-ufloat
 int
 uint
 long
