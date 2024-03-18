@@ -11,7 +11,7 @@ enum PolizType {
     GO, FGO, TGO, LABEL, ADDRESS, POINTER, GETARR, CALL, BLANK, SEMICOLON, LITERAL, USING, COMMA, ASSIGN, LOGICAL_OR, 
     LOGICAL_AND, BITWISE_OR, BITWISE_XOR, BITWISE_CONS, BITWISE_AND, EQUALITY, CMP, BITWISE_SHIFT, PLUS, MULT, UNARY, 
     SWITCH_CMP, SWITCH_POP, RET, BOOL_LITERAL, BYTE_LITERAL, CHAR_LITERAL, DOUBLE_LITERAL, FLOAT_LITERAL, INT_LITERAL, 
-    LONG_LITERAL, SHORT_LITERAL, STRING_LITERAL, UINT_LITERAL, ULONG_LITERAL
+    LONG_LITERAL, SHORT_LITERAL, STRING_LITERAL, UINT_LITERAL, ULONG_LITERAL, SWITCH_BEGIN
 };
 
 class Poliz {
@@ -50,6 +50,9 @@ public:
         }
     }
     void* convert(std::pair<PolizType, void*> op, PolizType to) {
+        if (op.first == PolizType::ADDRESS)
+            op = address_to_value(op.second);
+
         switch (op.first) {
         case BOOL_LITERAL: {
             switch (to) {
@@ -1037,19 +1040,19 @@ public:
                 break;
             }
             case FGO: {
-                bool val = *((bool*)st.top().second) == false;
-                st.pop();
                 int ind = *((int*)st.top().second);
                 st.pop();
+                bool val = *((bool*)st.top().second) == false;
+                st.pop(); 
                 if (val) {
                     p = ind;
                 } else ++p;
                 break;
             }
             case TGO: {
-                bool val = *((bool*)st.top().second) == true;
-                st.pop();
                 int ind = *((int*)st.top().second);
+                st.pop();
+                bool val = *((bool*)st.top().second) == true;
                 st.pop();
                 if (val) {
                     p = ind;
@@ -1073,13 +1076,14 @@ public:
             case UINT_LITERAL:
             case ULONG_LITERAL:
             case ADDRESS:
+            case SWITCH_BEGIN:
             case POINTER: {
                 st.push(lexes[p]);
                 ++p;
                 break;
             }
             case GETARR: {
-                int ind = *((int*)st.top().second);
+                int ind = *(int*)convert(st.top(), PolizType::INT_LITERAL);
                 st.pop();
                 if (st.top().second == nullptr)
                     throw std::exception("Cannot access the character of an uninitialized string");
@@ -1092,7 +1096,7 @@ public:
                 break;
             }
             case SEMICOLON: {
-                while (!st.empty()) {
+                while (!st.empty() && st.top().first != PolizType::SWITCH_BEGIN) {
                     st.pop();
                 }
                 ++p;
@@ -1176,11 +1180,41 @@ public:
                 auto op = st.top();
                 st.pop();
                 auto var = (Identifier*)op.second;
-                std::cout << (int)(*(uint8_t*)var->value) << std::endl;
+                std::cout << *(std::string*)(convert(op, PolizType::STRING_LITERAL)) << std::endl;
+                ++p;
+                break;
+            }
+            case RET: {
+                ++p;
+                break;
+            }
+            case SWITCH_CMP: {
+                auto op2 = st.top();
+                st.pop();
+                st.pop();
+                auto op1 = st.top();
+                st.pop();
+                st.push(op1);
+                st.push({ PolizType::SWITCH_BEGIN, nullptr });
+                st.push(execute_operation(op1, op2, "=="));
+                ++p;
+                break;
+            }
+            case SWITCH_POP: {
+                while (st.top().first != PolizType::SWITCH_BEGIN) {
+                    st.pop();
+                }
+                st.pop();
+                st.pop();
                 ++p;
                 break;
             }
             default:
+                auto op2 = st.top();
+                st.pop();
+                auto op1 = st.top();
+                st.pop();
+                st.push(execute_operation(op1, op2, *(std::string*)(lexes[p].second)));
                 ++p;
                 break;
             }
@@ -1832,7 +1866,7 @@ void logical_or_expression(LexicalAnalyzer& lex) {
         auto prev = exprs.top().first;
         exprs.pop();
         logical_and_expression(lex);
-        prog.put_lex({ PolizType::LOGICAL_OR, nullptr });
+        prog.put_lex({ PolizType::LOGICAL_OR, new std::string("||") });
         if (!check_operation(prev, exprs.top().first, "||"))
             throw std::exception(("Cannot apply || operator with " + type_to_string(prev) + " and " + type_to_string(exprs.top().first)).c_str());
         auto curr = exprs.top();
@@ -1848,7 +1882,7 @@ void logical_and_expression(LexicalAnalyzer& lex) {
         auto prev = exprs.top().first;
         exprs.pop();
         bitwise_or_expression(lex);
-        prog.put_lex({ PolizType::LOGICAL_AND, nullptr });
+        prog.put_lex({ PolizType::LOGICAL_AND, new std::string("&&") });
         if (!check_operation(prev, exprs.top().first, "&&"))
             throw std::exception(("Cannot apply && operator with " + type_to_string(prev) + " and " + type_to_string(exprs.top().first)).c_str());
         auto curr = exprs.top();
@@ -1864,7 +1898,7 @@ void bitwise_or_expression(LexicalAnalyzer& lex) {
         auto prev = exprs.top().first;
         exprs.pop();
         bitwise_xor_expression(lex);
-        prog.put_lex({ PolizType::BITWISE_OR, nullptr });
+        prog.put_lex({ PolizType::BITWISE_OR, new std::string("|") });
         if (!check_operation(prev, exprs.top().first, "|"))
             throw std::exception(("Cannot apply | operator with " + type_to_string(prev) + " and " + type_to_string(exprs.top().first)).c_str());
         auto curr = exprs.top();
@@ -1880,7 +1914,7 @@ void bitwise_xor_expression(LexicalAnalyzer& lex) {
         auto prev = exprs.top().first;
         exprs.pop();
         bitwise_consequence_expression(lex);
-        prog.put_lex({ PolizType::BITWISE_XOR, nullptr });
+        prog.put_lex({ PolizType::BITWISE_XOR, new std::string("^") });
         if (!check_operation(prev, exprs.top().first, "^"))
             throw std::exception(("Cannot apply ^ operator with " + type_to_string(prev) + " and " + type_to_string(exprs.top().first)).c_str());
         auto curr = exprs.top();
@@ -1896,7 +1930,7 @@ void bitwise_consequence_expression(LexicalAnalyzer& lex) {
         auto prev = exprs.top().first;
         exprs.pop();
         bitwise_and_expression(lex);
-        prog.put_lex({ PolizType::BITWISE_CONS, nullptr });
+        prog.put_lex({ PolizType::BITWISE_CONS, new std::string("->") });
         if (!check_operation(prev, exprs.top().first, "->"))
             throw std::exception(("Cannot apply -> operator with " + type_to_string(prev) + " and " + type_to_string(exprs.top().first)).c_str());
         auto curr = exprs.top();
@@ -1912,7 +1946,7 @@ void bitwise_and_expression(LexicalAnalyzer& lex) {
         auto prev = exprs.top().first;
         exprs.pop();
         equality_expression(lex);
-        prog.put_lex({ PolizType::BITWISE_AND, nullptr });
+        prog.put_lex({ PolizType::BITWISE_AND, new std::string("&") });
         if (!check_operation(prev, exprs.top().first, "&"))
             throw std::exception(("Cannot apply & operator with " + type_to_string(prev) + " and " + type_to_string(exprs.top().first)).c_str());
         auto curr = exprs.top();
@@ -2026,7 +2060,7 @@ void unary_expression(LexicalAnalyzer& lex) {
     auto curr = exprs.top();
     exprs.pop();
     for (int i = operations.size() - 1; i >= 0; --i) {
-        if (curr.first.is_array)
+        /*if (curr.first.is_array)
             throw std::exception(("Cannot apply " + operations[i] + " operator to " + type_to_string(curr.first)).c_str());
         if (operations[i] == "+" || operations[i] == "-" || operations[i] == "~") {
             if (curr.first.expr_type == ExprType::String || curr.first.expr_type == ExprType::Bool || curr.first.expr_type == ExprType::Unknown || 
@@ -2045,7 +2079,7 @@ void unary_expression(LexicalAnalyzer& lex) {
                 throw std::exception(("Cannot apply " + operations[i] + " operator to rvalue").c_str());
             if (curr.first.is_const)
                 throw std::exception(("Cannot apply " + operations[i] + " operator to const").c_str());
-        }
+        }*/
     }
     exprs.push(curr);
 }
@@ -2379,10 +2413,12 @@ void for_statement(LexicalAnalyzer& lex) {
     semicolon(lex, true);
 
     prog.blank();
-    int* ptrBeg = new int(prog.get_size() - 1);
+    int* ptrExpr = new int(prog.get_size() - 1);
     int* ptrEnd = new int(-1);
+    int* ptrAct = new int(-1);
+    int* ptrBody = new int(-1);
     break_ptr.push(ptrEnd);
-    continue_ptr.push(ptrBeg);
+    continue_ptr.push(ptrAct);
 
     if (current_token.value != ";") {
         expression(lex);
@@ -2392,17 +2428,26 @@ void for_statement(LexicalAnalyzer& lex) {
         
         prog.put_lex({ PolizType::POINTER, ptrEnd });
         prog.put_lex({ PolizType::FGO, new std::string("!F") });
+
+        prog.put_lex({ PolizType::POINTER, ptrBody });
+        prog.put_lex({ PolizType::GO, new std::string("!") });
     }
     semicolon(lex, true);
+    prog.blank();
+    *ptrAct = prog.get_size() - 1;
     if (current_token.value != ")") {
         expression(lex);
         exprs.pop();
     }
+    prog.put_lex({ PolizType::POINTER, ptrExpr });
+    prog.put_lex({ PolizType::GO, new std::string("!") });
     if (current_token.value != ")")
         throw std::exception("Invalid token: ')' expected");
     current_token = lex.get_token();
+    prog.blank();
+    *ptrBody = prog.get_size() - 1;
     statement(lex, true);
-    prog.put_lex({ PolizType::POINTER, ptrBeg });
+    prog.put_lex({ PolizType::POINTER, ptrAct });
     prog.put_lex({ PolizType::GO, new std::string("!") });
     prog.blank();
     *ptrEnd = prog.get_size() - 1;
@@ -2428,6 +2473,7 @@ void switch_statement(LexicalAnalyzer& lex) {
         throw std::exception("Invalid token: '{' expected");
     current_token = lex.get_token();
     int* ptr_end = new int(-1);
+    prog.put_lex({ PolizType::SWITCH_BEGIN, nullptr });
 
     while (current_token.value == "case" || current_token.value == "default") {
         break_ptr.push(ptr_end);
@@ -2464,8 +2510,8 @@ void switch_statement(LexicalAnalyzer& lex) {
             current_token = lex.get_token();
 
             int* ptr_case_end = new int(-1);
-            prog.put_lex({ PolizType::LITERAL, new std::string(val) });
-            prog.put_lex({ PolizType::CMP, new std::string("==") });
+            prog.put_lex({ PolizType::LITERAL, new std::pair<std::string, ExprType>(val, curr_type.expr_type) });
+            prog.put_lex({ PolizType::SWITCH_CMP, new std::string("==") });
             prog.put_lex({ PolizType::POINTER, ptr_case_end });
             prog.put_lex({ PolizType::FGO, new std::string("!F")});
 
@@ -2479,9 +2525,8 @@ void switch_statement(LexicalAnalyzer& lex) {
         throw std::exception("Invalid token: '}' expected");
     current_token = lex.get_token();
 
-    prog.blank();
-    *ptr_end = prog.get_size() - 1;
     prog.put_lex({ PolizType::SWITCH_POP, new std::string("POP") });
+    *ptr_end = prog.get_size() - 1;
 }
 
 void statement(LexicalAnalyzer& lex, bool prev_table) {
