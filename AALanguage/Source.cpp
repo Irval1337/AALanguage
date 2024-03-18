@@ -1640,7 +1640,7 @@ void type(LexicalAnalyzer& lex);
 void default_type(LexicalAnalyzer& lex);
 void function_or_var_definitions(LexicalAnalyzer& lex, bool is_program = false);
 void function(LexicalAnalyzer& lex, bool is_struct = false);
-void expression(LexicalAnalyzer& lex, bool is_vars = false);
+void expression(LexicalAnalyzer& lex, bool is_vars = false, bool is_print = false);
 void parameter_list(LexicalAnalyzer& lex);
 void statement(LexicalAnalyzer& lex, bool prev_table = false);
 void semicolon(LexicalAnalyzer& lex, bool is_important = false);
@@ -2005,13 +2005,19 @@ void function_or_var_definitions(LexicalAnalyzer& lex, bool is_program) {
         throw std::exception("Invalid token: '=', ',', ';' or '(' expected");
 }
 
-void expression(LexicalAnalyzer& lex, bool is_vars) {
+void expression(LexicalAnalyzer& lex, bool is_vars, bool is_print) {
     assignment_expression(lex);
+    if (is_print)
+        prog.put_lex({ PolizType::PRINT, nullptr });
+
     while (!is_vars && current_token.value == ",") {
         exprs.pop();
         current_token = lex.get_token();
         assignment_expression(lex);
-        prog.put_lex({ PolizType::COMMA, new std::string(",") });
+        if (is_print)
+            prog.put_lex({ PolizType::PRINT, nullptr });
+        if (!is_print)
+            prog.put_lex({ PolizType::COMMA, new std::string(",") });
     }
 }
 
@@ -2746,8 +2752,7 @@ void print_statement(LexicalAnalyzer& lex) {
     if (current_token.value != "print")
         throw std::exception("Invalid token: 'print' expected");
     current_token = lex.get_token();
-    expression(lex);
-    prog.put_lex({ PolizType::PRINT, nullptr });
+    expression(lex, false, true);
 }
 
 void read_statement(LexicalAnalyzer& lex) {
