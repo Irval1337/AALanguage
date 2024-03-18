@@ -537,6 +537,119 @@ public:
             return PolizType::BLANK;
         }
     }
+    std::pair<PolizType, void*> execute_operation(std::pair<PolizType, void*> op1, std::pair<PolizType, void*> op2, std::string operation) {
+        if (op1.first == PolizType::ADDRESS)
+            op1 = address_to_value(op1.second);
+        if (op2.first == PolizType::ADDRESS)
+            op2 = address_to_value(op2.second);
+        auto conv = make_same(op1, op2);
+        if (operation == "+") {
+            switch (conv.first) {
+                case BOOL_LITERAL:
+                    return { conv.first, new bool(*((bool*)conv.second.first) + *((bool*)conv.second.second)) };
+                case BYTE_LITERAL:
+                    return { conv.first, new uint8_t(*((uint8_t*)conv.second.first) + *((uint8_t*)conv.second.second)) };
+                case CHAR_LITERAL:
+                    return { conv.first, new char(*((char*)conv.second.first) + *((char*)conv.second.second)) };
+                case DOUBLE_LITERAL:
+                    return { conv.first, new double(*((double*)conv.second.first) + *((double*)conv.second.second)) };
+                case FLOAT_LITERAL:
+                    return { conv.first, new float(*((float*)conv.second.first) + *((float*)conv.second.second)) };
+                case INT_LITERAL:
+                    return { conv.first, new int(*((int*)conv.second.first) + *((int*)conv.second.second)) };
+                case LONG_LITERAL:
+                    return { conv.first, new long long(*((long long*)conv.second.first) + *((long long*)conv.second.second)) };
+                case SHORT_LITERAL:
+                    return { conv.first, new short(*((short*)conv.second.first) + *((short*)conv.second.second)) };
+                case STRING_LITERAL:
+                    return { conv.first, new std::string(*((std::string*)conv.second.first) + *((std::string*)conv.second.second)) };
+                case UINT_LITERAL:
+                    return { conv.first, new uint32_t(*((uint32_t*)conv.second.first) + *((uint32_t*)conv.second.second)) };
+                case ULONG_LITERAL:
+                    return { conv.first, new uint64_t(*((uint64_t*)conv.second.first) + *((uint64_t*)conv.second.second)) };
+                default:
+                    throw std::exception("Cannot use this operation");
+            }
+        }
+        else if (operation == "-") {
+            switch (conv.first) {
+            case BOOL_LITERAL:
+                return { conv.first, new bool(*((bool*)conv.second.first) - *((bool*)conv.second.second)) };
+            case BYTE_LITERAL:
+                return { conv.first, new uint8_t(*((uint8_t*)conv.second.first) - *((uint8_t*)conv.second.second)) };
+            case CHAR_LITERAL:
+                return { conv.first, new char(*((char*)conv.second.first) - *((char*)conv.second.second)) };
+            case DOUBLE_LITERAL:
+                return { conv.first, new double(*((double*)conv.second.first) - *((double*)conv.second.second)) };
+            case FLOAT_LITERAL:
+                return { conv.first, new float(*((float*)conv.second.first) - *((float*)conv.second.second)) };
+            case INT_LITERAL:
+                return { conv.first, new int(*((int*)conv.second.first) - *((int*)conv.second.second)) };
+            case LONG_LITERAL:
+                return { conv.first, new long long(*((long long*)conv.second.first) - *((long long*)conv.second.second)) };
+            case SHORT_LITERAL:
+                return { conv.first, new short(*((short*)conv.second.first) - *((short*)conv.second.second)) };
+            case UINT_LITERAL:
+                return { conv.first, new uint32_t(*((uint32_t*)conv.second.first) - *((uint32_t*)conv.second.second)) };
+            case ULONG_LITERAL:
+                return { conv.first, new uint64_t(*((uint64_t*)conv.second.first) - *((uint64_t*)conv.second.second)) };
+            default:
+                throw std::exception("Cannot use this operation");
+            }
+        }
+        else if (operation == "*") {
+            switch (conv.first) {
+            case BOOL_LITERAL:
+                return { conv.first, new bool(*((bool*)conv.second.first) * *((bool*)conv.second.second)) };
+            case BYTE_LITERAL:
+                return { conv.first, new uint8_t(*((uint8_t*)conv.second.first) * *((uint8_t*)conv.second.second)) };
+            case CHAR_LITERAL:
+                return { conv.first, new char(*((char*)conv.second.first) * *((char*)conv.second.second)) };
+            case DOUBLE_LITERAL:
+                return { conv.first, new double(*((double*)conv.second.first) * *((double*)conv.second.second)) };
+            case FLOAT_LITERAL:
+                return { conv.first, new float(*((float*)conv.second.first) * *((float*)conv.second.second)) };
+            case INT_LITERAL:
+                return { conv.first, new int(*((int*)conv.second.first) * *((int*)conv.second.second)) };
+            case LONG_LITERAL:
+                return { conv.first, new long long(*((long long*)conv.second.first) * *((long long*)conv.second.second)) };
+            case SHORT_LITERAL:
+                return { conv.first, new short(*((short*)conv.second.first) * *((short*)conv.second.second)) };
+            case UINT_LITERAL:
+                return { conv.first, new uint32_t(*((uint32_t*)conv.second.first) * *((uint32_t*)conv.second.second)) };
+            case ULONG_LITERAL:
+                return { conv.first, new uint64_t(*((uint64_t*)conv.second.first) * *((uint64_t*)conv.second.second)) };
+            default:
+                throw std::exception("Cannot use this operation");
+            }
+        }
+        else if (operation == "/") {
+            switch (conv.first) {
+            case BOOL_LITERAL:
+                return { conv.first, new bool(*((bool*)conv.second.first) / *((bool*)conv.second.second)) };
+            case BYTE_LITERAL:
+                return { conv.first, new uint8_t(*((uint8_t*)conv.second.first) / *((uint8_t*)conv.second.second)) };
+            case CHAR_LITERAL:
+                return { conv.first, new char(*((char*)conv.second.first) / *((char*)conv.second.second)) };
+            case DOUBLE_LITERAL:
+                return { conv.first, new double(*((double*)conv.second.first) / *((double*)conv.second.second)) };
+            case FLOAT_LITERAL:
+                return { conv.first, new float(*((float*)conv.second.first) / *((float*)conv.second.second)) };
+            case INT_LITERAL:
+                return { conv.first, new int(*((int*)conv.second.first) / *((int*)conv.second.second)) };
+            case LONG_LITERAL:
+                return { conv.first, new long long(*((long long*)conv.second.first) / *((long long*)conv.second.second)) };
+            case SHORT_LITERAL:
+                return { conv.first, new short(*((short*)conv.second.first) / *((short*)conv.second.second)) };
+            case UINT_LITERAL:
+                return { conv.first, new uint32_t(*((uint32_t*)conv.second.first) / *((uint32_t*)conv.second.second)) };
+            case ULONG_LITERAL:
+                return { conv.first, new uint64_t(*((uint64_t*)conv.second.first) / *((uint64_t*)conv.second.second)) };
+            default:
+                throw std::exception("Cannot use this operation");
+            }
+        }
+    }
     void execute(int entrypoint) {
         std::stack<std::pair<PolizType, void*>> st;
         int p = entrypoint;
@@ -676,7 +789,9 @@ public:
                     var->value = convert(op2, type_to_poliz(var->type.expr_type));
                 }
                 else {
-
+                    std::string op = *((std::string*)lexes[p].second);
+                    auto val = execute_operation(op1, op2, op.substr(0, op.size() - 1));
+                    var->value = convert(val, type_to_poliz(var->type.expr_type));
                 }
                 st.push(op1);
                 ++p;
