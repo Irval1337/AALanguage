@@ -11,7 +11,7 @@ enum PolizType {
     GO, FGO, TGO, LABEL, ADDRESS, POINTER, GETARR, CALL, BLANK, SEMICOLON, LITERAL, USING, COMMA, ASSIGN, LOGICAL_OR, 
     LOGICAL_AND, BITWISE_OR, BITWISE_XOR, BITWISE_CONS, BITWISE_AND, EQUALITY, CMP, BITWISE_SHIFT, PLUS, MULT, UNARY, 
     SWITCH_CMP, SWITCH_POP, RET, BOOL_LITERAL, BYTE_LITERAL, CHAR_LITERAL, DOUBLE_LITERAL, FLOAT_LITERAL, INT_LITERAL, 
-    LONG_LITERAL, SHORT_LITERAL, STRING_LITERAL, UINT_LITERAL, ULONG_LITERAL, STACK_PLUG
+    LONG_LITERAL, SHORT_LITERAL, STRING_LITERAL, UINT_LITERAL, ULONG_LITERAL, STACK_PLUG, READ, PRINT
 };
 
 class Poliz {
@@ -1157,7 +1157,6 @@ public:
             }
         }
         else if (operation == "+") {
-            std::cout << *(std::string*)(convert(op, PolizType::STRING_LITERAL)) << std::endl;
             return op;
         }
         else if (operation == "-") {
@@ -1405,6 +1404,22 @@ public:
                 ++p;
                 break;
             }
+            case READ: {
+                auto var = (Identifier*)st.top().second;
+                st.pop();
+                std::string value;
+                std::cin >> value;
+                var->value = convert({ PolizType::STRING_LITERAL, new std::string(value) }, type_to_poliz(var->type.expr_type));
+                ++p;
+                break;
+            }
+            case PRINT: {
+                auto op = st.top();
+                st.pop();
+                std::cout << *(std::string*)(convert(op, PolizType::STRING_LITERAL));
+                ++p;
+                break;
+            }
             default:
                 auto op2 = st.top();
                 st.pop();
@@ -1645,7 +1660,7 @@ void plus_expression(LexicalAnalyzer& lex);
 void multiply_expression(LexicalAnalyzer& lex);
 void unary_expression(LexicalAnalyzer& lex);
 void construct_expression(LexicalAnalyzer& lex);
-void field(LexicalAnalyzer& lex);
+void field(LexicalAnalyzer& lex, bool only_array = false);
 
 void if_statement(LexicalAnalyzer& lex);
 void goto_statement(LexicalAnalyzer& lex);
@@ -1653,6 +1668,8 @@ void return_statement(LexicalAnalyzer& lex);
 void while_statement(LexicalAnalyzer& lex);
 void for_statement(LexicalAnalyzer& lex);
 void switch_statement(LexicalAnalyzer& lex);
+void read_statement(LexicalAnalyzer& lex);
+void print_statement(LexicalAnalyzer& lex);
 
 std::vector<std::string> service_types = { "bool", "char", "byte", "double", "udouble", "float", "ufloat", "int", "uint", "long",
         "ulong", "short", "ushort", "string" };
@@ -2338,7 +2355,7 @@ void construct_expression(LexicalAnalyzer& lex) {
     field(lex);
 }
 
-void field(LexicalAnalyzer& lex) {
+void field(LexicalAnalyzer& lex, bool only_array) {
     if (current_token.type != LexicalAnalyzer::token_type::identifier)
         throw std::exception("Invalid token: identifier expected");
     std::string name = current_token.value;
@@ -2346,7 +2363,7 @@ void field(LexicalAnalyzer& lex) {
     Identifier* ident = nullptr;
     if (current_token.value == "[")
         ident = get_identifier(name);
-    while (current_token.value == "[" || current_token.value == "(") { // TODO: field .
+    while (current_token.value == "[" || current_token.value == "(" && !only_array) { // TODO: field .
         if (current_token.value == "[") {
             if (!ident->type.is_array && ident->type.expr_type != ExprType::String)
                 throw std::exception("Cannot apply operator [] to anything other than an array or string");
@@ -2725,6 +2742,22 @@ void switch_statement(LexicalAnalyzer& lex) {
     *ptr_end = prog.get_size() - 1;
 }
 
+void print_statement(LexicalAnalyzer& lex) {
+    if (current_token.value != "print")
+        throw std::exception("Invalid token: 'print' expected");
+    current_token = lex.get_token();
+    expression(lex);
+    prog.put_lex({ PolizType::PRINT, nullptr });
+}
+
+void read_statement(LexicalAnalyzer& lex) {
+    if (current_token.value != "read")
+        throw std::exception("Invalid token: 'read' expected");
+    current_token = lex.get_token();
+    field(lex, true);
+    prog.put_lex({ PolizType::READ, nullptr });
+}
+
 void statement(LexicalAnalyzer& lex, bool prev_table) {
     if (current_token.value == "{") {
         current_token = lex.get_token();
@@ -2753,8 +2786,8 @@ void statement(LexicalAnalyzer& lex, bool prev_table) {
     if (current_token.value == "return") {
         return_statement(lex);
         semicolon(lex);
-        return;
         may_be_semicolon(lex);
+        return;
     }
     if (current_token.value == "while") {
         while_statement(lex);
@@ -2768,6 +2801,18 @@ void statement(LexicalAnalyzer& lex, bool prev_table) {
     }
     if (current_token.value == "switch") {
         switch_statement(lex);
+        may_be_semicolon(lex);
+        return;
+    }
+    if (current_token.value == "read") {
+        read_statement(lex);
+        semicolon(lex);
+        may_be_semicolon(lex);
+        return;
+    }
+    if (current_token.value == "print") {
+        print_statement(lex);
+        semicolon(lex);
         may_be_semicolon(lex);
         return;
     }
