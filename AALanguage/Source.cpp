@@ -11,7 +11,7 @@ enum PolizType {
     GO, FGO, TGO, LABEL, ADDRESS, POINTER, GETARR, CALL, BLANK, SEMICOLON, LITERAL, USING, COMMA, ASSIGN, LOGICAL_OR, 
     LOGICAL_AND, BITWISE_OR, BITWISE_XOR, BITWISE_CONS, BITWISE_AND, EQUALITY, CMP, BITWISE_SHIFT, PLUS, MULT, UNARY, 
     SWITCH_CMP, SWITCH_POP, RET, BOOL_LITERAL, BYTE_LITERAL, CHAR_LITERAL, DOUBLE_LITERAL, FLOAT_LITERAL, INT_LITERAL, 
-    LONG_LITERAL, SHORT_LITERAL, STRING_LITERAL, UINT_LITERAL, ULONG_LITERAL, SWITCH_BEGIN
+    LONG_LITERAL, SHORT_LITERAL, STRING_LITERAL, UINT_LITERAL, ULONG_LITERAL, STACK_PLUG
 };
 
 class Poliz {
@@ -81,7 +81,7 @@ public:
                 return new short(*((bool*)op.second));
                 break;
             case STRING_LITERAL:
-                return new std::string(std::to_string(*((bool*)op.second)));
+                return new std::string(*((bool*)op.second) ? "true" : "false");
                 break;
             case UINT_LITERAL:
                 return new uint32_t(*((bool*)op.second));
@@ -157,7 +157,7 @@ public:
                 return new short(*((char*)op.second));
                 break;
             case STRING_LITERAL:
-                return new std::string(std::to_string(*((char*)op.second)));
+                return new std::string(1, *((char*)op.second));
                 break;
             case UINT_LITERAL:
                 return new uint32_t(*((char*)op.second));
@@ -1028,6 +1028,203 @@ public:
             }
         }
     }
+    std::pair<PolizType, void*> execute_operation(std::pair<PolizType, void*> op, std::string operation) {
+        Identifier* ident = nullptr;
+        if (op.first == PolizType::ADDRESS) {
+            ident = (Identifier*)op.second;
+            op = address_to_value(op.second);
+        }
+        if (operation == "++") {
+            switch (op.first) {
+            case BOOL_LITERAL: {
+                auto val = *((bool*)op.second);
+                ++val;
+                ident->value = new bool(val);
+                return { ADDRESS, ident };
+            }
+            case BYTE_LITERAL: {
+                auto val = *((uint8_t*)op.second);
+                ++val;
+                ident->value = new uint8_t(val);
+                return { ADDRESS, ident };
+            }
+            case CHAR_LITERAL: {
+                auto val = *((char*)op.second);
+                ++val;
+                ident->value = new char(val);
+                return { ADDRESS, ident };
+            }
+            case DOUBLE_LITERAL: {
+                auto val = *((double*)op.second);
+                ++val;
+                ident->value = new double(val);
+                return { ADDRESS, ident };
+            }
+            case FLOAT_LITERAL: {
+                auto val = *((float*)op.second);
+                ++val;
+                ident->value = new float(val);
+                return { ADDRESS, ident };
+            }
+            case INT_LITERAL: {
+                auto val = *((int*)op.second);
+                ++val;
+                ident->value = new int(val);
+                return { ADDRESS, ident };
+            }
+            case LONG_LITERAL: {
+                auto val = *((long long*)op.second);
+                ++val;
+                ident->value = new long long(val);
+                return { ADDRESS, ident };
+            }
+            case SHORT_LITERAL: {
+                auto val = *((short*)op.second);
+                ++val;
+                ident->value = new short(val);
+                return { ADDRESS, ident };
+            }
+            case UINT_LITERAL: {
+                auto val = *((uint32_t*)op.second);
+                ++val;
+                ident->value = new uint32_t(val);
+                return { ADDRESS, ident };
+            }
+            case ULONG_LITERAL: {
+                auto val = *((uint64_t*)op.second);
+                ++val;
+                ident->value = new uint64_t(val);
+                return { ADDRESS, ident };
+            }
+            }
+        }
+        else if (operation == "--") {
+            switch (op.first) {
+            case BYTE_LITERAL: {
+                auto val = *((uint8_t*)op.second);
+                --val;
+                ident->value = new uint8_t(val);
+                return { ADDRESS, ident };
+            }
+            case CHAR_LITERAL: {
+                auto val = *((char*)op.second);
+                --val;
+                ident->value = new char(val);
+                return { ADDRESS, ident };
+            }
+            case DOUBLE_LITERAL: {
+                auto val = *((double*)op.second);
+                --val;
+                ident->value = new double(val);
+                return { ADDRESS, ident };
+            }
+            case FLOAT_LITERAL: {
+                auto val = *((float*)op.second);
+                --val;
+                ident->value = new float(val);
+                return { ADDRESS, ident };
+            }
+            case INT_LITERAL: {
+                auto val = *((int*)op.second);
+                --val;
+                ident->value = new int(val);
+                return { ADDRESS, ident };
+            }
+            case LONG_LITERAL: {
+                auto val = *((long long*)op.second);
+                --val;
+                ident->value = new long long(val);
+                return { ADDRESS, ident };
+            }
+            case SHORT_LITERAL: {
+                auto val = *((short*)op.second);
+                --val;
+                ident->value = new short(val);
+                return { ADDRESS, ident };
+            }
+            case UINT_LITERAL: {
+                auto val = *((uint32_t*)op.second);
+                --val;
+                ident->value = new uint32_t(val);
+                return { ADDRESS, ident };
+            }
+            case ULONG_LITERAL: {
+                auto val = *((uint64_t*)op.second);
+                --val;
+                ident->value = new uint64_t(val);
+                return { ADDRESS, ident };
+            }
+            }
+        }
+        else if (operation == "+") {
+            std::cout << *(std::string*)(convert(op, PolizType::STRING_LITERAL)) << std::endl;
+            return op;
+        }
+        else if (operation == "-") {
+            switch (op.first) {
+            case BOOL_LITERAL:
+                return { op.first, new bool(-*((bool*)op.second)) };
+            case BYTE_LITERAL:
+                return { op.first, new uint8_t(-*((uint8_t*)op.second)) };
+            case CHAR_LITERAL:
+                return { op.first, new char(-*((char*)op.second)) };
+            case DOUBLE_LITERAL:
+                return { op.first, new double(-*((double*)op.second)) };
+            case FLOAT_LITERAL:
+                return { op.first, new float(-*((float*)op.second)) };
+            case INT_LITERAL:
+                return { op.first, new int(-*((int*)op.second)) };
+            case LONG_LITERAL:
+                return { op.first, new long long(-*((long long*)op.second)) };
+            case SHORT_LITERAL:
+                return { op.first, new short(-*((short*)op.second)) };
+            }
+        }
+        else if (operation == "!") {
+            switch (op.first) {
+            case BOOL_LITERAL:
+                return { op.first, new bool(!*((bool*)op.second)) };
+            case BYTE_LITERAL:
+                return { op.first, new uint8_t(!*((uint8_t*)op.second)) };
+            case CHAR_LITERAL:
+                return { op.first, new char(!*((char*)op.second)) };
+            case DOUBLE_LITERAL:
+                return { op.first, new double(!*((double*)op.second)) };
+            case FLOAT_LITERAL:
+                return { op.first, new float(!*((float*)op.second)) };
+            case INT_LITERAL:
+                return { op.first, new int(!*((int*)op.second)) };
+            case LONG_LITERAL:
+                return { op.first, new long long(!*((long long*)op.second)) };
+            case SHORT_LITERAL:
+                return { op.first, new short(!*((short*)op.second)) };
+            case UINT_LITERAL:
+                return { op.first, new uint32_t(!*((uint32_t*)op.second)) };
+            case ULONG_LITERAL:
+                return { op.first, new uint64_t(!*((uint64_t*)op.second)) };
+            }
+        }
+        else if (operation == "~") {
+            switch (op.first) {
+            case BOOL_LITERAL:
+                return { op.first, new bool(~*((bool*)op.second)) };
+            case BYTE_LITERAL:
+                return { op.first, new uint8_t(~*((uint8_t*)op.second)) };
+            case CHAR_LITERAL:
+                return { op.first, new char(~*((char*)op.second)) };
+            case INT_LITERAL:
+                return { op.first, new int(~*((int*)op.second)) };
+            case LONG_LITERAL:
+                return { op.first, new long long(~*((long long*)op.second)) };
+            case SHORT_LITERAL:
+                return { op.first, new short(~*((short*)op.second)) };
+            case UINT_LITERAL:
+                return { op.first, new uint32_t(~*((uint32_t*)op.second)) };
+            case ULONG_LITERAL:
+                return { op.first, new uint64_t(~*((uint64_t*)op.second)) };
+            }
+        }
+    }
     void execute(int entrypoint) {
         std::stack<std::pair<PolizType, void*>> st;
         int p = entrypoint;
@@ -1076,7 +1273,7 @@ public:
             case UINT_LITERAL:
             case ULONG_LITERAL:
             case ADDRESS:
-            case SWITCH_BEGIN:
+            case STACK_PLUG:
             case POINTER: {
                 st.push(lexes[p]);
                 ++p;
@@ -1096,7 +1293,7 @@ public:
                 break;
             }
             case SEMICOLON: {
-                while (!st.empty() && st.top().first != PolizType::SWITCH_BEGIN) {
+                while (!st.empty() && st.top().first != PolizType::STACK_PLUG) {
                     st.pop();
                 }
                 ++p;
@@ -1110,15 +1307,15 @@ public:
                     st.push({ PolizType::BYTE_LITERAL, new uint8_t(std::stoll(val.first)) });
                 } else if (val.second.expr_type == ExprType::Char) {
                     std::string s = val.first.substr(1, val.first.size() - 2);
-                    if (s == "\'")
+                    if (s == "\\\'")
                         st.push({ PolizType::CHAR_LITERAL, new char('\'') });
-                    else if (s == "\"")
+                    else if (s == "\\\"")
                         st.push({ PolizType::CHAR_LITERAL, new char('\"') });
-                    else if (s == "\n")
+                    else if (s == "\\n")
                         st.push({ PolizType::CHAR_LITERAL, new char('\n') });
-                    else if (s == "\t")
+                    else if (s == "\\t")
                         st.push({ PolizType::CHAR_LITERAL, new char('\t') });
-                    else if (s == "\0")
+                    else if (s == "\\0")
                         st.push({ PolizType::CHAR_LITERAL, new char('\0') });
                     else
                         st.push({ PolizType::CHAR_LITERAL, new char(s[0]) });
@@ -1179,8 +1376,7 @@ public:
             case UNARY: {
                 auto op = st.top();
                 st.pop();
-                auto var = (Identifier*)op.second;
-                std::cout << *(std::string*)(convert(op, PolizType::STRING_LITERAL)) << std::endl;
+                st.push(execute_operation(op, *((std::string*)lexes[p].second)));
                 ++p;
                 break;
             }
@@ -1195,13 +1391,13 @@ public:
                 auto op1 = st.top();
                 st.pop();
                 st.push(op1);
-                st.push({ PolizType::SWITCH_BEGIN, nullptr });
+                st.push({ PolizType::STACK_PLUG, nullptr });
                 st.push(execute_operation(op1, op2, "=="));
                 ++p;
                 break;
             }
             case SWITCH_POP: {
-                while (st.top().first != PolizType::SWITCH_BEGIN) {
+                while (st.top().first != PolizType::STACK_PLUG) {
                     st.pop();
                 }
                 st.pop();
@@ -2473,7 +2669,7 @@ void switch_statement(LexicalAnalyzer& lex) {
         throw std::exception("Invalid token: '{' expected");
     current_token = lex.get_token();
     int* ptr_end = new int(-1);
-    prog.put_lex({ PolizType::SWITCH_BEGIN, nullptr });
+    prog.put_lex({ PolizType::STACK_PLUG, nullptr });
 
     while (current_token.value == "case" || current_token.value == "default") {
         break_ptr.push(ptr_end);
@@ -2613,10 +2809,11 @@ void statement(LexicalAnalyzer& lex, bool prev_table) {
 int main(int argc, char* argv[]) {
     std::string path;
     if (argc != 2) {
-        std::cin >> path;
+        /*std::cin >> path;
         if (path[0] == '\"') {
             path = path.substr(1, path.size() - 2);
-        }
+        }*/
+        path = "C:\\test.prog";
     } else {
         path = argv[1];
     }
