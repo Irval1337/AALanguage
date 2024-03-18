@@ -2273,7 +2273,7 @@ void unary_expression(LexicalAnalyzer& lex) {
     auto curr = exprs.top();
     exprs.pop();
     for (int i = operations.size() - 1; i >= 0; --i) {
-        /*if (curr.first.is_array)
+        if (curr.first.is_array)
             throw std::exception(("Cannot apply " + operations[i] + " operator to " + type_to_string(curr.first)).c_str());
         if (operations[i] == "+" || operations[i] == "-" || operations[i] == "~") {
             if (curr.first.expr_type == ExprType::String || curr.first.expr_type == ExprType::Bool || curr.first.expr_type == ExprType::Unknown || 
@@ -2292,7 +2292,7 @@ void unary_expression(LexicalAnalyzer& lex) {
                 throw std::exception(("Cannot apply " + operations[i] + " operator to rvalue").c_str());
             if (curr.first.is_const)
                 throw std::exception(("Cannot apply " + operations[i] + " operator to const").c_str());
-        }*/
+        }
     }
     exprs.push(curr);
 }
