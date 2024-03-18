@@ -48,42 +48,42 @@ public:
             //std::cout << std::endl;
         }
     }
-    void* convert(std::pair<PolizType, void*>* op, PolizType to) {
-        switch (op->first) {
+    void* convert(std::pair<PolizType, void*> op, PolizType to) {
+        switch (op.first) {
         case BOOL_LITERAL: {
             switch (to) {
             case BOOL_LITERAL:
-                return new bool(*((bool*)op->second));
+                return new bool(*((bool*)op.second));
                 break;
             case BYTE_LITERAL:
-                return new uint8_t(*((bool*)op->second));
+                return new uint8_t(*((bool*)op.second));
                 break;
             case CHAR_LITERAL:
-                return new char(*((bool*)op->second));
+                return new char(*((bool*)op.second));
                 break;
             case DOUBLE_LITERAL:
-                return new double(*((bool*)op->second));
+                return new double(*((bool*)op.second));
                 break;
             case FLOAT_LITERAL:
-                return new float(*((bool*)op->second));
+                return new float(*((bool*)op.second));
                 break;
             case INT_LITERAL:
-                return new int(*((bool*)op->second));
+                return new int(*((bool*)op.second));
                 break;
             case LONG_LITERAL:
-                return new long long(*((bool*)op->second));
+                return new long long(*((bool*)op.second));
                 break;
             case SHORT_LITERAL:
-                return new short(*((bool*)op->second));
+                return new short(*((bool*)op.second));
                 break;
             case STRING_LITERAL:
-                return new std::string(std::to_string(*((bool*)op->second)));
+                return new std::string(std::to_string(*((bool*)op.second)));
                 break;
             case UINT_LITERAL:
-                return new uint32_t(*((bool*)op->second));
+                return new uint32_t(*((bool*)op.second));
                 break;
             case ULONG_LITERAL:
-                return new uint64_t(*((bool*)op->second));
+                return new uint64_t(*((bool*)op.second));
                 break;
             }
             break;
@@ -91,37 +91,37 @@ public:
         case BYTE_LITERAL: {
             switch (to) {
             case BOOL_LITERAL:
-                return new bool(*((uint8_t*)op->second));
+                return new bool(*((uint8_t*)op.second));
                 break;
             case BYTE_LITERAL:
-                return new uint8_t(*((uint8_t*)op->second));
+                return new uint8_t(*((uint8_t*)op.second));
                 break;
             case CHAR_LITERAL:
-                return new char(*((uint8_t*)op->second));
+                return new char(*((uint8_t*)op.second));
                 break;
             case DOUBLE_LITERAL:
-                return new double(*((uint8_t*)op->second));
+                return new double(*((uint8_t*)op.second));
                 break;
             case FLOAT_LITERAL:
-                return new float(*((uint8_t*)op->second));
+                return new float(*((uint8_t*)op.second));
                 break;
             case INT_LITERAL:
-                return new int(*((uint8_t*)op->second));
+                return new int(*((uint8_t*)op.second));
                 break;
             case LONG_LITERAL:
-                return new long long(*((uint8_t*)op->second));
+                return new long long(*((uint8_t*)op.second));
                 break;
             case SHORT_LITERAL:
-                return new short(*((uint8_t*)op->second));
+                return new short(*((uint8_t*)op.second));
                 break;
             case STRING_LITERAL:
-                return new std::string(std::to_string(*((uint8_t*)op->second)));
+                return new std::string(std::to_string(*((uint8_t*)op.second)));
                 break;
             case UINT_LITERAL:
-                return new uint32_t(*((uint8_t*)op->second));
+                return new uint32_t(*((uint8_t*)op.second));
                 break;
             case ULONG_LITERAL:
-                return new uint64_t(*((uint8_t*)op->second));
+                return new uint64_t(*((uint8_t*)op.second));
                 break;
             }
             break;
@@ -129,37 +129,37 @@ public:
         case CHAR_LITERAL: {
             switch (to) {
             case BOOL_LITERAL:
-                return new bool(*((char*)op->second));
+                return new bool(*((char*)op.second));
                 break;
             case BYTE_LITERAL:
-                return new uint8_t(*((char*)op->second));
+                return new uint8_t(*((char*)op.second));
                 break;
             case CHAR_LITERAL:
-                return new char(*((char*)op->second));
+                return new char(*((char*)op.second));
                 break;
             case DOUBLE_LITERAL:
-                return new double(*((char*)op->second));
+                return new double(*((char*)op.second));
                 break;
             case FLOAT_LITERAL:
-                return new float(*((char*)op->second));
+                return new float(*((char*)op.second));
                 break;
             case INT_LITERAL:
-                return new int(*((char*)op->second));
+                return new int(*((char*)op.second));
                 break;
             case LONG_LITERAL:
-                return new long long(*((char*)op->second));
+                return new long long(*((char*)op.second));
                 break;
             case SHORT_LITERAL:
-                return new short(*((char*)op->second));
+                return new short(*((char*)op.second));
                 break;
             case STRING_LITERAL:
-                return new std::string(std::to_string(*((char*)op->second)));
+                return new std::string(std::to_string(*((char*)op.second)));
                 break;
             case UINT_LITERAL:
-                return new uint32_t(*((char*)op->second));
+                return new uint32_t(*((char*)op.second));
                 break;
             case ULONG_LITERAL:
-                return new uint64_t(*((char*)op->second));
+                return new uint64_t(*((char*)op.second));
                 break;
             }
             break;
@@ -167,37 +167,37 @@ public:
         case DOUBLE_LITERAL: {
             switch (to) {
             case BOOL_LITERAL:
-                return new bool(*((double*)op->second));
+                return new bool(*((double*)op.second));
                 break;
             case BYTE_LITERAL:
-                return new uint8_t(*((double*)op->second));
+                return new uint8_t(*((double*)op.second));
                 break;
             case CHAR_LITERAL:
-                return new char(*((double*)op->second));
+                return new char(*((double*)op.second));
                 break;
             case DOUBLE_LITERAL:
-                return new double(*((double*)op->second));
+                return new double(*((double*)op.second));
                 break;
             case FLOAT_LITERAL:
-                return new float(*((double*)op->second));
+                return new float(*((double*)op.second));
                 break;
             case INT_LITERAL:
-                return new int(*((double*)op->second));
+                return new int(*((double*)op.second));
                 break;
             case LONG_LITERAL:
-                return new long long(*((double*)op->second));
+                return new long long(*((double*)op.second));
                 break;
             case SHORT_LITERAL:
-                return new short(*((double*)op->second));
+                return new short(*((double*)op.second));
                 break;
             case STRING_LITERAL:
-                return new std::string(std::to_string(*((double*)op->second)));
+                return new std::string(std::to_string(*((double*)op.second)));
                 break;
             case UINT_LITERAL:
-                return new uint32_t(*((double*)op->second));
+                return new uint32_t(*((double*)op.second));
                 break;
             case ULONG_LITERAL:
-                return new uint64_t(*((double*)op->second));
+                return new uint64_t(*((double*)op.second));
                 break;
             }
             break;
@@ -205,37 +205,37 @@ public:
         case FLOAT_LITERAL: {
             switch (to) {
             case BOOL_LITERAL:
-                return new bool(*((float*)op->second));
+                return new bool(*((float*)op.second));
                 break;
             case BYTE_LITERAL:
-                return new uint8_t(*((float*)op->second));
+                return new uint8_t(*((float*)op.second));
                 break;
             case CHAR_LITERAL:
-                return new char(*((float*)op->second));
+                return new char(*((float*)op.second));
                 break;
             case DOUBLE_LITERAL:
-                return new double(*((float*)op->second));
+                return new double(*((float*)op.second));
                 break;
             case FLOAT_LITERAL:
-                return new float(*((float*)op->second));
+                return new float(*((float*)op.second));
                 break;
             case INT_LITERAL:
-                return new int(*((float*)op->second));
+                return new int(*((float*)op.second));
                 break;
             case LONG_LITERAL:
-                return new long long(*((float*)op->second));
+                return new long long(*((float*)op.second));
                 break;
             case SHORT_LITERAL:
-                return new short(*((float*)op->second));
+                return new short(*((float*)op.second));
                 break;
             case STRING_LITERAL:
-                return new std::string(std::to_string(*((float*)op->second)));
+                return new std::string(std::to_string(*((float*)op.second)));
                 break;
             case UINT_LITERAL:
-                return new uint32_t(*((float*)op->second));
+                return new uint32_t(*((float*)op.second));
                 break;
             case ULONG_LITERAL:
-                return new uint64_t(*((float*)op->second));
+                return new uint64_t(*((float*)op.second));
                 break;
             }
             break;
@@ -243,37 +243,37 @@ public:
         case INT_LITERAL: {
             switch (to) {
             case BOOL_LITERAL:
-                return new bool(*((int*)op->second));
+                return new bool(*((int*)op.second));
                 break;
             case BYTE_LITERAL:
-                return new uint8_t(*((int*)op->second));
+                return new uint8_t(*((int*)op.second));
                 break;
             case CHAR_LITERAL:
-                return new char(*((int*)op->second));
+                return new char(*((int*)op.second));
                 break;
             case DOUBLE_LITERAL:
-                return new double(*((int*)op->second));
+                return new double(*((int*)op.second));
                 break;
             case FLOAT_LITERAL:
-                return new float(*((int*)op->second));
+                return new float(*((int*)op.second));
                 break;
             case INT_LITERAL:
-                return new int(*((int*)op->second));
+                return new int(*((int*)op.second));
                 break;
             case LONG_LITERAL:
-                return new long long(*((int*)op->second));
+                return new long long(*((int*)op.second));
                 break;
             case SHORT_LITERAL:
-                return new short(*((int*)op->second));
+                return new short(*((int*)op.second));
                 break;
             case STRING_LITERAL:
-                return new std::string(std::to_string(*((int*)op->second)));
+                return new std::string(std::to_string(*((int*)op.second)));
                 break;
             case UINT_LITERAL:
-                return new uint32_t(*((int*)op->second));
+                return new uint32_t(*((int*)op.second));
                 break;
             case ULONG_LITERAL:
-                return new uint64_t(*((int*)op->second));
+                return new uint64_t(*((int*)op.second));
                 break;
             }
             break;
@@ -281,37 +281,37 @@ public:
         case LONG_LITERAL: {
             switch (to) {
             case BOOL_LITERAL:
-                return new bool(*((long long*)op->second));
+                return new bool(*((long long*)op.second));
                 break;
             case BYTE_LITERAL:
-                return new uint8_t(*((long long*)op->second));
+                return new uint8_t(*((long long*)op.second));
                 break;
             case CHAR_LITERAL:
-                return new char(*((long long*)op->second));
+                return new char(*((long long*)op.second));
                 break;
             case DOUBLE_LITERAL:
-                return new double(*((long long*)op->second));
+                return new double(*((long long*)op.second));
                 break;
             case FLOAT_LITERAL:
-                return new float(*((long long*)op->second));
+                return new float(*((long long*)op.second));
                 break;
             case INT_LITERAL:
-                return new int(*((long long*)op->second));
+                return new int(*((long long*)op.second));
                 break;
             case LONG_LITERAL:
-                return new long long(*((long long*)op->second));
+                return new long long(*((long long*)op.second));
                 break;
             case SHORT_LITERAL:
-                return new short(*((long long*)op->second));
+                return new short(*((long long*)op.second));
                 break;
             case STRING_LITERAL:
-                return new std::string(std::to_string(*((long long*)op->second)));
+                return new std::string(std::to_string(*((long long*)op.second)));
                 break;
             case UINT_LITERAL:
-                return new uint32_t(*((long long*)op->second));
+                return new uint32_t(*((long long*)op.second));
                 break;
             case ULONG_LITERAL:
-                return new uint64_t(*((long long*)op->second));
+                return new uint64_t(*((long long*)op.second));
                 break;
             }
             break;
@@ -319,37 +319,37 @@ public:
         case SHORT_LITERAL: {
             switch (to) {
             case BOOL_LITERAL:
-                return new bool(*((short*)op->second));
+                return new bool(*((short*)op.second));
                 break;
             case BYTE_LITERAL:
-                return new uint8_t(*((short*)op->second));
+                return new uint8_t(*((short*)op.second));
                 break;
             case CHAR_LITERAL:
-                return new char(*((short*)op->second));
+                return new char(*((short*)op.second));
                 break;
             case DOUBLE_LITERAL:
-                return new double(*((short*)op->second));
+                return new double(*((short*)op.second));
                 break;
             case FLOAT_LITERAL:
-                return new float(*((short*)op->second));
+                return new float(*((short*)op.second));
                 break;
             case INT_LITERAL:
-                return new int(*((short*)op->second));
+                return new int(*((short*)op.second));
                 break;
             case LONG_LITERAL:
-                return new long long(*((short*)op->second));
+                return new long long(*((short*)op.second));
                 break;
             case SHORT_LITERAL:
-                return new short(*((short*)op->second));
+                return new short(*((short*)op.second));
                 break;
             case STRING_LITERAL:
-                return new std::string(std::to_string(*((short*)op->second)));
+                return new std::string(std::to_string(*((short*)op.second)));
                 break;
             case UINT_LITERAL:
-                return new uint32_t(*((short*)op->second));
+                return new uint32_t(*((short*)op.second));
                 break;
             case ULONG_LITERAL:
-                return new uint64_t(*((short*)op->second));
+                return new uint64_t(*((short*)op.second));
                 break;
             }
             break;
@@ -357,124 +357,185 @@ public:
         case STRING_LITERAL: {
             switch (to) {
             case BOOL_LITERAL:
-                return new bool(*((std::string*)op->second) == "true");
+                return new bool(*((std::string*)op.second) == "true");
                 break;
             case BYTE_LITERAL:
-                return new uint8_t(std::stoll(*((std::string*)op->second)));
+                return new uint8_t(std::stoll(*((std::string*)op.second)));
                 break;
             case CHAR_LITERAL:
-                return new char((*((std::string*)op->second))[0]);
+                return new char((*((std::string*)op.second))[0]);
                 break;
             case DOUBLE_LITERAL:
-                return new double(std::stold(*((std::string*)op->second)));
+                return new double(std::stold(*((std::string*)op.second)));
                 break;
             case FLOAT_LITERAL:
-                return new float(std::stold(*((std::string*)op->second)));
+                return new float(std::stold(*((std::string*)op.second)));
                 break;
             case INT_LITERAL:
-                return new int(std::stoll(*((std::string*)op->second)));
+                return new int(std::stoll(*((std::string*)op.second)));
                 break;
             case LONG_LITERAL:
-                return new long long(std::stoll(*((std::string*)op->second)));
+                return new long long(std::stoll(*((std::string*)op.second)));
                 break;
             case SHORT_LITERAL:
-                return new short(std::stoll(*((std::string*)op->second)));
+                return new short(std::stoll(*((std::string*)op.second)));
                 break;
             case STRING_LITERAL:
-                return new std::string(*((std::string*)op->second));
+                return new std::string(*((std::string*)op.second));
                 break;
             case UINT_LITERAL:
-                return new uint32_t(std::stoll(*((std::string*)op->second)));
+                return new uint32_t(std::stoll(*((std::string*)op.second)));
                 break;
             case ULONG_LITERAL:
-                return new uint64_t(std::stoll(*((std::string*)op->second)));
+                return new uint64_t(std::stoll(*((std::string*)op.second)));
                 break;
             }
             break;
         } case UINT_LITERAL: {
             switch (to) {
             case BOOL_LITERAL:
-                return new bool(*((uint32_t*)op->second));
+                return new bool(*((uint32_t*)op.second));
                 break;
             case BYTE_LITERAL:
-                return new uint8_t(*((uint32_t*)op->second));
+                return new uint8_t(*((uint32_t*)op.second));
                 break;
             case CHAR_LITERAL:
-                return new char(*((uint32_t*)op->second));
+                return new char(*((uint32_t*)op.second));
                 break;
             case DOUBLE_LITERAL:
-                return new double(*((uint32_t*)op->second));
+                return new double(*((uint32_t*)op.second));
                 break;
             case FLOAT_LITERAL:
-                return new float(*((uint32_t*)op->second));
+                return new float(*((uint32_t*)op.second));
                 break;
             case INT_LITERAL:
-                return new int(*((uint32_t*)op->second));
+                return new int(*((uint32_t*)op.second));
                 break;
             case LONG_LITERAL:
-                return new long long(*((uint32_t*)op->second));
+                return new long long(*((uint32_t*)op.second));
                 break;
             case SHORT_LITERAL:
-                return new short(*((uint32_t*)op->second));
+                return new short(*((uint32_t*)op.second));
                 break;
             case STRING_LITERAL:
-                return new std::string(std::to_string(*((uint32_t*)op->second)));
+                return new std::string(std::to_string(*((uint32_t*)op.second)));
                 break;
             case UINT_LITERAL:
-                return new uint32_t(*((uint32_t*)op->second));
+                return new uint32_t(*((uint32_t*)op.second));
                 break;
             case ULONG_LITERAL:
-                return new uint64_t(*((uint32_t*)op->second));
+                return new uint64_t(*((uint32_t*)op.second));
                 break;
             }
             break;
         } case ULONG_LITERAL: {
             switch (to) {
             case BOOL_LITERAL:
-                return new bool(*((uint64_t*)op->second));
+                return new bool(*((uint64_t*)op.second));
                 break;
             case BYTE_LITERAL:
-                return new uint8_t(*((uint64_t*)op->second));
+                return new uint8_t(*((uint64_t*)op.second));
                 break;
             case CHAR_LITERAL:
-                return new char(*((uint64_t*)op->second));
+                return new char(*((uint64_t*)op.second));
                 break;
             case DOUBLE_LITERAL:
-                return new double(*((uint64_t*)op->second));
+                return new double(*((uint64_t*)op.second));
                 break;
             case FLOAT_LITERAL:
-                return new float(*((uint64_t*)op->second));
+                return new float(*((uint64_t*)op.second));
                 break;
             case INT_LITERAL:
-                return new int(*((uint64_t*)op->second));
+                return new int(*((uint64_t*)op.second));
                 break;
             case LONG_LITERAL:
-                return new long long(*((uint64_t*)op->second));
+                return new long long(*((uint64_t*)op.second));
                 break;
             case SHORT_LITERAL:
-                return new short(*((uint64_t*)op->second));
+                return new short(*((uint64_t*)op.second));
                 break;
             case STRING_LITERAL:
-                return new std::string(std::to_string(*((uint64_t*)op->second)));
+                return new std::string(std::to_string(*((uint64_t*)op.second)));
                 break;
             case UINT_LITERAL:
-                return new uint32_t(*((uint64_t*)op->second));
+                return new uint32_t(*((uint64_t*)op.second));
                 break;
             case ULONG_LITERAL:
-                return new uint64_t(*((uint64_t*)op->second));
+                return new uint64_t(*((uint64_t*)op.second));
                 break;
             }
             break;
         }
         }
     }
-    std::pair<PolizType, std::pair<void*, void*>>* make_same(std::pair<PolizType, void*>* op1, std::pair<PolizType, void*>* op2) {
-        int pr1 = literal_prior[(int)op1->first - (int)PolizType::BOOL_LITERAL], pr2 = literal_prior[(int)op2->first - (int)PolizType::BOOL_LITERAL];
+    std::pair<PolizType, std::pair<void*, void*>> make_same(std::pair<PolizType, void*> op1, std::pair<PolizType, void*> op2) {
+        int pr1 = literal_prior[(int)op1.first - (int)PolizType::BOOL_LITERAL], pr2 = literal_prior[(int)op2.first - (int)PolizType::BOOL_LITERAL];
         if (pr1 >= pr2)
-            return new std::pair<PolizType, std::pair<void*, void*>>(op1->first, { op1->second, convert(op2, op1->first) });
+            return std::pair<PolizType, std::pair<void*, void*>>(op1.first, { op1.second, convert(op2, op1.first) });
         else
-            return new std::pair<PolizType, std::pair<void*, void*>>(op2->first, { convert(op1, op2->first), op2->second });
+            return std::pair<PolizType, std::pair<void*, void*>>(op2.first, { convert(op1, op2.first), op2.second });
 
+    }
+    std::pair<PolizType, void*> address_to_value(void* ptr) {
+        Identifier* ident = (Identifier*)ptr;
+        if (ident->value == nullptr) {
+            throw std::exception(("Variable '" + ident->name + "' was not initialized").c_str());
+        }
+        switch (ident->type.expr_type) {
+        case ExprType::Bool:
+            return { PolizType::BOOL_LITERAL, (bool*)(ident->value) };
+        case ExprType::Byte:
+            return { PolizType::BYTE_LITERAL, (uint8_t*)(ident->value) };
+        case ExprType::Char:
+            return { PolizType::CHAR_LITERAL, (char*)(ident->value) };
+        case ExprType::Double:
+            return { PolizType::DOUBLE_LITERAL, (double*)(ident->value) };
+        case ExprType::Float:
+            return { PolizType::FLOAT_LITERAL, (float*)(ident->value) };
+        case ExprType::Int:
+            return { PolizType::INT_LITERAL, (int*)(ident->value) };
+        case ExprType::Long:
+            return { PolizType::LONG_LITERAL, (long long*)(ident->value) };
+        case ExprType::Short:
+            return { PolizType::SHORT_LITERAL, (short*)(ident->value) };
+        case ExprType::String:
+            return { PolizType::STRING_LITERAL, (std::string*)(ident->value) };
+        case ExprType::UInt:
+            return { PolizType::UINT_LITERAL, (uint32_t*)(ident->value) };
+        case ExprType::ULong:
+            return { PolizType::ULONG_LITERAL, (uint64_t*)(ident->value) };
+        default:
+            throw std::exception(("Variable '" + ident->name + "' has unconvertable value").c_str());
+        }
+    }
+    PolizType type_to_poliz(ExprType type) {
+        switch (type)
+        {
+        case Bool:
+            return PolizType::BOOL_LITERAL;
+        case Char:
+            return PolizType::CHAR_LITERAL;
+        case Double:
+            return PolizType::DOUBLE_LITERAL;
+        case Float:
+            return PolizType::FLOAT_LITERAL;
+        case Int:
+            return PolizType::INT_LITERAL;
+        case UInt:
+            return PolizType::UINT_LITERAL;
+        case Long:
+            return PolizType::LONG_LITERAL;
+        case ULong:
+            return PolizType::ULONG_LITERAL;
+        case Short:
+            return PolizType::SHORT_LITERAL;
+        case Byte:
+            return PolizType::BYTE_LITERAL;
+        case String:
+            return PolizType::STRING_LITERAL;
+        default:
+            return PolizType::BLANK;
+        }
     }
     void execute(int entrypoint) {
         std::stack<std::pair<PolizType, void*>> st;
@@ -610,10 +671,22 @@ public:
                     if (assign_val == nullptr)
                         throw std::exception(("Cannot use a variable '" + ((Identifier*)op2.second)->name + "' that has not been assigned a value").c_str());
                 }
+
                 if (*((std::string*)lexes[p].second) == "=") {
-                    
+                    var->value = convert(op2, type_to_poliz(var->type.expr_type));
+                }
+                else {
+
                 }
                 st.push(op1);
+                ++p;
+                break;
+            }
+            case UNARY: {
+                auto op = st.top();
+                st.pop();
+                auto var = (Identifier*)op.second;
+                std::cout << (int)(*(uint8_t*)var->value) << std::endl;
                 ++p;
                 break;
             }
@@ -1201,7 +1274,7 @@ void expression(LexicalAnalyzer& lex, bool is_vars) {
         exprs.pop();
         current_token = lex.get_token();
         assignment_expression(lex);
-        prog.put_lex({ PolizType::COMMA, new std::string(",")});
+        prog.put_lex({ PolizType::COMMA, new std::string(",") });
     }
 }
 

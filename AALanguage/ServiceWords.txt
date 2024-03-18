@@ -21,6 +21,5 @@ long
 ulong
 void
 short
-ushort
 string
 byte
