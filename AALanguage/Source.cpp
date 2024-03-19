@@ -1804,7 +1804,7 @@ void may_be_semicolon(LexicalAnalyzer& lex) {
 
 void program(LexicalAnalyzer& lex) {
     may_be_semicolon(lex);
-    preprocessor(lex);
+    //preprocessor(lex);
     if (current_token.line == -1) return;
     program_body(lex);
 }
@@ -3062,13 +3062,15 @@ int main(int argc, char* argv[]) {
     } else {
         path = argv[1];
     }
+
+    std::string lib_path = "E:\\Github\\AALanguage\\lib";
     
-    LexicalAnalyzer lex(path);
-
-    printf("\x1B[32mThe lexical analysis was successful\n\033[0m");
-
     bool started = false;
     try {
+        LexicalAnalyzer lex(path, lib_path);
+
+        printf("\x1B[32mThe lexical analysis was successful\n\033[0m");
+
         current_token = lex.get_token();
         program(lex);
 

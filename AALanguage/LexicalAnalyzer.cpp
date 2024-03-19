@@ -1,6 +1,7 @@
 #include "LexicalAnalyzer.h"
 #include <iostream>
 #include <fstream>
+#include "LibParser.h"
 
 bool LexicalAnalyzer::is_service(Trie* service_trie, std::string s) {
 	return service_trie->find(s.begin(), s.end()) != nullptr;
@@ -93,7 +94,7 @@ bool LexicalAnalyzer::get_ok() const {
 	return ok_;
 }
 
-LexicalAnalyzer::LexicalAnalyzer(std::string path) {
+LexicalAnalyzer::LexicalAnalyzer(std::string path, std::string lib_path) {
 	Trie* service_trie = new Trie();
 	std::ifstream file("ServiceWords.txt");
 	std::string str;
@@ -103,7 +104,10 @@ LexicalAnalyzer::LexicalAnalyzer(std::string path) {
 	}
 	file.close();
 
-	file = std::ifstream(path);
+	LibParser libs(path, lib_path);
+	libs.execute();
+
+	file = std::ifstream("output.aa");
 
 	str.clear();
 

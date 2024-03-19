@@ -1,0 +1,3 @@
+int pow(int x, int n) { if (n == 0) return 1; if (n % 2 == 1) return x * pow(x, n - 1); int tmp = pow(x, n / 2); return tmp * tmp; } double sqrt(double x) { double L = 0, R = 1 * pow(10, 9), M; for(int _ = 0; _ < 1000; ++_) { M = L + (R - L) / 2; if (M * M > x) R = M; else L = M; } return L; } string fill() { string a[10]; for(int i = 0; i < 10; ++i) { a[i] = "012345"; } a[1] = "ZZVO"; return a[1]; } int fu(int a) { return a + 1; } void main() { print(fu(10)); }  int f(int a) {
+    return a + 1;
+} 

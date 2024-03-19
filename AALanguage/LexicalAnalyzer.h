@@ -20,7 +20,7 @@ public:
 	bool get_ok() const;
 	literal_type is_literal(std::string s);
 
-	LexicalAnalyzer(std::string path);
+	LexicalAnalyzer(std::string path, std::string lib_path);
 private:
 	int line_ = 1;
 	int curr_ = 0;

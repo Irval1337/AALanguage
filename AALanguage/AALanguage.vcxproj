@@ -136,6 +136,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="LexicalAnalyzer.h" />
+    <ClInclude Include="LibParser.h" />
     <ClInclude Include="TableIdentifiers.h" />
     <ClInclude Include="Trie.h" />
   </ItemGroup>
