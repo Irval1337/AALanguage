@@ -11,7 +11,8 @@ enum PolizType {
     GO, FGO, TGO, LABEL, ADDRESS, POINTER, GETARR, CALL, BLANK, SEMICOLON, LITERAL, USING, COMMA, ASSIGN, LOGICAL_OR, 
     LOGICAL_AND, BITWISE_OR, BITWISE_XOR, BITWISE_CONS, BITWISE_AND, EQUALITY, CMP, BITWISE_SHIFT, PLUS, MULT, UNARY, 
     SWITCH_CMP, SWITCH_POP, RET, BOOL_LITERAL, BYTE_LITERAL, CHAR_LITERAL, DOUBLE_LITERAL, FLOAT_LITERAL, INT_LITERAL, 
-    LONG_LITERAL, SHORT_LITERAL, STRING_LITERAL, UINT_LITERAL, ULONG_LITERAL, STACK_PLUG, READ, PRINT, READLN
+    LONG_LITERAL, SHORT_LITERAL, STRING_LITERAL, UINT_LITERAL, ULONG_LITERAL, STACK_PLUG, READ, PRINT, READLN, NORET,
+    GETSTR, EXIT
 };
 
 TableIdentifiers* tid = new TableIdentifiers();
@@ -19,7 +20,7 @@ TableIdentifiers* tid = new TableIdentifiers();
 class Poliz {
 private:
     int literal_prior[11] = { 0, 2, 1, 11, 7, 5, 9, 3, 0, 6, 10 };
-    std::stack<int> func_stack;
+    std::stack<int> func_calls;
 public:
     ~Poliz() {
         for (int i = 0; i < lexes.size(); ++i) {
@@ -46,10 +47,8 @@ public:
                 std::cout << *((int*)lexes[i].second) << " ";
                 continue;
             }
-            //std::cout << lexes[i].first;
             if (lexes[i].second != nullptr)
                 std::cout << *((std::string*)lexes[i].second) << " ";
-            //std::cout << std::endl;
         }
     }
     void* convert(std::pair<PolizType, void*> op, PolizType to) {
@@ -1232,23 +1231,30 @@ public:
         st.pop();
         Function* func = (Function*)st.top().second;
         st.pop();
+        p = func->ptr;
         std::stack<std::pair<PolizType, void*>> args;
         for (int i = 0; i < sz; ++i) {
             args.push(st.top());
             st.pop();
         }
+        st.push({ PolizType::STACK_PLUG, nullptr });
         int q = 0;
-        while (!st.empty()) {
-            a = convert(st.top(), type_to_poliz(var->type.expr_type));
-            st.pop();
+        while (!args.empty()) {
+            func->params_ptrs[q]->value = convert(args.top(), type_to_poliz(func->params_ptrs[q]->type.expr_type));
+            args.pop();
             p = func->params_init[q];
             ++q;
         }
     }
-    void execute(int entrypoint) {
+    std::pair<PolizType, void*> execute(int entrypoint) {
         std::stack<std::pair<PolizType, void*>> st;
         int p = entrypoint;
-        while (p != lexes.size()) {
+        int label_balance = 0;
+        st.push({ PolizType::STACK_PLUG, nullptr });
+        func_calls.push(lexes.size());
+        while (p < lexes.size()) {
+            if (func_calls.size() > 200000) throw std::exception("Stack overflow");
+
             switch (lexes[p].first) {
             case GO: {
                 int ind = *((int*)st.top().second);
@@ -1276,9 +1282,15 @@ public:
                 } else ++p;
                 break;
             }
-            case BLANK:
-            case LABEL: {
+            case BLANK: {
                 ++p;
+                break;
+            }
+            case LABEL: {
+                ++label_balance;
+                ++p;
+                if (func_calls.size() != label_balance)
+                    throw std::exception("The return statement was not called");
                 break;
             }
             case BOOL_LITERAL:
@@ -1303,12 +1315,28 @@ public:
                 int ind = *(int*)convert(st.top(), PolizType::INT_LITERAL);
                 st.pop();
                 if (st.top().second == nullptr)
-                    throw std::exception("Cannot access the character of an uninitialized string");
+                    throw std::exception("Cannot access the element of an uninitialized array");
                 auto var = (std::vector<void*>*)((Identifier*)st.top().second)->value;
                 st.pop();
                 if (var->size() <= ind)
                     throw std::exception("Array index out of range");
                 st.push({ PolizType::ADDRESS, var->operator[](ind) });
+                ++p;
+                break;
+            }
+            case GETSTR: {
+                int ind = *(int*)convert(st.top(), PolizType::INT_LITERAL);
+                st.pop();
+                if (st.top().second == nullptr)
+                    throw std::exception("Cannot access the character of an uninitialized string");
+                auto var = (std::string*)((Identifier*)st.top().second)->value;
+                auto name = ((Identifier*)st.top().second)->name;
+                st.pop();
+                if (var->size() <= ind)
+                    throw std::exception("String index out of range");
+                auto ptr = new Identifier(name + "[" + std::to_string(ind) + "]", Type(ExprType::Char, false, false), nullptr);
+                ptr->value = &(var->operator[](ind));
+                st.push({ PolizType::ADDRESS, ptr });
                 ++p;
                 break;
             }
@@ -1382,7 +1410,10 @@ public:
                 }
 
                 if (*((std::string*)lexes[p].second) == "=") {
-                    var->value = convert(op2, type_to_poliz(var->type.expr_type));
+                    if (var->type.expr_type == ExprType::Char)
+                        *(char*)var->value = *(char*)convert(op2, type_to_poliz(var->type.expr_type));
+                    else
+                        var->value = convert(op2, type_to_poliz(var->type.expr_type));
                 }
                 else {
                     std::string op = *((std::string*)lexes[p].second);
@@ -1401,8 +1432,35 @@ public:
                 break;
             }
             case RET: {
-                ++p;
+                auto top = st.top();
+                while (st.top().first != PolizType::STACK_PLUG) {
+                    st.pop();
+                }
+                st.pop();
+                st.push(top);
+                p = func_calls.top() + 1;
+                func_calls.pop();
+                --label_balance;
                 break;
+            }
+            case NORET: {
+                while (st.top().first != PolizType::STACK_PLUG) {
+                    st.pop();
+                }
+                st.pop();
+                p = func_calls.top() + 1;
+                func_calls.pop();
+                --label_balance;
+                break;
+            }
+            case CALL: {
+                func_calls.push(p);
+                st.push(lexes[p]);
+                call_function(st, p);
+                break;
+            }
+            case EXIT: {
+                return st.top();
             }
             case SWITCH_CMP: {
                 auto op2 = st.top();
@@ -1461,6 +1519,10 @@ public:
                 break;
             }
         }
+
+        if (!func_calls.empty())
+            throw std::exception("The return statement was not called");
+        return st.empty() ? std::pair<PolizType, void*>(PolizType::BLANK, nullptr) : st.top();
     }
     std::pair<PolizType, void*>& operator[](int ind) {
         return lexes[ind];
@@ -1475,6 +1537,7 @@ std::unordered_map<Function, TableIdentifiers*, FunctionHasher> funcs;
 TableIdentifiers* global_tid = new TableIdentifiers();
 Type current_function;
 std::stack<int*> break_ptr, continue_ptr;
+std::vector<Identifier*> params_ptrs;
 Poliz prog;
 
 bool is_convertible(Type first, Type second, bool is_func = false) {
@@ -1574,6 +1637,7 @@ void add_identifier(Identifier* ident, bool is_global = false) {
     if (!is_global) {
         if (tid->identifiers.count(ident->name) != 0) throw std::exception(("Identifier '" + ident->name + "' was already declared in the current scope").c_str());
         tid->identifiers[ident->name] = ident;
+        params_ptrs.push_back(ident);
     } else {
         if (global_tid->identifiers.count(ident->name) != 0) throw std::exception(("Identifier '" + ident->name + "' was already declared in the current scope").c_str());
         global_tid->identifiers[ident->name] = ident;
@@ -1610,9 +1674,12 @@ void create_table(bool new_func = false) {
     tid = next;
 }
 
-void create_function(std::string name, Type type, int pref, std::vector<int> inits, int ptr) {
+void create_function(std::string name, Type type, int pref, std::vector<int> inits, std::vector<Identifier*> ptrs, int ptr) {
     std::vector<Type> idents;
-    Function f = Function(name, type, idents, inits, ptr, pref);
+    for (auto& u : tid->identifiers) {
+        idents.push_back(u.second->type);
+    }
+    Function f = Function(name, type, idents, inits, ptrs, ptr, pref);
     if (funcs.count(f) != 0)
         throw std::exception(("Function '" + f.name + "' was already declared in the current scope").c_str());
     funcs[f] = tid;
@@ -1695,9 +1762,11 @@ void return_statement(LexicalAnalyzer& lex);
 void while_statement(LexicalAnalyzer& lex);
 void for_statement(LexicalAnalyzer& lex);
 void switch_statement(LexicalAnalyzer& lex);
+
 void read_statement(LexicalAnalyzer& lex);
 void readln_statement(LexicalAnalyzer& lex);
 void print_statement(LexicalAnalyzer& lex);
+void exit_statement(LexicalAnalyzer& lex);
 
 std::vector<std::string> service_types = { "bool", "char", "byte", "double", "udouble", "float", "ufloat", "int", "uint", "long",
         "ulong", "short", "ushort", "string" };
@@ -1982,9 +2051,11 @@ void function(LexicalAnalyzer& lex, bool is_struct) {
     prog.put_lex({ PolizType::LABEL, nullptr });
     
     function_params_init.clear();
+    params_ptrs.clear();
     check_function_brace:
     if (current_token.value == ")" || was_parameters) {
-        create_function(name, func_type, function_params_pref, function_params_init, ptr);
+        create_function(name, func_type, function_params_pref, function_params_init, params_ptrs, ptr);
+        params_ptrs.clear();
         current_token = lex.get_token();
         if (current_token.value != "{")
             throw std::exception("Invalid token: '{' expected");
@@ -1994,7 +2065,8 @@ void function(LexicalAnalyzer& lex, bool is_struct) {
         if (current_token.value != "}")
             throw std::exception("Invalid token: '}' expected");
         current_token = lex.get_token();
-        prog.put_lex({ PolizType::RET, nullptr });
+        if (func_type.expr_type == ExprType::Void)
+            prog.put_lex({ PolizType::NORET, nullptr });
         may_be_semicolon(lex);
     } else {
         parameter_list(lex);
@@ -2412,7 +2484,10 @@ void field(LexicalAnalyzer& lex, bool only_array) {
             expression(lex, true);
             if (!is_convertible(exprs.top().first, Type(ExprType::Long, false, false)))
                 throw std::exception("Cannot access index that is not an integer");
-            prog.put_lex({ PolizType::GETARR, new std::string("[]") });
+            if (ident->type.expr_type != ExprType::String)
+                prog.put_lex({ PolizType::GETARR, new std::string("[]") });
+            else
+                prog.put_lex({ PolizType::GETSTR, new std::string("[]") });
             exprs.pop();
             if (current_token.value != "]")
                 throw std::exception("Invalid token: ']' expected");
@@ -2422,6 +2497,10 @@ void field(LexicalAnalyzer& lex, bool only_array) {
             } else if (ident->type.expr_type != ExprType::String)
                 throw std::exception("Cannot apply operator [] to anything other than an array or string");
             else {
+                if (ident->type.expr_type != ExprType::String)
+                    prog.put_lex({ PolizType::GETARR, new std::string("[]") });
+                else
+                    prog.put_lex({ PolizType::GETSTR, new std::string("[]") });
                 current_token = lex.get_token();
                 expression(lex, true);
                 if (!is_convertible(exprs.top().first, Type(ExprType::Long, false, false)))
@@ -2433,7 +2512,6 @@ void field(LexicalAnalyzer& lex, bool only_array) {
                 current_token = lex.get_token();
                 exprs.push({ Type(ExprType::Char, false, false), true });
             }
-            
             return;
         } /*else if (current_token.value == ".") {
             current_token = lex.get_token();
@@ -2465,6 +2543,10 @@ void field(LexicalAnalyzer& lex, bool only_array) {
             if (current_token.value == "[") {
                 if (!func.type.is_array)
                     throw std::exception("Cannot apply operator [] to anything other than an array");
+                if (ident->type.expr_type != ExprType::String)
+                    prog.put_lex({ PolizType::GETARR, new std::string("[]") });
+                else
+                    prog.put_lex({ PolizType::GETSTR, new std::string("[]") });
                 current_token = lex.get_token();
                 expression(lex, true);
                 if (!is_convertible(exprs.top().first, Type(ExprType::Long, false, false)))
@@ -2593,11 +2675,12 @@ void return_statement(LexicalAnalyzer& lex) {
         exprs.pop();
         if (!is_convertible(type, current_function))
             throw std::exception(("Cannot cast " + type_to_string(type) + " type to " + type_to_string(current_function)).c_str());
+        prog.put_lex({ PolizType::RET, nullptr });
     } else {
         if (!is_convertible(Type(ExprType::Void, false, false), current_function))
             throw std::exception("The function requires a return value.");
+        prog.put_lex({ PolizType::NORET, nullptr });
     }
-    prog.put_lex({ PolizType::RET, nullptr });
 }
 
 void while_statement(LexicalAnalyzer& lex) {
@@ -2904,6 +2987,12 @@ void statement(LexicalAnalyzer& lex, bool prev_table) {
         may_be_semicolon(lex);
         return;
     }
+    if (current_token.value == "exit") {
+        exit_statement(lex);
+        semicolon(lex);
+        may_be_semicolon(lex);
+        return;
+    }
     if (current_token.type == LexicalAnalyzer::token_type::service) {
         for (int i = 0; i < service_types.size(); ++i) {
             if (service_types[i] == current_token.value) {
@@ -2939,6 +3028,18 @@ void statement(LexicalAnalyzer& lex, bool prev_table) {
     }
 }
 
+void exit_statement(LexicalAnalyzer& lex) {
+    current_token = lex.get_token();
+    if (current_token.value != "(")
+        throw std::exception("Invalid token: '(' expected");
+    current_token = lex.get_token();
+    expression(lex);
+    prog.put_lex({ PolizType::EXIT, nullptr });
+    if (current_token.value != ")")
+        throw std::exception("Invalid token: ')' expected");
+    current_token = lex.get_token();
+}
+
 int main(int argc, char* argv[]) {
     std::string path;
     if (argc != 2) {
@@ -2946,7 +3047,7 @@ int main(int argc, char* argv[]) {
         if (path[0] == '\"') {
             path = path.substr(1, path.size() - 2);
         }*/
-        path = "C:\\Users\\sasha\\Documents\\test.prog";
+        path = "C:\\test.prog";//"C:\\Users\\sasha\\Documents\\test.prog";
     } else {
         path = argv[1];
     }
@@ -2955,6 +3056,7 @@ int main(int argc, char* argv[]) {
 
     printf("\x1B[32mThe lexical analysis was successful\n\033[0m");
 
+    bool started = false;
     try {
         current_token = lex.get_token();
         program(lex);
@@ -2966,13 +3068,16 @@ int main(int argc, char* argv[]) {
         printf("\x1B[32mThe syntactic & semantic analysis was successful\n\033[0m");
         printf("\x1B[32mThe internal representation of the program has been successfully generated\n\033[0m");
         auto main = get_function("main", std::vector<Type>());
-        printf("Main ptr: %d\n", main.ptr);
-        prog.execute(main.ptr);
+        started = true;
+        auto result = prog.execute(main.ptr);
+        std::cout << "\nExit code: " << (result.second == nullptr ? "unknown" : *(std::string*)prog.convert(result, PolizType::STRING_LITERAL));
     } catch (std::exception ex) {
-        printf(("\x1B[31m" + std::string(ex.what())).c_str());
+        printf(("\x1B[31m\n" + std::string(ex.what())).c_str());
         if (current_token.line != -1) {
             std::cout << " (" << current_token.line << " line)";
         }
         printf("\033[0m");
+        if (started)
+            std::cout << "\nExit code: -1";
     }
 }

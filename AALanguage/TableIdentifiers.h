@@ -71,14 +71,17 @@ struct Function {
 	Type type;
 	std::vector<Type> identifiers;
 	std::vector<int> params_init;
+	std::vector<Identifier*> params_ptrs;
 	int ptr;
-	Function(std::string name_, Type type_, std::vector<Type> identifiers_, std::vector<int> params_init_, int ptr_, int not_default_pref_ = 0) {
+	Function(std::string name_, Type type_, std::vector<Type> identifiers_, std::vector<int> params_init_, std::vector<Identifier*> params_ptrs_,
+		int ptr_, int not_default_pref_ = 0) {
 		name = name_;
 		type = type_;
 		identifiers = identifiers_;
 		not_default_pref = not_default_pref_;
 		ptr = ptr_;
 		params_init = params_init_;
+		params_ptrs = params_ptrs_;
 	}
 	bool operator==(const Function& f) const {
 		if (identifiers.size() != f.identifiers.size()) return false;
