@@ -11,12 +11,15 @@ enum PolizType {
     GO, FGO, TGO, LABEL, ADDRESS, POINTER, GETARR, CALL, BLANK, SEMICOLON, LITERAL, USING, COMMA, ASSIGN, LOGICAL_OR, 
     LOGICAL_AND, BITWISE_OR, BITWISE_XOR, BITWISE_CONS, BITWISE_AND, EQUALITY, CMP, BITWISE_SHIFT, PLUS, MULT, UNARY, 
     SWITCH_CMP, SWITCH_POP, RET, BOOL_LITERAL, BYTE_LITERAL, CHAR_LITERAL, DOUBLE_LITERAL, FLOAT_LITERAL, INT_LITERAL, 
-    LONG_LITERAL, SHORT_LITERAL, STRING_LITERAL, UINT_LITERAL, ULONG_LITERAL, STACK_PLUG, READ, PRINT
+    LONG_LITERAL, SHORT_LITERAL, STRING_LITERAL, UINT_LITERAL, ULONG_LITERAL, STACK_PLUG, READ, PRINT, READLN
 };
+
+TableIdentifiers* tid = new TableIdentifiers();
 
 class Poliz {
 private:
     int literal_prior[11] = { 0, 2, 1, 11, 7, 5, 9, 3, 0, 6, 10 };
+    std::stack<int> func_stack;
 public:
     ~Poliz() {
         for (int i = 0; i < lexes.size(); ++i) {
@@ -1224,6 +1227,24 @@ public:
             }
         }
     }
+    void call_function(std::stack<std::pair<PolizType, void*>>& st, int& p) {
+        int sz = *(int*)st.top().second;
+        st.pop();
+        Function* func = (Function*)st.top().second;
+        st.pop();
+        std::stack<std::pair<PolizType, void*>> args;
+        for (int i = 0; i < sz; ++i) {
+            args.push(st.top());
+            st.pop();
+        }
+        int q = 0;
+        while (!st.empty()) {
+            a = convert(st.top(), type_to_poliz(var->type.expr_type));
+            st.pop();
+            p = func->params_init[q];
+            ++q;
+        }
+    }
     void execute(int entrypoint) {
         std::stack<std::pair<PolizType, void*>> st;
         int p = entrypoint;
@@ -1413,6 +1434,16 @@ public:
                 ++p;
                 break;
             }
+            case READLN: {
+                auto var = (Identifier*)st.top().second;
+                st.pop();
+                std::string value;
+                std::cin.clear();
+                std::getline(std::cin, value);
+                var->value = convert({ PolizType::STRING_LITERAL, new std::string(value) }, type_to_poliz(var->type.expr_type));
+                ++p;
+                break;
+            }
             case PRINT: {
                 auto op = st.top();
                 st.pop();
@@ -1440,9 +1471,8 @@ private:
 
 Token current_token;
 std::stack<std::pair<Type, bool>> exprs;
-TableIdentifiers* tid = new TableIdentifiers();
-TableIdentifiers* global_tid = new TableIdentifiers();
 std::unordered_map<Function, TableIdentifiers*, FunctionHasher> funcs;
+TableIdentifiers* global_tid = new TableIdentifiers();
 Type current_function;
 std::stack<int*> break_ptr, continue_ptr;
 Poliz prog;
@@ -1580,12 +1610,9 @@ void create_table(bool new_func = false) {
     tid = next;
 }
 
-void create_function(std::string name, Type type, int pref, int ptr) {
+void create_function(std::string name, Type type, int pref, std::vector<int> inits, int ptr) {
     std::vector<Type> idents;
-    for (auto& u : tid->identifiers) {
-        idents.push_back(u.second->type);
-    }
-    Function f = Function(name, type, idents, ptr, pref);
+    Function f = Function(name, type, idents, inits, ptr, pref);
     if (funcs.count(f) != 0)
         throw std::exception(("Function '" + f.name + "' was already declared in the current scope").c_str());
     funcs[f] = tid;
@@ -1669,6 +1696,7 @@ void while_statement(LexicalAnalyzer& lex);
 void for_statement(LexicalAnalyzer& lex);
 void switch_statement(LexicalAnalyzer& lex);
 void read_statement(LexicalAnalyzer& lex);
+void readln_statement(LexicalAnalyzer& lex);
 void print_statement(LexicalAnalyzer& lex);
 
 std::vector<std::string> service_types = { "bool", "char", "byte", "double", "udouble", "float", "ufloat", "int", "uint", "long",
@@ -1912,6 +1940,8 @@ void default_type(LexicalAnalyzer& lex) {
     throw std::exception("Invalid token: service type expected");
 }
 
+std::vector<int> function_params_init;
+
 void function(LexicalAnalyzer& lex, bool is_struct) {
     ExprType curr_type = string_to_type(current_token.value);
     if (current_token.value == "void")
@@ -1926,6 +1956,7 @@ void function(LexicalAnalyzer& lex, bool is_struct) {
         throw std::exception("Invalid token: identifier expected");
     std::string name = current_token.value;
     current_token = lex.get_token();
+    std::unordered_map<std::string, void*> values;
 
     if (current_token.value == "[" && curr_type != ExprType::Void) {
         current_token = lex.get_token();
@@ -1949,9 +1980,11 @@ void function(LexicalAnalyzer& lex, bool is_struct) {
     bool was_parameters = false;
     int ptr = prog.get_size();
     prog.put_lex({ PolizType::LABEL, nullptr });
+    
+    function_params_init.clear();
     check_function_brace:
     if (current_token.value == ")" || was_parameters) {
-        create_function(name, func_type, function_params_pref, ptr);
+        create_function(name, func_type, function_params_pref, function_params_init, ptr);
         current_token = lex.get_token();
         if (current_token.value != "{")
             throw std::exception("Invalid token: '{' expected");
@@ -2458,10 +2491,16 @@ void parameter_list(LexicalAnalyzer& lex) {
     is_in_function_header = true;
     was_function_assign = false;
     function_params_pref = 0;
+
     var_definition(lex);
+    prog.blank();
+    function_params_init.push_back(prog.get_size() - 1);
+
     while (current_token.value == ",") {
         current_token = lex.get_token();
         var_definition(lex);
+        prog.blank();
+        function_params_init.push_back(prog.get_size() - 1);
     }
     is_in_function_header = false;
 }
@@ -2752,15 +2791,53 @@ void print_statement(LexicalAnalyzer& lex) {
     if (current_token.value != "print")
         throw std::exception("Invalid token: 'print' expected");
     current_token = lex.get_token();
+    if (current_token.value != "(")
+        throw std::exception("Invalid token: '(' expected");
+    current_token = lex.get_token();
     expression(lex, false, true);
+    exprs.pop();
+    if (current_token.value != ")")
+        throw std::exception("Invalid token: ')' expected");
+    current_token = lex.get_token();
 }
 
 void read_statement(LexicalAnalyzer& lex) {
     if (current_token.value != "read")
         throw std::exception("Invalid token: 'read' expected");
     current_token = lex.get_token();
+    if (current_token.value != "(")
+        throw std::exception("Invalid token: '(' expected");
+    current_token = lex.get_token();
     field(lex, true);
+    exprs.pop();
     prog.put_lex({ PolizType::READ, nullptr });
+    while (current_token.value == ",") {
+        current_token = lex.get_token();
+        field(lex, true);
+        exprs.pop();
+        prog.put_lex({ PolizType::READ, nullptr });
+    }
+    if (current_token.value != ")")
+        throw std::exception("Invalid token: ')' expected");
+    current_token = lex.get_token();
+}
+
+void readln_statement(LexicalAnalyzer& lex) {
+    if (current_token.value != "readln")
+        throw std::exception("Invalid token: 'readln' expected");
+    current_token = lex.get_token();
+    if (current_token.value != "(")
+        throw std::exception("Invalid token: '(' expected");
+    current_token = lex.get_token();
+    field(lex, true);
+    auto type = exprs.top().first;
+    if (type.expr_type != ExprType::String)
+        throw std::exception("Cannot use readln with not a string identifier");
+    exprs.pop();
+    prog.put_lex({ PolizType::READLN, nullptr });
+    if (current_token.value != ")")
+        throw std::exception("Invalid token: ')' expected");
+    current_token = lex.get_token();
 }
 
 void statement(LexicalAnalyzer& lex, bool prev_table) {
@@ -2821,6 +2898,12 @@ void statement(LexicalAnalyzer& lex, bool prev_table) {
         may_be_semicolon(lex);
         return;
     }
+    if (current_token.value == "readln") {
+        readln_statement(lex);
+        semicolon(lex);
+        may_be_semicolon(lex);
+        return;
+    }
     if (current_token.type == LexicalAnalyzer::token_type::service) {
         for (int i = 0; i < service_types.size(); ++i) {
             if (service_types[i] == current_token.value) {
@@ -2863,7 +2946,7 @@ int main(int argc, char* argv[]) {
         if (path[0] == '\"') {
             path = path.substr(1, path.size() - 2);
         }*/
-        path = "C:\\test.prog";
+        path = "C:\\Users\\sasha\\Documents\\test.prog";
     } else {
         path = argv[1];
     }

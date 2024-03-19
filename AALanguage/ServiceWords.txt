@@ -25,3 +25,4 @@ string
 byte
 read
 print
+readln
