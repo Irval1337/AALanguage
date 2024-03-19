@@ -1410,7 +1410,9 @@ public:
                 }
 
                 if (*((std::string*)lexes[p].second) == "=") {
-                    if (var->type.expr_type == ExprType::Char)
+                    if (var->type.is_array)
+                        var->value = ((Identifier*)op2.second)->value;
+                    else if (var->type.expr_type == ExprType::Char)
                         *(char*)var->value = *(char*)convert(op2, type_to_poliz(var->type.expr_type));
                     else
                         var->value = convert(op2, type_to_poliz(var->type.expr_type));
@@ -2484,7 +2486,7 @@ void field(LexicalAnalyzer& lex, bool only_array) {
             expression(lex, true);
             if (!is_convertible(exprs.top().first, Type(ExprType::Long, false, false)))
                 throw std::exception("Cannot access index that is not an integer");
-            if (ident->type.expr_type != ExprType::String)
+            if (ident->type.is_array)
                 prog.put_lex({ PolizType::GETARR, new std::string("[]") });
             else
                 prog.put_lex({ PolizType::GETSTR, new std::string("[]") });
@@ -2497,15 +2499,11 @@ void field(LexicalAnalyzer& lex, bool only_array) {
             } else if (ident->type.expr_type != ExprType::String)
                 throw std::exception("Cannot apply operator [] to anything other than an array or string");
             else {
-                if (ident->type.expr_type != ExprType::String)
-                    prog.put_lex({ PolizType::GETARR, new std::string("[]") });
-                else
-                    prog.put_lex({ PolizType::GETSTR, new std::string("[]") });
                 current_token = lex.get_token();
                 expression(lex, true);
+                prog.put_lex({ PolizType::GETSTR, new std::string("[]") });
                 if (!is_convertible(exprs.top().first, Type(ExprType::Long, false, false)))
                     throw std::exception("Cannot access index that is not an integer");
-                prog.put_lex({ PolizType::GETARR, new std::string("[]") });
                 exprs.pop();
                 if (current_token.value != "]")
                     throw std::exception("Invalid token: ']' expected");
@@ -2542,21 +2540,34 @@ void field(LexicalAnalyzer& lex, bool only_array) {
 
             if (current_token.value == "[") {
                 if (!func.type.is_array)
-                    throw std::exception("Cannot apply operator [] to anything other than an array");
-                if (ident->type.expr_type != ExprType::String)
+                    throw std::exception("Cannot apply operator [] to anything other than an array or string");
+                current_token = lex.get_token();
+                expression(lex, true);
+                if (func.type.is_array != ExprType::String)
                     prog.put_lex({ PolizType::GETARR, new std::string("[]") });
                 else
                     prog.put_lex({ PolizType::GETSTR, new std::string("[]") });
-                current_token = lex.get_token();
-                expression(lex, true);
                 if (!is_convertible(exprs.top().first, Type(ExprType::Long, false, false)))
                     throw std::exception("Cannot access index that is not an integer");
                 exprs.pop();
-                if (current_token.value != "]")
-                    throw std::exception("Invalid token: ']' expected");
-                prog.put_lex({ PolizType::GETARR, new std::string("[]") });
-                exprs.push({ Type(func.type.expr_type, false, false), false });
                 current_token = lex.get_token();
+
+                if (current_token.value != "[") {
+                    exprs.push({ Type(func.type.expr_type, false, false), false });
+                } else if (func.type.expr_type != ExprType::String)
+                    throw std::exception("Cannot apply operator [] to anything other than an array or string");
+                else {
+                    current_token = lex.get_token();
+                    expression(lex, true);
+                    prog.put_lex({ PolizType::GETSTR, new std::string("[]") });
+                    if (!is_convertible(exprs.top().first, Type(ExprType::Long, false, false)))
+                        throw std::exception("Cannot access index that is not an integer");
+                    exprs.pop();
+                    if (current_token.value != "]")
+                        throw std::exception("Invalid token: ']' expected");
+                    current_token = lex.get_token();
+                    exprs.push({ Type(ExprType::Char, false, false), true });
+                }               
             }
             else
                 exprs.push({ func.type, false });
