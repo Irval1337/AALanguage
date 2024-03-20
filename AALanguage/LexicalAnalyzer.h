@@ -3,6 +3,7 @@
 #include "Trie.h"
 #include <regex>
 #include <string>
+#include "LibParser.h"
 
 struct Token;
 
@@ -19,8 +20,9 @@ public:
 	Token prev_token();
 	bool get_ok() const;
 	literal_type is_literal(std::string s);
+	std::vector<Token> get_tokens();
 
-	LexicalAnalyzer(std::string path, std::string lib_path);
+	LexicalAnalyzer(std::string path, LibParser& lib_parser);
 private:
 	int line_ = 1;
 	int curr_ = 0;
@@ -36,6 +38,7 @@ private:
 	bool is_comment(std::string s);
 	token_type get_token_type(Trie* service_trie, std::string s);
 	void print_token(Trie* service_trie, std::string buffer);
+	std::vector<Token> merge(std::vector<Token>& f, std::vector<Token>& s, int& ind, int);
 };
 
 struct Token {

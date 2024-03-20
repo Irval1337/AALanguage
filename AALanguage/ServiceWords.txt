@@ -26,3 +26,5 @@ byte
 read
 print
 readln
+convert
+rand

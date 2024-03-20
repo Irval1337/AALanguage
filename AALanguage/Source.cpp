@@ -6,21 +6,47 @@
 #include "TableIdentifiers.h"
 #include <unordered_set>
 #include <string>
+#include <cstdlib>
+#include <ctime>
+#include <random>
+#include <chrono>
 
 enum PolizType {
     GO, FGO, TGO, LABEL, ADDRESS, POINTER, GETARR, CALL, BLANK, SEMICOLON, LITERAL, USING, COMMA, ASSIGN, LOGICAL_OR, 
     LOGICAL_AND, BITWISE_OR, BITWISE_XOR, BITWISE_CONS, BITWISE_AND, EQUALITY, CMP, BITWISE_SHIFT, PLUS, MULT, UNARY, 
     SWITCH_CMP, SWITCH_POP, RET, BOOL_LITERAL, BYTE_LITERAL, CHAR_LITERAL, DOUBLE_LITERAL, FLOAT_LITERAL, INT_LITERAL, 
     LONG_LITERAL, SHORT_LITERAL, STRING_LITERAL, UINT_LITERAL, ULONG_LITERAL, STACK_PLUG, READ, PRINT, READLN, NORET,
-    GETSTR, EXIT
+    GETSTR, EXIT, CONVERT, RAND
 };
 
 TableIdentifiers* tid = new TableIdentifiers();
+Type current_function = Type();
+std::mt19937 rnd(std::chrono::high_resolution_clock::now().time_since_epoch().count() + 13);
+
+ExprType string_to_type(std::string str) {
+    if (str == "double") return ExprType::Double;
+    if (str == "udouble") return ExprType::UDouble;
+    if (str == "long") return ExprType::Long;
+    if (str == "ulong") return ExprType::ULong;
+    if (str == "float") return ExprType::Float;
+    if (str == "ufloat") return ExprType::UFloat;
+    if (str == "int") return ExprType::Int;
+    if (str == "uint") return ExprType::UInt;
+    if (str == "short") return ExprType::Short;
+    if (str == "ushort") return ExprType::UShort;
+    if (str == "byte") return ExprType::Byte;
+    if (str == "char") return ExprType::Char;
+    if (str == "string") return ExprType::String;
+    if (str == "bool") return ExprType::Bool;
+    if (str == "void") return ExprType::Void;
+    return ExprType::Unknown;
+}
 
 class Poliz {
 private:
     int literal_prior[11] = { 0, 2, 1, 11, 7, 5, 9, 3, 0, 6, 10 };
-    std::stack<int> func_calls;
+    std::stack<std::pair<int, PolizType>> func_calls;
+    std::vector<std::pair<PolizType, void*>> global_lexes;
 public:
     ~Poliz() {
         for (int i = 0; i < lexes.size(); ++i) {
@@ -29,7 +55,10 @@ public:
         }
     }
     void put_lex(std::pair<PolizType, void*> l) {
-        lexes.push_back(l);
+        if (current_function != Type())
+            lexes.push_back(l);
+        else
+            global_lexes.push_back(l);
     }
     void blank() {
         lexes.push_back({ PolizType::BLANK, nullptr });
@@ -473,6 +502,7 @@ public:
             break;
         }
         }
+        throw std::exception("Cannot convert types");
     }
     std::pair<PolizType, std::pair<void*, void*>> make_same(std::pair<PolizType, void*> op1, std::pair<PolizType, void*> op2) {
         int pr1 = literal_prior[(int)op1.first - (int)PolizType::BOOL_LITERAL], pr2 = literal_prior[(int)op2.first - (int)PolizType::BOOL_LITERAL];
@@ -1246,12 +1276,184 @@ public:
             ++q;
         }
     }
-    std::pair<PolizType, void*> execute(int entrypoint) {
+    std::pair<PolizType, void*> execute(Function entry_func) {
         std::stack<std::pair<PolizType, void*>> st;
-        int p = entrypoint;
+        int p = 0;
         int label_balance = 0;
         st.push({ PolizType::STACK_PLUG, nullptr });
-        func_calls.push(lexes.size());
+        func_calls.push({ lexes.size(), type_to_poliz(entry_func.type.expr_type) });
+
+        while (p < global_lexes.size()) {
+            switch (global_lexes[p].first) {
+            case BLANK: {
+                ++p;
+                break;
+            }
+            case BOOL_LITERAL:
+            case BYTE_LITERAL:
+            case CHAR_LITERAL:
+            case DOUBLE_LITERAL:
+            case FLOAT_LITERAL:
+            case INT_LITERAL:
+            case LONG_LITERAL:
+            case SHORT_LITERAL:
+            case STRING_LITERAL:
+            case UINT_LITERAL:
+            case ULONG_LITERAL:
+            case ADDRESS:
+            case STACK_PLUG:
+            case POINTER: {
+                st.push(global_lexes[p]);
+                ++p;
+                break;
+            }
+            case GETARR: {
+                int ind = *(int*)convert(st.top(), PolizType::INT_LITERAL);
+                st.pop();
+                if (st.top().second == nullptr)
+                    throw std::exception("Cannot access the element of an uninitialized array");
+                auto var = (std::vector<void*>*)((Identifier*)st.top().second)->value;
+                st.pop();
+                if (var->size() <= ind)
+                    throw std::exception("Array index out of range");
+                st.push({ PolizType::ADDRESS, var->operator[](ind) });
+                ++p;
+                break;
+            }
+            case GETSTR: {
+                int ind = *(int*)convert(st.top(), PolizType::INT_LITERAL);
+                st.pop();
+                if (st.top().second == nullptr)
+                    throw std::exception("Cannot access the character of an uninitialized string");
+                auto var = (std::string*)((Identifier*)st.top().second)->value;
+                auto name = ((Identifier*)st.top().second)->name;
+                st.pop();
+                if (var->size() <= ind)
+                    throw std::exception("String index out of range");
+                auto ptr = new Identifier(name + "[" + std::to_string(ind) + "]", Type(ExprType::Char, false, false), nullptr);
+                ptr->value = &(var->operator[](ind));
+                st.push({ PolizType::ADDRESS, ptr });
+                ++p;
+                break;
+            }
+            case SEMICOLON: {
+                while (!st.empty() && st.top().first != PolizType::STACK_PLUG) {
+                    st.pop();
+                }
+                ++p;
+                break;
+            }
+            case LITERAL: {
+                std::pair<std::string, Type> val = *((std::pair<std::string, Type>*)global_lexes[p].second);
+                if (val.second.expr_type == ExprType::Bool) {
+                    st.push({ PolizType::BOOL_LITERAL, new bool(val.first == "true") });
+                } else if (val.second.expr_type == ExprType::Byte || val.second.expr_type == ExprType::UShort) {
+                    st.push({ PolizType::BYTE_LITERAL, new uint8_t(std::stoll(val.first)) });
+                } else if (val.second.expr_type == ExprType::Char) {
+                    std::string s = val.first.substr(1, val.first.size() - 2);
+                    if (s == "\\\'")
+                        st.push({ PolizType::CHAR_LITERAL, new char('\'') });
+                    else if (s == "\\\"")
+                        st.push({ PolizType::CHAR_LITERAL, new char('\"') });
+                    else if (s == "\\n")
+                        st.push({ PolizType::CHAR_LITERAL, new char('\n') });
+                    else if (s == "\\t")
+                        st.push({ PolizType::CHAR_LITERAL, new char('\t') });
+                    else if (s == "\\0")
+                        st.push({ PolizType::CHAR_LITERAL, new char('\0') });
+                    else
+                        st.push({ PolizType::CHAR_LITERAL, new char(s[0]) });
+                } else if (val.second.expr_type == ExprType::Double) {
+                    st.push({ PolizType::DOUBLE_LITERAL, new double(std::stold(val.first)) });
+                } else if (val.second.expr_type == ExprType::Float) {
+                    st.push({ PolizType::FLOAT_LITERAL, new float(std::stold(val.first)) });
+                } else if (val.second.expr_type == ExprType::Int) {
+                    st.push({ PolizType::INT_LITERAL, new int(std::stoll(val.first)) });
+                } else if (val.second.expr_type == ExprType::Long) {
+                    st.push({ PolizType::LONG_LITERAL, new long long(std::stoll(val.first)) });
+                } else if (val.second.expr_type == ExprType::Short) {
+                    st.push({ PolizType::SHORT_LITERAL, new short(std::stoll(val.first)) });
+                } else if (val.second.expr_type == ExprType::String) {
+                    st.push({ PolizType::STRING_LITERAL, new std::string(val.first.substr(1, val.first.size() - 2)) });
+                } else if (val.second.expr_type == ExprType::UInt) {
+                    st.push({ PolizType::UINT_LITERAL, new uint32_t(std::stoll(val.first)) });
+                } else if (val.second.expr_type == ExprType::ULong) {
+                    st.push({ PolizType::ULONG_LITERAL, new uint64_t(std::stoll(val.first)) });
+                }
+                ++p;
+                break;
+            }
+            case COMMA: {
+                auto op2 = st.top();
+                st.pop();
+                auto op1 = st.top();
+                st.pop();
+                st.push(op2);
+                ++p;
+                break;
+            }
+            case ASSIGN: {
+                auto op2 = st.top();
+                st.pop();
+                auto op1 = st.top();
+                st.pop();
+                auto var = (Identifier*)op1.second;
+                auto assign_val = op2.second;
+                if (op2.first == PolizType::ADDRESS) {
+                    assign_val = ((Identifier*)op2.second)->value;
+                    if (assign_val == nullptr)
+                        throw std::exception(("Cannot use a variable '" + ((Identifier*)op2.second)->name + "' that has not been assigned a value").c_str());
+                }
+
+                if (*((std::string*)global_lexes[p].second) == "=") {
+                    if (var->type.is_array)
+                        var->value = ((Identifier*)op2.second)->value;
+                    else if (var->type.expr_type == ExprType::Char && *var->name.rbegin() == ']')
+                        *(char*)var->value = *(char*)convert(op2, type_to_poliz(var->type.expr_type));
+                    else
+                        var->value = convert(op2, type_to_poliz(var->type.expr_type));
+                } else {
+                    std::string op = *((std::string*)global_lexes[p].second);
+                    auto val = execute_operation(op1, op2, op.substr(0, op.size() - 1));
+                    var->value = convert(val, type_to_poliz(var->type.expr_type));
+                }
+                st.push(op1);
+                ++p;
+                break;
+            }
+            case UNARY: {
+                auto op = st.top();
+                st.pop();
+                st.push(execute_operation(op, *((std::string*)global_lexes[p].second)));
+                ++p;
+                break;
+            }
+            case CONVERT: {
+                throw std::exception("convert() function is restricted in the global scope");
+            }
+            case RAND: {
+                throw std::exception("rand() function is restricted in the global scope");
+            }
+            case CALL: {
+                throw std::exception("function calls are restricted in the global scope");
+            }
+            default:
+                auto op2 = st.top();
+                st.pop();
+                auto op1 = st.top();
+                st.pop();
+                st.push(execute_operation(op1, op2, *(std::string*)(global_lexes[p].second)));
+                ++p;
+                break;
+            }
+        }
+
+        while (st.size() > 1)
+            st.pop();
+
+        label_balance = 0;
+        p = entry_func.ptr;
+
         while (p < lexes.size()) {
             if (func_calls.size() > 200000) throw std::exception("Stack overflow");
 
@@ -1412,7 +1614,7 @@ public:
                 if (*((std::string*)lexes[p].second) == "=") {
                     if (var->type.is_array)
                         var->value = ((Identifier*)op2.second)->value;
-                    else if (var->type.expr_type == ExprType::Char)
+                    else if (var->type.expr_type == ExprType::Char && *var->name.rbegin() == ']')
                         *(char*)var->value = *(char*)convert(op2, type_to_poliz(var->type.expr_type));
                     else
                         var->value = convert(op2, type_to_poliz(var->type.expr_type));
@@ -1439,8 +1641,12 @@ public:
                     st.pop();
                 }
                 st.pop();
+                if (top.first == PolizType::ADDRESS)
+                    top = address_to_value(top.second);
+                top.second = convert(top, func_calls.top().second);
+                top.first = func_calls.top().second;
                 st.push(top);
-                p = func_calls.top() + 1;
+                p = func_calls.top().first + 1;
                 func_calls.pop();
                 --label_balance;
                 break;
@@ -1450,13 +1656,13 @@ public:
                     st.pop();
                 }
                 st.pop();
-                p = func_calls.top() + 1;
+                p = func_calls.top().first + 1;
                 func_calls.pop();
                 --label_balance;
                 break;
             }
             case CALL: {
-                func_calls.push(p);
+                func_calls.push({ p, type_to_poliz(((Function*)st.top().second)->type.expr_type) });
                 st.push(lexes[p]);
                 call_function(st, p);
                 break;
@@ -1511,6 +1717,20 @@ public:
                 ++p;
                 break;
             }
+            case CONVERT: {
+                auto type = lexes[p];
+                auto val = st.top();
+                st.pop();
+                auto poliz_type = type_to_poliz(string_to_type(*(std::string*)type.second));
+                st.push({ poliz_type, convert(val, poliz_type) });
+                ++p;
+                break;
+            }
+            case RAND: {
+                st.push({ PolizType::INT_LITERAL, new int(rnd()) });
+                ++p;
+                break;
+            }
             default:
                 auto op2 = st.top();
                 st.pop();
@@ -1537,7 +1757,6 @@ Token current_token;
 std::stack<std::pair<Type, bool>> exprs;
 std::unordered_map<Function, TableIdentifiers*, FunctionHasher> funcs;
 TableIdentifiers* global_tid = new TableIdentifiers();
-Type current_function;
 std::stack<int*> break_ptr, continue_ptr;
 std::vector<Identifier*> params_ptrs;
 Poliz prog;
@@ -1576,25 +1795,6 @@ Type calc_expr_type(Type first, Type second) {
         return first;
     else
         return second;
-}
-
-ExprType string_to_type(std::string str) {
-    if (str == "double") return ExprType::Double;
-    if (str == "udouble") return ExprType::UDouble;
-    if (str == "long") return ExprType::Long;
-    if (str == "ulong") return ExprType::ULong;
-    if (str == "float") return ExprType::Float;
-    if (str == "ufloat") return ExprType::UFloat;
-    if (str == "int") return ExprType::Int;
-    if (str == "uint") return ExprType::UInt;
-    if (str == "short") return ExprType::Short;
-    if (str == "ushort") return ExprType::UShort;
-    if (str == "byte") return ExprType::Byte;
-    if (str == "char") return ExprType::Char;
-    if (str == "string") return ExprType::String;
-    if (str == "bool") return ExprType::Bool;
-    if (str == "void") return ExprType::Void;
-    return ExprType::Unknown;
 }
 
 std::string type_to_string(Type type) {
@@ -1769,6 +1969,8 @@ void read_statement(LexicalAnalyzer& lex);
 void readln_statement(LexicalAnalyzer& lex);
 void print_statement(LexicalAnalyzer& lex);
 void exit_statement(LexicalAnalyzer& lex);
+void convert_statement(LexicalAnalyzer& lex);
+void rand_statement(LexicalAnalyzer& lex);
 
 std::vector<std::string> service_types = { "bool", "char", "byte", "double", "udouble", "float", "ufloat", "int", "uint", "long",
         "ulong", "short", "ushort", "string" };
@@ -1804,7 +2006,7 @@ void may_be_semicolon(LexicalAnalyzer& lex) {
 
 void program(LexicalAnalyzer& lex) {
     may_be_semicolon(lex);
-    //preprocessor(lex);
+    preprocessor(lex);
     if (current_token.line == -1) return;
     program_body(lex);
 }
@@ -2028,6 +2230,8 @@ void function(LexicalAnalyzer& lex, bool is_struct) {
     std::string name = current_token.value;
     current_token = lex.get_token();
     std::unordered_map<std::string, void*> values;
+
+    current_function = func_type;
 
     if (current_token.value == "[" && curr_type != ExprType::Void) {
         current_token = lex.get_token();
@@ -2469,7 +2673,18 @@ void construct_expression(LexicalAnalyzer& lex) {
 }
 
 void field(LexicalAnalyzer& lex, bool only_array) {
-    if (current_token.type != LexicalAnalyzer::token_type::identifier)
+    if (current_token.type == LexicalAnalyzer::token_type::service) {
+        if (current_token.value == "convert") {
+            convert_statement(lex);
+            if (current_token.value == "[")
+                throw std::exception("Cannot apply operator [] to rvalue string");
+        } else if (current_token.value == "rand") {
+            rand_statement(lex);
+        } else
+            throw std::exception("Invalid token: identifier expected");
+        return;
+    }
+    else if (current_token.type != LexicalAnalyzer::token_type::identifier)
         throw std::exception("Invalid token: identifier expected");
     std::string name = current_token.value;
     current_token = lex.get_token();
@@ -3004,6 +3219,12 @@ void statement(LexicalAnalyzer& lex, bool prev_table) {
         may_be_semicolon(lex);
         return;
     }
+    if (current_token.value == "convert") {
+        convert_statement(lex);
+        semicolon(lex);
+        may_be_semicolon(lex);
+        return;
+    }
     if (current_token.type == LexicalAnalyzer::token_type::service) {
         for (int i = 0; i < service_types.size(); ++i) {
             if (service_types[i] == current_token.value) {
@@ -3051,6 +3272,37 @@ void exit_statement(LexicalAnalyzer& lex) {
     current_token = lex.get_token();
 }
 
+void convert_statement(LexicalAnalyzer& lex) {
+    current_token = lex.get_token();
+    if (current_token.value != "(")
+        throw std::exception("Invalid token: '(' expected");
+    current_token = lex.get_token();
+    expression(lex, true);
+    if (current_token.value != ",")
+        throw std::exception("Invalid token: ',' expected");
+    current_token = lex.get_token();
+    std::string* val = new std::string(current_token.value);
+    default_type(lex);
+    exprs.pop();
+    exprs.push({ Type(string_to_type(*val), false, false), false });
+    prog.put_lex({ PolizType::CONVERT, val });
+    if (current_token.value != ")")
+        throw std::exception("Invalid token: ')' expected");
+    current_token = lex.get_token();
+}
+
+void rand_statement(LexicalAnalyzer& lex) {
+    current_token = lex.get_token();
+    if (current_token.value != "(")
+        throw std::exception("Invalid token: '(' expected");
+    current_token = lex.get_token();
+    if (current_token.value != ")")
+        throw std::exception("Invalid token: ')' expected");
+    current_token = lex.get_token();
+    prog.put_lex({ PolizType::RAND, nullptr });
+    exprs.push({ Type(ExprType::Int, false, false), false });
+}
+
 int main(int argc, char* argv[]) {
     std::string path;
     if (argc != 2) {
@@ -3067,7 +3319,8 @@ int main(int argc, char* argv[]) {
     
     bool started = false;
     try {
-        LexicalAnalyzer lex(path, lib_path);
+        LibParser lib_parser(lib_path);
+        LexicalAnalyzer lex(path, lib_parser);
 
         printf("\x1B[32mThe lexical analysis was successful\n\033[0m");
 
@@ -3082,7 +3335,7 @@ int main(int argc, char* argv[]) {
         printf("\x1B[32mThe internal representation of the program has been successfully generated\n\033[0m");
         auto main = get_function("main", std::vector<Type>());
         started = true;
-        auto result = prog.execute(main.ptr);
+        auto result = prog.execute(main);
         std::cout << "\nExit code: " << (result.second == nullptr ? "unknown" : *(std::string*)prog.convert(result, PolizType::STRING_LITERAL));
     } catch (std::exception ex) {
         printf(("\x1B[31m\n" + std::string(ex.what())).c_str());

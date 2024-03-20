@@ -29,6 +29,9 @@ struct Type {
 	bool operator==(const Type& other) const {
 		return expr_type == other.expr_type && is_const == other.is_const && is_array == other.is_array && array_size == other.array_size;
 	}
+	bool operator!=(const Type& other) const {
+		return !(*this == other);
+	}
 };
 
 struct Identifier {

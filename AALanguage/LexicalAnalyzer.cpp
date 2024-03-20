@@ -1,7 +1,6 @@
 #include "LexicalAnalyzer.h"
 #include <iostream>
 #include <fstream>
-#include "LibParser.h"
 
 bool LexicalAnalyzer::is_service(Trie* service_trie, std::string s) {
 	return service_trie->find(s.begin(), s.end()) != nullptr;
@@ -94,7 +93,26 @@ bool LexicalAnalyzer::get_ok() const {
 	return ok_;
 }
 
-LexicalAnalyzer::LexicalAnalyzer(std::string path, std::string lib_path) {
+std::vector<Token> LexicalAnalyzer::get_tokens() {
+	return tokens_;
+}
+
+std::vector<Token> LexicalAnalyzer::merge(std::vector<Token>& f, std::vector<Token>& s, int& fin_ind, int start_ptr) {
+	std::vector<Token> res;
+	for (int i = 0; i < start_ptr; ++i) {
+		res.push_back(f[i]);
+	}
+	for (int i = 0; i < s.size(); ++i) {
+		res.push_back(s[i]);
+	}
+	for (int i = fin_ind + 1; i < f.size(); ++i) {
+		res.push_back(f[i]);
+	}
+	fin_ind += s.size();
+	return res;
+}
+
+LexicalAnalyzer::LexicalAnalyzer(std::string path, LibParser& lib_parser) {
 	Trie* service_trie = new Trie();
 	std::ifstream file("ServiceWords.txt");
 	std::string str;
@@ -104,10 +122,7 @@ LexicalAnalyzer::LexicalAnalyzer(std::string path, std::string lib_path) {
 	}
 	file.close();
 
-	LibParser libs(path, lib_path);
-	libs.execute();
-
-	file = std::ifstream("output.aa");
+	file = std::ifstream(path);
 
 	str.clear();
 
@@ -172,4 +187,38 @@ LexicalAnalyzer::LexicalAnalyzer(std::string path, std::string lib_path) {
 	}
 
 	print_token(service_trie, buffer);
+
+	int start_ptr = 0;
+	int ptr = 0;
+	int state = 0;
+	int state_line = -1;
+	std::string lib_buff = "";
+	while (ptr < tokens_.size()) {
+		if (state == 0) {
+			if (tokens_[ptr].value == "using") {
+				state = 1;
+				start_ptr = ptr;
+				state_line = tokens_[ptr].line;
+				lib_buff.clear();
+			}
+			++ptr;
+		} else if (state == 1) {
+			if (tokens_[ptr].line != state_line)
+				throw std::exception(("Invalid token: ';' expected (" + std::to_string(tokens_[ptr].line) + " line)").c_str());
+			if (tokens_[ptr].value != ";") {
+				lib_buff += tokens_[ptr].value;
+			} else {
+				bool need_to_parse = lib_parser.add_lib(lib_buff);
+				if (need_to_parse) {
+					std::string lib_path = lib_parser.name_to_path(lib_buff);
+					auto lib_tokens = LexicalAnalyzer(lib_path, lib_parser).get_tokens();
+					tokens_ = merge(tokens_, lib_tokens, ptr, start_ptr);
+				}
+				state = 0;
+			}
+			++ptr;
+		}
+	}
+	if (state != 0)
+		throw std::exception(("Invalid token: ';' expected (" + std::to_string(tokens_[tokens_.size() - 1].line) + " line)").c_str());
 }
