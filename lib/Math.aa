@@ -1,4 +1,6 @@
 double M_INF = 2147483647;
+double M_PI = 3.14159265358979323846;
+double M_E = 2.71828182845904523536;
 
 double pow(double x, long n) {
     if (n == 0) return 1;

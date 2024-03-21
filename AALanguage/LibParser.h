@@ -15,7 +15,15 @@ public:
     bool add_lib(std::string name) {
         if (used.count(name)) return false;
         used.insert(name);
-        return true;
+
+        std::string path = name_to_path(name);
+        std::ifstream file;
+        file.open(path, std::ios::in);
+        if (file.is_open()) {
+            file.close();
+            return true;
+        }
+        throw std::exception(("Unknown library: " + name).c_str());
     }
     std::string parse_lib(std::string name) {
         std::string path = name_to_path(name);
