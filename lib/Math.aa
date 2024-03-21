@@ -1,4 +1,4 @@
-double INF = 2147483647;
+double M_INF = 2147483647;
 
 double pow(double x, long n) {
     if (n == 0) return 1;

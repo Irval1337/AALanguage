@@ -14,10 +14,10 @@ bool LexicalAnalyzer::is_identifier(std::string s) {
 LexicalAnalyzer::literal_type LexicalAnalyzer::is_literal(std::string s) {
 	if (s == "true" || s == "false") return literal_type::logical;
 
-	static const std::regex integer_r(R"([0-9]{1,}(UL|ul|L|l|I|i|U|u|s|S|us|US|b|B|ui|UI)?)");
+	static const std::regex integer_r(R"([0-9]{1,}(UL|ul|L|l|I|i|U|u|s|S|US|b|B|ui|UI)?)");
 	if (std::regex_match(s, integer_r)) return literal_type::integer;
 
-	static const std::regex real_r(R"(([0-9]{1,}\.[0-9]*)(e(\+|-)?[0-9]{1,})?(d|D|f|F|ud|UD|uf|UF)?)");
+	static const std::regex real_r(R"(([0-9]{1,}\.[0-9]*)(e(\+|-)?[0-9]{1,})?(d|D|f|F)?)");
 	if (std::regex_match(s, real_r)) return literal_type::real;
 
 	static const std::regex symbol_r(R"(\'(.|\\n|\\t|\\0|\\'|\\")\')");
@@ -108,7 +108,7 @@ std::vector<Token> LexicalAnalyzer::merge(std::vector<Token>& f, std::vector<Tok
 	for (int i = fin_ind + 1; i < f.size(); ++i) {
 		res.push_back(f[i]);
 	}
-	fin_ind += s.size();
+	fin_ind = s.size() + start_ptr;
 	return res;
 }
 
@@ -213,8 +213,9 @@ LexicalAnalyzer::LexicalAnalyzer(std::string path, LibParser& lib_parser) {
 					std::string lib_path = lib_parser.name_to_path(lib_buff);
 					auto lib_tokens = LexicalAnalyzer(lib_path, lib_parser).get_tokens();
 					tokens_ = merge(tokens_, lib_tokens, ptr, start_ptr);
+					state = 0;
+					continue;
 				}
-				state = 0;
 			}
 			++ptr;
 		}

@@ -135,6 +135,7 @@
     <Text Include="ServiceWords.txt" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Large.h" />
     <ClInclude Include="LexicalAnalyzer.h" />
     <ClInclude Include="LibParser.h" />
     <ClInclude Include="TableIdentifiers.h" />

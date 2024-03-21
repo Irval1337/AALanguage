@@ -10,13 +10,14 @@
 #include <ctime>
 #include <random>
 #include <chrono>
+#include "Large.h"
 
 enum PolizType {
     GO, FGO, TGO, LABEL, ADDRESS, POINTER, GETARR, CALL, BLANK, SEMICOLON, LITERAL, USING, COMMA, ASSIGN, LOGICAL_OR, 
     LOGICAL_AND, BITWISE_OR, BITWISE_XOR, BITWISE_CONS, BITWISE_AND, EQUALITY, CMP, BITWISE_SHIFT, PLUS, MULT, UNARY, 
     SWITCH_CMP, SWITCH_POP, RET, BOOL_LITERAL, BYTE_LITERAL, CHAR_LITERAL, DOUBLE_LITERAL, FLOAT_LITERAL, INT_LITERAL, 
-    LONG_LITERAL, SHORT_LITERAL, STRING_LITERAL, UINT_LITERAL, ULONG_LITERAL, STACK_PLUG, READ, PRINT, READLN, NORET,
-    GETSTR, EXIT, CONVERT, RAND
+    LONG_LITERAL, SHORT_LITERAL, STRING_LITERAL, UINT_LITERAL, ULONG_LITERAL, LARGE_LITERAL, STACK_PLUG, READ, PRINT, READLN, NORET,
+    GETSTR, EXIT, CONVERT, RAND, STRLEN, TIME
 };
 
 TableIdentifiers* tid = new TableIdentifiers();
@@ -39,12 +40,13 @@ ExprType string_to_type(std::string str) {
     if (str == "string") return ExprType::String;
     if (str == "bool") return ExprType::Bool;
     if (str == "void") return ExprType::Void;
+    if (str == "large") return ExprType::Large;
     return ExprType::Unknown;
 }
 
 class Poliz {
 private:
-    int literal_prior[11] = { 0, 2, 1, 11, 7, 5, 9, 3, 0, 6, 10 };
+    int literal_prior[12] = { 0, 2, 1, 11, 7, 5, 9, 3, 0, 6, 10, 12 };
     std::stack<std::pair<int, PolizType>> func_calls;
     std::vector<std::pair<PolizType, void*>> global_lexes;
 public:
@@ -120,6 +122,8 @@ public:
             case ULONG_LITERAL:
                 return new uint64_t(*((bool*)op.second));
                 break;
+            case LARGE_LITERAL:
+                return new large(*((bool*)op.second));
             }
             break;
         }
@@ -158,6 +162,8 @@ public:
             case ULONG_LITERAL:
                 return new uint64_t(*((uint8_t*)op.second));
                 break;
+            case LARGE_LITERAL:
+                return new large(*((uint8_t*)op.second));
             }
             break;
         }
@@ -196,6 +202,8 @@ public:
             case ULONG_LITERAL:
                 return new uint64_t(*((char*)op.second));
                 break;
+            case LARGE_LITERAL:
+                return new large(*((char*)op.second));
             }
             break;
         }
@@ -234,6 +242,8 @@ public:
             case ULONG_LITERAL:
                 return new uint64_t(*((double*)op.second));
                 break;
+            case LARGE_LITERAL:
+                return new large(*((double*)op.second));
             }
             break;
         }
@@ -272,6 +282,8 @@ public:
             case ULONG_LITERAL:
                 return new uint64_t(*((float*)op.second));
                 break;
+            case LARGE_LITERAL:
+                return new large(*((float*)op.second));
             }
             break;
         }
@@ -310,6 +322,8 @@ public:
             case ULONG_LITERAL:
                 return new uint64_t(*((int*)op.second));
                 break;
+            case LARGE_LITERAL:
+                return new large(*((int*)op.second));
             }
             break;
         }
@@ -348,6 +362,8 @@ public:
             case ULONG_LITERAL:
                 return new uint64_t(*((long long*)op.second));
                 break;
+            case LARGE_LITERAL:
+                return new large(*((long long*)op.second));
             }
             break;
         }
@@ -386,6 +402,8 @@ public:
             case ULONG_LITERAL:
                 return new uint64_t(*((short*)op.second));
                 break;
+            case LARGE_LITERAL:
+                return new large(*((short*)op.second));
             }
             break;
         }
@@ -424,6 +442,8 @@ public:
             case ULONG_LITERAL:
                 return new uint64_t(std::stoll(*((std::string*)op.second)));
                 break;
+            case LARGE_LITERAL:
+                return new large(*((std::string*)op.second));
             }
             break;
         } case UINT_LITERAL: {
@@ -461,6 +481,8 @@ public:
             case ULONG_LITERAL:
                 return new uint64_t(*((uint32_t*)op.second));
                 break;
+            case LARGE_LITERAL:
+                return new large(*((uint32_t*)op.second));
             }
             break;
         } case ULONG_LITERAL: {
@@ -498,6 +520,48 @@ public:
             case ULONG_LITERAL:
                 return new uint64_t(*((uint64_t*)op.second));
                 break;
+            case LARGE_LITERAL:
+                return new large(*((uint64_t*)op.second));
+            }
+            break;
+        }
+        case LARGE_LITERAL: {
+            switch (to) {
+            case BOOL_LITERAL:
+                return new bool(std::stoll(((large*)op.second)->ToString()));
+                break;
+            case BYTE_LITERAL:
+                return new uint8_t(std::stoll(((large*)op.second)->ToString()));
+                break;
+            case CHAR_LITERAL:
+                return new char(std::stoll(((large*)op.second)->ToString()));
+                break;
+            case DOUBLE_LITERAL:
+                return new double(std::stoll(((large*)op.second)->ToString()));
+                break;
+            case FLOAT_LITERAL:
+                return new float(std::stoll(((large*)op.second)->ToString()));
+                break;
+            case INT_LITERAL:
+                return new int(std::stoll(((large*)op.second)->ToString()));
+                break;
+            case LONG_LITERAL:
+                return new long long(std::stoll(((large*)op.second)->ToString()));
+                break;
+            case SHORT_LITERAL:
+                return new short(std::stoll(((large*)op.second)->ToString()));
+                break;
+            case STRING_LITERAL:
+                return new std::string(((large*)op.second)->ToString());
+                break;
+            case UINT_LITERAL:
+                return new uint32_t(std::stoll(((large*)op.second)->ToString()));
+                break;
+            case ULONG_LITERAL:
+                return new uint64_t(std::stoll(((large*)op.second)->ToString()));
+                break;
+            case LARGE_LITERAL:
+                return new large(*((large*)op.second));
             }
             break;
         }
@@ -540,6 +604,8 @@ public:
             return { PolizType::UINT_LITERAL, (uint32_t*)(ident->value) };
         case ExprType::ULong:
             return { PolizType::ULONG_LITERAL, (uint64_t*)(ident->value) };
+        case ExprType::Large:
+            return { PolizType::LARGE_LITERAL, (large*)(ident->value) };
         default:
             throw std::exception(("Variable '" + ident->name + "' has unconvertable value").c_str());
         }
@@ -569,6 +635,8 @@ public:
             return PolizType::BYTE_LITERAL;
         case String:
             return PolizType::STRING_LITERAL;
+        case Large:
+            return PolizType::LARGE_LITERAL;
         default:
             return PolizType::BLANK;
         }
@@ -603,6 +671,8 @@ public:
                     return { conv.first, new uint32_t(*((uint32_t*)conv.second.first) + *((uint32_t*)conv.second.second)) };
                 case ULONG_LITERAL:
                     return { conv.first, new uint64_t(*((uint64_t*)conv.second.first) + *((uint64_t*)conv.second.second)) };
+                case LARGE_LITERAL:
+                    return { conv.first, new large(*((large*)conv.second.first) + *((large*)conv.second.second)) };
                 default:
                     throw std::exception("Cannot use this operation");
             }
@@ -629,6 +699,8 @@ public:
                 return { conv.first, new uint32_t(*((uint32_t*)conv.second.first) - *((uint32_t*)conv.second.second)) };
             case ULONG_LITERAL:
                 return { conv.first, new uint64_t(*((uint64_t*)conv.second.first) - *((uint64_t*)conv.second.second)) };
+            case LARGE_LITERAL:
+                return { conv.first, new large(*((large*)conv.second.first) - *((large*)conv.second.second)) };
             default:
                 throw std::exception("Cannot use this operation");
             }
@@ -655,6 +727,8 @@ public:
                 return { conv.first, new uint32_t(*((uint32_t*)conv.second.first) * *((uint32_t*)conv.second.second)) };
             case ULONG_LITERAL:
                 return { conv.first, new uint64_t(*((uint64_t*)conv.second.first) * *((uint64_t*)conv.second.second)) };
+            case LARGE_LITERAL:
+                return { conv.first, new large(*((large*)conv.second.first) * *((large*)conv.second.second)) };
             default:
                 throw std::exception("Cannot use this operation");
             }
@@ -681,6 +755,8 @@ public:
                 return { conv.first, new uint32_t(*((uint32_t*)conv.second.first) / *((uint32_t*)conv.second.second)) };
             case ULONG_LITERAL:
                 return { conv.first, new uint64_t(*((uint64_t*)conv.second.first) / *((uint64_t*)conv.second.second)) };
+            case LARGE_LITERAL:
+                return { conv.first, new large(*((large*)conv.second.first) / *((large*)conv.second.second)) };
             default:
                 throw std::exception("Cannot use this operation");
             }
@@ -703,6 +779,8 @@ public:
                 return { conv.first, new uint32_t(*((uint32_t*)conv.second.first) % *((uint32_t*)conv.second.second)) };
             case ULONG_LITERAL:
                 return { conv.first, new uint64_t(*((uint64_t*)conv.second.first) % *((uint64_t*)conv.second.second)) };
+            case LARGE_LITERAL:
+                return { conv.first, new large(*((large*)conv.second.first) % *((large*)conv.second.second)) };
             default:
                 throw std::exception("Cannot use this operation");
             }
@@ -775,6 +853,8 @@ public:
                 return { BOOL_LITERAL, new bool(*((uint32_t*)conv.second.first) < *((uint32_t*)conv.second.second)) };
             case ULONG_LITERAL:
                 return { BOOL_LITERAL, new bool(*((uint64_t*)conv.second.first) < *((uint64_t*)conv.second.second)) };
+            case LARGE_LITERAL:
+                return { conv.first, new large(*((large*)conv.second.first) < *((large*)conv.second.second)) };
             default:
                 throw std::exception("Cannot use this operation");
             }
@@ -803,6 +883,8 @@ public:
                 return { BOOL_LITERAL, new bool(*((uint32_t*)conv.second.first) <= *((uint32_t*)conv.second.second)) };
             case ULONG_LITERAL:
                 return { BOOL_LITERAL, new bool(*((uint64_t*)conv.second.first) <= *((uint64_t*)conv.second.second)) };
+            case LARGE_LITERAL:
+                return { conv.first, new large(*((large*)conv.second.first) <= *((large*)conv.second.second)) };
             default:
                 throw std::exception("Cannot use this operation");
             }
@@ -831,6 +913,8 @@ public:
                 return { BOOL_LITERAL, new bool(*((uint32_t*)conv.second.first) > *((uint32_t*)conv.second.second)) };
             case ULONG_LITERAL:
                 return { BOOL_LITERAL, new bool(*((uint64_t*)conv.second.first) > *((uint64_t*)conv.second.second)) };
+            case LARGE_LITERAL:
+                return { conv.first, new large(*((large*)conv.second.first) > *((large*)conv.second.second)) };
             default:
                 throw std::exception("Cannot use this operation");
             }
@@ -859,6 +943,8 @@ public:
                 return { BOOL_LITERAL, new bool(*((uint32_t*)conv.second.first) >= *((uint32_t*)conv.second.second)) };
             case ULONG_LITERAL:
                 return { BOOL_LITERAL, new bool(*((uint64_t*)conv.second.first) >= *((uint64_t*)conv.second.second)) };
+            case LARGE_LITERAL:
+                return { conv.first, new large(*((large*)conv.second.first) >= *((large*)conv.second.second)) };
             default:
                 throw std::exception("Cannot use this operation");
             }
@@ -887,6 +973,8 @@ public:
                 return { BOOL_LITERAL, new bool(*((uint32_t*)conv.second.first) == *((uint32_t*)conv.second.second)) };
             case ULONG_LITERAL:
                 return { BOOL_LITERAL, new bool(*((uint64_t*)conv.second.first) == *((uint64_t*)conv.second.second)) };
+            case LARGE_LITERAL:
+                return { conv.first, new large(*((large*)conv.second.first) == *((large*)conv.second.second)) };
             default:
                 throw std::exception("Cannot use this operation");
             }
@@ -915,6 +1003,8 @@ public:
                 return { BOOL_LITERAL, new bool(*((uint32_t*)conv.second.first) != *((uint32_t*)conv.second.second)) };
             case ULONG_LITERAL:
                 return { BOOL_LITERAL, new bool(*((uint64_t*)conv.second.first) != *((uint64_t*)conv.second.second)) };
+            case LARGE_LITERAL:
+                return { conv.first, new large(*((large*)conv.second.first) != *((large*)conv.second.second)) };
             default:
                 throw std::exception("Cannot use this operation");
             }
@@ -1033,7 +1123,7 @@ public:
                 throw std::exception("Cannot use this operation");
             }
         }
-        else if (operation == "&&") {
+        else if (operation == "||") {
             switch (conv.first) {
             case BOOL_LITERAL:
                 return { BOOL_LITERAL, new bool(*((bool*)conv.second.first) || *((bool*)conv.second.second)) };
@@ -1128,6 +1218,12 @@ public:
                 ident->value = new uint64_t(val);
                 return { ADDRESS, ident };
             }
+            case LARGE_LITERAL: {
+                auto val = *((large*)op.second);
+                ++val;
+                ident->value = new large(val);
+                return { ADDRESS, ident };
+            }
             }
         }
         else if (operation == "--") {
@@ -1186,6 +1282,12 @@ public:
                 ident->value = new uint64_t(val);
                 return { ADDRESS, ident };
             }
+            case LARGE_LITERAL: {
+                auto val = *((large*)op.second);
+                --val;
+                ident->value = new large(val);
+                return { ADDRESS, ident };
+            }
             }
         }
         else if (operation == "+") {
@@ -1209,6 +1311,9 @@ public:
                 return { op.first, new long long(-*((long long*)op.second)) };
             case SHORT_LITERAL:
                 return { op.first, new short(-*((short*)op.second)) };
+            case LARGE_LITERAL: {
+                return { op.first, new large(large(0) - *((large*)op.second))};
+            }
             }
         }
         else if (operation == "!") {
@@ -1302,6 +1407,7 @@ public:
             case ULONG_LITERAL:
             case ADDRESS:
             case STACK_PLUG:
+            case LARGE_LITERAL:
             case POINTER: {
                 st.push(global_lexes[p]);
                 ++p;
@@ -1379,6 +1485,8 @@ public:
                     st.push({ PolizType::UINT_LITERAL, new uint32_t(std::stoll(val.first)) });
                 } else if (val.second.expr_type == ExprType::ULong) {
                     st.push({ PolizType::ULONG_LITERAL, new uint64_t(std::stoll(val.first)) });
+                } else if (val.second.expr_type == ExprType::Large) {
+                    st.push({ PolizType::LARGE_LITERAL, new large(val.first) });
                 }
                 ++p;
                 break;
@@ -1434,8 +1542,14 @@ public:
             case RAND: {
                 throw std::exception("rand() function is restricted in the global scope");
             }
+            case STRLEN: {
+                throw std::exception("strlen() function is restricted in the global scope");
+            }
             case CALL: {
                 throw std::exception("function calls are restricted in the global scope");
+            }
+            case TIME: {
+                throw std::exception("time() function is restricted in the global scope");
             }
             default:
                 auto op2 = st.top();
@@ -1508,6 +1622,7 @@ public:
             case ULONG_LITERAL:
             case ADDRESS:
             case STACK_PLUG:
+            case LARGE_LITERAL:
             case POINTER: {
                 st.push(lexes[p]);
                 ++p;
@@ -1585,6 +1700,8 @@ public:
                     st.push({ PolizType::UINT_LITERAL, new uint32_t(std::stoll(val.first)) });
                 } else if (val.second.expr_type == ExprType::ULong) {
                     st.push({ PolizType::ULONG_LITERAL, new uint64_t(std::stoll(val.first)) });
+                } else if (val.second.expr_type == ExprType::Large) {
+                    st.push({ PolizType::LARGE_LITERAL, new large(val.first) });
                 }
                 ++p;
                 break;
@@ -1731,6 +1848,20 @@ public:
                 ++p;
                 break;
             }
+            case STRLEN: {
+                auto op = st.top();
+                st.pop();
+                auto conv = convert(op, PolizType::STRING_LITERAL);
+                st.push({ PolizType::INT_LITERAL, new int(((std::string*)conv)->size()) });
+                ++p;
+                break;
+            }
+            case TIME: {
+                const auto p1 = std::chrono::system_clock::now();
+                st.push({ PolizType::LONG_LITERAL, new long long(std::chrono::duration_cast<std::chrono::seconds>(p1.time_since_epoch()).count()) });
+                ++p;
+                break;
+            }
             default:
                 auto op2 = st.top();
                 st.pop();
@@ -1778,6 +1909,7 @@ bool is_convertible(Type first, Type second, bool is_func = false) {
     case Short:
     case UShort:
     case Byte:
+    case Large:
         return second.expr_type != ExprType::Bool && second.expr_type != ExprType::String && second.expr_type != ExprType::Void && second.expr_type != ExprType::Unknown;
     case String:
         return second.expr_type == ExprType::String;
@@ -1790,7 +1922,7 @@ bool is_convertible(Type first, Type second, bool is_func = false) {
 }
 
 Type calc_expr_type(Type first, Type second) {
-    if (!is_convertible(first, second)) return Type();
+    if (!::is_convertible(first, second)) return Type();
     if (type_prior[first.expr_type] >= type_prior[second.expr_type])
         return first;
     else
@@ -1827,6 +1959,8 @@ std::string type_to_string(Type type) {
         return (std::string)"byte" + (type.is_array ? "[" + std::to_string(type.array_size) + "]" : "");
     case String:
         return (std::string)"string" + (type.is_array ? "[" + std::to_string(type.array_size) + "]" : "");
+    case Large:
+        return (std::string)"large" + (type.is_array ? "[" + std::to_string(type.array_size) + "]" : "");
     case Void:
         return (std::string)"void" + (type.is_array ? "[" + std::to_string(type.array_size) + "]" : "");
     case Unknown:
@@ -1898,7 +2032,7 @@ Function get_function(std::string name, std::vector<Type> params) {
         bool flag = true;
         for (int i = 0; i < params.size(); ++i) {
             if (params[i].expr_type != u.first.identifiers[i].expr_type) {
-                if (!is_convertible(params[i], u.first.identifiers[i], true)) {
+                if (!::is_convertible(params[i], u.first.identifiers[i], true)) {
                     flag = false;
                     break;
                 } else {
@@ -1971,9 +2105,11 @@ void print_statement(LexicalAnalyzer& lex);
 void exit_statement(LexicalAnalyzer& lex);
 void convert_statement(LexicalAnalyzer& lex);
 void rand_statement(LexicalAnalyzer& lex);
+void strlen_statement(LexicalAnalyzer& lex);
+void time_statement(LexicalAnalyzer& lex);
 
 std::vector<std::string> service_types = { "bool", "char", "byte", "double", "udouble", "float", "ufloat", "int", "uint", "long",
-        "ulong", "short", "ushort", "string" };
+        "ulong", "short", "ushort", "string", "large" };
 
 int function_params_pref = 0;
 bool is_in_function_header = false, was_function_assign = false;
@@ -2088,7 +2224,7 @@ void var_definition(LexicalAnalyzer& lex) {
         current_token = lex.get_token();
         prog.put_lex({ PolizType::ADDRESS, ident });
         expression(lex, true);
-        if (!is_convertible(exprs.top().first, ident->type))
+        if (!::is_convertible(exprs.top().first, ident->type))
             throw std::exception(("Cannot convert " + type_to_string(exprs.top().first) + " to " + type_to_string(ident->type)).c_str());
         exprs.pop();
         prog.put_lex({ PolizType::ASSIGN, new std::string("=")});
@@ -2147,7 +2283,7 @@ void var_definitions(LexicalAnalyzer& lex, bool need_semicolon, bool is_program)
         expression(lex, true);
         prog.put_lex({ PolizType::ASSIGN, new std::string("=")});
 
-        if (!is_convertible(exprs.top().first, ident->type))
+        if (!::is_convertible(exprs.top().first, ident->type))
             throw std::exception(("Cannot convert " + type_to_string(exprs.top().first) + " to " + type_to_string(ident->type)).c_str());
         exprs.pop();
     } else {
@@ -2182,7 +2318,7 @@ void var_definitions(LexicalAnalyzer& lex, bool need_semicolon, bool is_program)
             expression(lex, true);
             prog.put_lex({ PolizType::ASSIGN, new std::string("=")});
 
-            if (!is_convertible(exprs.top().first, ident->type))
+            if (!::is_convertible(exprs.top().first, ident->type))
                 throw std::exception(("Cannot convert " + type_to_string(exprs.top().first) + " to " + type_to_string(ident->type)).c_str());
             exprs.pop();
         } else {
@@ -2335,23 +2471,23 @@ void expression(LexicalAnalyzer& lex, bool is_vars, bool is_print) {
 bool check_operation(Type f, Type s, std::string operation) {
     auto first = f.expr_type, second = s.expr_type;
     if (operation == ">>" || operation == "<<" || operation == "~" || operation == "|" || operation == "&" || operation == "^" || operation == "->")
-        if (first == ExprType::Double || first == ExprType::Float || second == ExprType::Double || second == ExprType::Float)
+        if (first == ExprType::Double || first == ExprType::Float || second == ExprType::Double || second == ExprType::Float || second == ExprType::Large)
             return false;
     if (operation == "+")
-        return first != ExprType::Bool && is_convertible(f, s);
+        return first != ExprType::Bool && ::is_convertible(f, s);
     if (operation == "-" || operation == "*" || operation == "/" || operation == ">>" || operation == "<<" || operation == "<" || operation == "<=" ||
         operation == ">" || operation == ">=")
-        return first != ExprType::Bool && first != ExprType::String && is_convertible(f, s);
+        return first != ExprType::Bool && first != ExprType::String && ::is_convertible(f, s);
     if (operation == "%")
         return first != ExprType::Bool && first != ExprType::String && first != ExprType::Float && first != ExprType::UFloat && 
         first != ExprType::Double && first != ExprType::UDouble && second != ExprType::Float && second != ExprType::UFloat &&
-        second != ExprType::Double && second != ExprType::UDouble && is_convertible(f, s);
+        second != ExprType::Double && second != ExprType::UDouble && ::is_convertible(f, s);
     if (operation == "&" || operation == "^" || operation == "|" || operation == "->" || operation == "~")
-        return first != ExprType::String && is_convertible(f, s);
+        return first != ExprType::String && ::is_convertible(f, s);
     if (operation == "=" || operation == "==" || operation == "!=")
-        return is_convertible(f, s);
+        return ::is_convertible(f, s);
     if (operation == "||" || operation == "&&")
-        return first == ExprType::Bool && is_convertible(f, s);
+        return first == ExprType::Bool && ::is_convertible(f, s);
     return false;
 }
 
@@ -2678,9 +2814,13 @@ void field(LexicalAnalyzer& lex, bool only_array) {
             convert_statement(lex);
             if (current_token.value == "[")
                 throw std::exception("Cannot apply operator [] to rvalue string");
-        } else if (current_token.value == "rand") {
+        } else if (current_token.value == "rand")
             rand_statement(lex);
-        } else
+        else if (current_token.value == "strlen")
+            strlen_statement(lex);
+        else if (current_token.value == "time")
+            time_statement(lex);
+        else
             throw std::exception("Invalid token: identifier expected");
         return;
     }
@@ -2699,7 +2839,7 @@ void field(LexicalAnalyzer& lex, bool only_array) {
 
             prog.put_lex({ PolizType::ADDRESS, ident });
             expression(lex, true);
-            if (!is_convertible(exprs.top().first, Type(ExprType::Long, false, false)))
+            if (!::is_convertible(exprs.top().first, Type(ExprType::Long, false, false)))
                 throw std::exception("Cannot access index that is not an integer");
             if (ident->type.is_array)
                 prog.put_lex({ PolizType::GETARR, new std::string("[]") });
@@ -2717,7 +2857,7 @@ void field(LexicalAnalyzer& lex, bool only_array) {
                 current_token = lex.get_token();
                 expression(lex, true);
                 prog.put_lex({ PolizType::GETSTR, new std::string("[]") });
-                if (!is_convertible(exprs.top().first, Type(ExprType::Long, false, false)))
+                if (!::is_convertible(exprs.top().first, Type(ExprType::Long, false, false)))
                     throw std::exception("Cannot access index that is not an integer");
                 exprs.pop();
                 if (current_token.value != "]")
@@ -2762,7 +2902,7 @@ void field(LexicalAnalyzer& lex, bool only_array) {
                     prog.put_lex({ PolizType::GETARR, new std::string("[]") });
                 else
                     prog.put_lex({ PolizType::GETSTR, new std::string("[]") });
-                if (!is_convertible(exprs.top().first, Type(ExprType::Long, false, false)))
+                if (!::is_convertible(exprs.top().first, Type(ExprType::Long, false, false)))
                     throw std::exception("Cannot access index that is not an integer");
                 exprs.pop();
                 current_token = lex.get_token();
@@ -2775,7 +2915,7 @@ void field(LexicalAnalyzer& lex, bool only_array) {
                     current_token = lex.get_token();
                     expression(lex, true);
                     prog.put_lex({ PolizType::GETSTR, new std::string("[]") });
-                    if (!is_convertible(exprs.top().first, Type(ExprType::Long, false, false)))
+                    if (!::is_convertible(exprs.top().first, Type(ExprType::Long, false, false)))
                         throw std::exception("Cannot access index that is not an integer");
                     exprs.pop();
                     if (current_token.value != "]")
@@ -2899,11 +3039,11 @@ void return_statement(LexicalAnalyzer& lex) {
         expression(lex);
         auto type = exprs.top().first;
         exprs.pop();
-        if (!is_convertible(type, current_function))
+        if (!::is_convertible(type, current_function))
             throw std::exception(("Cannot cast " + type_to_string(type) + " type to " + type_to_string(current_function)).c_str());
         prog.put_lex({ PolizType::RET, nullptr });
     } else {
-        if (!is_convertible(Type(ExprType::Void, false, false), current_function))
+        if (!::is_convertible(Type(ExprType::Void, false, false), current_function))
             throw std::exception("The function requires a return value.");
         prog.put_lex({ PolizType::NORET, nullptr });
     }
@@ -3067,7 +3207,7 @@ void switch_statement(LexicalAnalyzer& lex) {
             }
             if (cases.count(val) != 0)
                 throw std::exception(("The case " + current_token.value + " has already been described above").c_str());
-            if (!is_convertible(literal_to_type(lex), curr_type))
+            if (!::is_convertible(literal_to_type(lex), curr_type))
                 throw std::exception(("Cannot cast " + type_to_string(literal_to_type(lex)) + " type to " + type_to_string(curr_type)).c_str());
 
             cases.insert(val);
@@ -3272,6 +3412,22 @@ void exit_statement(LexicalAnalyzer& lex) {
     current_token = lex.get_token();
 }
 
+void strlen_statement(LexicalAnalyzer& lex) {
+    current_token = lex.get_token();
+    if (current_token.value != "(")
+        throw std::exception("Invalid token: '(' expected");
+    current_token = lex.get_token();
+    expression(lex);
+    if (exprs.top().first.expr_type != ExprType::String)
+        throw std::exception("Invalid operand: cannot use strlen function with not a string");
+    exprs.pop();
+    exprs.push({ Type(ExprType::Int, false, false), false });
+    prog.put_lex({ PolizType::STRLEN, nullptr });
+    if (current_token.value != ")")
+        throw std::exception("Invalid token: ')' expected");
+    current_token = lex.get_token();
+}
+
 void convert_statement(LexicalAnalyzer& lex) {
     current_token = lex.get_token();
     if (current_token.value != "(")
@@ -3301,6 +3457,18 @@ void rand_statement(LexicalAnalyzer& lex) {
     current_token = lex.get_token();
     prog.put_lex({ PolizType::RAND, nullptr });
     exprs.push({ Type(ExprType::Int, false, false), false });
+}
+
+void time_statement(LexicalAnalyzer& lex) {
+    current_token = lex.get_token();
+    if (current_token.value != "(")
+        throw std::exception("Invalid token: '(' expected");
+    current_token = lex.get_token();
+    if (current_token.value != ")")
+        throw std::exception("Invalid token: ')' expected");
+    current_token = lex.get_token();
+    prog.put_lex({ PolizType::TIME, nullptr });
+    exprs.push({ Type(ExprType::Long, false, false), false });
 }
 
 int main(int argc, char* argv[]) {

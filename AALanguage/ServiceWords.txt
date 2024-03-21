@@ -28,3 +28,6 @@ print
 readln
 convert
 rand
+large
+strlen
+time

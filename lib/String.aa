@@ -1,0 +1,82 @@
+string substr(string s, int start, int len = -1) {
+    int n = strlen(s);
+    if (start >= n || len > n - start || start < 0) return "";
+    if (len == -1) len = n - start;
+    string res = "";
+    for(int i = 0; i < len; ++i) {
+        res += convert(s[i + start], string);
+    }
+    return res;
+}
+
+bool contains(string source, string s) {
+    int n = strlen(source), m = strlen(s);
+    for(int i = 0; i < n - m + 1; ++i) {
+        if (substr(source, i, m) == s)
+            return true;
+    }
+    return false;
+}
+
+bool starts_with(string source, string s) {
+    int n = strlen(source), m = strlen(s);
+    return substr(source, 0, m) == s;
+}
+
+bool ends_with(string source, string s) {
+    int n = strlen(source), m = strlen(s);
+    return substr(source, n - m, m) == s;
+}
+
+int index_of(string source, char c) {
+    int n = strlen(source);
+    for(int i = 0; i < n; ++i) {
+        if (source[i] == c) return i;
+    }
+    return -1;
+}
+
+int index_of(string source, string s) {
+    int n = strlen(source), m = strlen(s);
+    for(int i = 0; i < n; ++i) {
+        if (substr(source, i, m) == s) return i;
+    }
+    return -1;
+}
+
+int last_index_of(string source, char c) {
+    int n = strlen(source);
+    for(int i = n - 1; i >= 0; --i) {
+        if (source[i] == c) return i;
+    }
+    return -1;
+}
+
+int last_index_of(string source, string s) {
+    int n = strlen(source), m = strlen(s);
+    for(int i = n - 1; i >= 0; --i) {
+        if (substr(source, i, m) == s) return i;
+    }
+    return -1;
+}
+
+string str_insert(string source, string s, int ind) {
+    int n = strlen(source), m = strlen(s);
+    if (ind >= n) return source;
+    return substr(source, 0, ind) + s + substr(source, ind);
+}
+
+string str_remove(string source, int ind) {
+    int n = strlen(source);
+    if (ind >= n) return source;
+    return substr(source, 0, ind) + substr(source, ind + 1);
+}
+
+string str_replace(string source, string from, string to) {
+    int n = strlen(from), m = strlen(to), str = strlen(source);
+    int ind;
+    while (ind = index_of(source, from), ind != -1) {
+        source = substr(source, 0, ind) + to + substr(source, ind + n);
+    }
+    return source;
+}
