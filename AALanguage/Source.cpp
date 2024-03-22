@@ -2182,6 +2182,7 @@ void program_body(LexicalAnalyzer& lex) {
 }
 
 void init_array(ExprType type, int size, void*& value, std::string name) {
+    if (size > 5e5) throw std::exception("Array size cannot be bigger than 5e5");
     std::vector<Identifier*>* arr = new std::vector<Identifier*>();
     for (int i = 0; i < size; ++i) {
         arr->push_back(new Identifier(name + "[" + std::to_string(i) + "]", Type(type, false, false), nullptr));
