@@ -1420,7 +1420,7 @@ public:
                     throw std::exception("Cannot access the element of an uninitialized array");
                 auto var = (std::vector<void*>*)((Identifier*)st.top().second)->value;
                 st.pop();
-                if (var->size() <= ind)
+                if (var->size() <= ind || ind < 0)
                     throw std::exception("Array index out of range");
                 st.push({ PolizType::ADDRESS, var->operator[](ind) });
                 ++p;
@@ -1434,7 +1434,7 @@ public:
                 auto var = (std::string*)((Identifier*)st.top().second)->value;
                 auto name = ((Identifier*)st.top().second)->name;
                 st.pop();
-                if (var->size() <= ind)
+                if (var->size() <= ind || ind < 0)
                     throw std::exception("String index out of range");
                 auto ptr = new Identifier(name + "[" + std::to_string(ind) + "]", Type(ExprType::Char, false, false), nullptr);
                 ptr->value = &(var->operator[](ind));
@@ -2183,6 +2183,7 @@ void program_body(LexicalAnalyzer& lex) {
 
 void init_array(ExprType type, int size, void*& value, std::string name) {
     if (size > 5e5) throw std::exception("Array size cannot be bigger than 5e5");
+    if (size <= 0) throw std::exception("Array size cannot be less than 1");
     std::vector<Identifier*>* arr = new std::vector<Identifier*>();
     for (int i = 0; i < size; ++i) {
         arr->push_back(new Identifier(name + "[" + std::to_string(i) + "]", Type(type, false, false), nullptr));
