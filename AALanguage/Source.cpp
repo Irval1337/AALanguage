@@ -1,8 +1,23 @@
 #include <iostream>
 #include "Analyzer.h"
 
+//! Define used for testing on the developer's machine
 #define TESTING_MODE
 
+/**
+* @brief Entry point
+*
+* Execution of the program starts here. 
+* 
+* Command line startup arguments: aalanguage.exe 'path' 'lib_path'
+* - 'path' - path to the source code file
+* - 'lib_path' - path to the directory with built-in libraries
+* 
+* @param argc Number of arguments
+* @param argv List of arguments
+*
+* @return Program exit status
+*/
 int main(int argc, char* argv[]) {
     std::string path, lib_path;
 #ifndef TESTING_MODE
