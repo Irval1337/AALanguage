@@ -42,20 +42,6 @@ void Poliz::blank() {
 int Poliz::get_size() {
     return lexes.size();
 }
-void Poliz::print() {
-    for (int i = 0; i < lexes.size(); ++i) {
-        if (lexes[i].first == Poliz::PolizType::ADDRESS) {
-            std::cout << ((Identifier*)lexes[i].second)->name << " ";
-            continue;
-        }
-        if (lexes[i].first == Poliz::PolizType::POINTER) {
-            std::cout << *((int*)lexes[i].second) << " ";
-            continue;
-        }
-        if (lexes[i].second != nullptr)
-            std::cout << *((std::string*)lexes[i].second) << " ";
-    }
-}
 void* Poliz::convert(std::pair<Poliz::PolizType, void*> op, Poliz::PolizType to) {
     if (op.first == Poliz::PolizType::ADDRESS)
         op = address_to_value(op.second);
