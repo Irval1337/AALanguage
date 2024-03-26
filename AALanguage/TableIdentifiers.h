@@ -8,7 +8,7 @@ enum ExprType {
 	Bool, Char, Double, UDouble, Float, UFloat, Int, UInt, Long, ULong, Short, UShort, Byte, String, Void, Large, Unknown
 };
 
-int type_prior[17] = { 0, 1, 11, 12, 7, 8, 5, 6, 9, 10, 3, 4, 2, 0, 0, 13, 0 };
+static int type_prior[17] = { 0, 1, 11, 12, 7, 8, 5, 6, 9, 10, 3, 4, 2, 0, 0, 13, 0 };
 
 struct Type {
 	ExprType expr_type;

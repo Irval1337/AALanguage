@@ -127,7 +127,12 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Analyzer.cpp" />
+    <ClCompile Include="Large.cpp" />
     <ClCompile Include="LexicalAnalyzer.cpp" />
+    <ClCompile Include="LibParser.cpp" />
+    <ClCompile Include="Poliz.cpp" />
+    <ClCompile Include="Semantic.cpp" />
     <ClCompile Include="Source.cpp" />
     <ClCompile Include="Trie.cpp" />
   </ItemGroup>
@@ -135,9 +140,12 @@
     <Text Include="ServiceWords.txt" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Analyzer.h" />
     <ClInclude Include="Large.h" />
     <ClInclude Include="LexicalAnalyzer.h" />
     <ClInclude Include="LibParser.h" />
+    <ClInclude Include="Poliz.h" />
+    <ClInclude Include="Semantic.h" />
     <ClInclude Include="TableIdentifiers.h" />
     <ClInclude Include="Trie.h" />
   </ItemGroup>
