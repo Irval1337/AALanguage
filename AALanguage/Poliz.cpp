@@ -1,5 +1,14 @@
 #include "Poliz.h"
 
+std::string Poliz::ReplaceAll(std::string str, const std::string& from, const std::string& to) {
+    size_t start_pos = 0;
+    while ((start_pos = str.find(from, start_pos)) != std::string::npos) {
+        str.replace(start_pos, from.length(), to);
+        start_pos += to.length(); // Handles case where 'to' is a substring of 'from'
+    }
+    return str;
+}
+
 ExprType Poliz::string_to_type(std::string str) {
     if (str == "double") return ExprType::Double;
     if (str == "udouble") return ExprType::UDouble;
@@ -566,6 +575,39 @@ std::pair<Poliz::PolizType, void*> Poliz::address_to_value(void* ptr) {
         return { Poliz::PolizType::ULONG_LITERAL, (uint64_t*)(ident->value) };
     case ExprType::Large:
         return { Poliz::PolizType::LARGE_LITERAL, (large*)(ident->value) };
+    default:
+        throw std::exception(("Variable '" + ident->name + "' has unconvertable value").c_str());
+    }
+}
+void* Poliz::copy_value(void* ptr) {
+    Identifier* ident = (Identifier*)ptr;
+    if (ident->value == nullptr)
+        return nullptr;
+    switch (ident->type.expr_type) {
+    case ExprType::Bool:
+        return new bool(*(bool*)(ident->value));
+    case ExprType::Byte:
+        return new uint8_t(*(uint8_t*)(ident->value));
+    case ExprType::Char:
+        return new char(*(char*)(ident->value));
+    case ExprType::Double:
+        return new double(*(double*)(ident->value));
+    case ExprType::Float:
+        return new float(*(float*)(ident->value));
+    case ExprType::Int:
+        return new int(*(int*)(ident->value));
+    case ExprType::Long:
+        return new long long(*(long long*)(ident->value));
+    case ExprType::Short:
+        return new short(*(short*)(ident->value));
+    case ExprType::String:
+        return new std::string(*(std::string*)(ident->value));
+    case ExprType::UInt:
+        return new uint32_t(*(uint32_t*)(ident->value));
+    case ExprType::ULong:
+        return new uint64_t(*(uint64_t*)(ident->value));
+    case ExprType::Large:
+        return new large(*(large*)(ident->value));
     default:
         throw std::exception(("Variable '" + ident->name + "' has unconvertable value").c_str());
     }
@@ -1301,6 +1343,8 @@ void Poliz::call_function(std::stack<std::pair<Poliz::PolizType, void*>>& st, in
     int sz = *(int*)st.top().second;
     st.pop();
     Function* func = (Function*)st.top().second;
+    add_tid_values(func->TID);
+    clear_tid_values(func->TID);
     st.pop();
     p = func->ptr;
     std::stack<std::pair<Poliz::PolizType, void*>> args;
@@ -1323,6 +1367,7 @@ std::pair<Poliz::PolizType, void*> Poliz::execute(Function entry_func) {
     int label_balance = 0;
     st.push({ Poliz::PolizType::STACK_PLUG, nullptr });
     func_calls.push({ lexes.size(), type_to_poliz(entry_func.type.expr_type) });
+    add_tid_values(entry_func.TID);
 
     while (p < global_lexes.size()) {
         switch (global_lexes[p].first) {
@@ -1505,7 +1550,7 @@ std::pair<Poliz::PolizType, void*> Poliz::execute(Function entry_func) {
     p = entry_func.ptr;
 
     while (p < lexes.size()) {
-        if (func_calls.size() > 200000) throw std::exception("Stack overflow");
+        if (func_calls.size() > 1e3) throw std::exception("Stack overflow");
 
         switch (lexes[p].first) {
         case GO: {
@@ -1631,7 +1676,12 @@ std::pair<Poliz::PolizType, void*> Poliz::execute(Function entry_func) {
             } else if (val.second.expr_type == ExprType::Short) {
                 st.push({ Poliz::PolizType::SHORT_LITERAL, new short(std::stoll(val.first)) });
             } else if (val.second.expr_type == ExprType::String) {
-                st.push({ Poliz::PolizType::STRING_LITERAL, new std::string(val.first.substr(1, val.first.size() - 2)) });
+                val.first = val.first.substr(1, val.first.size() - 2);
+                val.first = ReplaceAll(val.first, "\\\"", "\"");
+                val.first = ReplaceAll(val.first, "\\n", "\n");
+                val.first = ReplaceAll(val.first, "\\t", "\t");
+                val.first = ReplaceAll(val.first, "\\0", "\0");
+                st.push({ Poliz::PolizType::STRING_LITERAL, new std::string(val.first) });
             } else if (val.second.expr_type == ExprType::UInt) {
                 st.push({ Poliz::PolizType::UINT_LITERAL, new uint32_t(std::stoll(val.first)) });
             } else if (val.second.expr_type == ExprType::ULong) {
@@ -1700,6 +1750,7 @@ std::pair<Poliz::PolizType, void*> Poliz::execute(Function entry_func) {
             st.push(top);
             p = func_calls.top().first + 1;
             func_calls.pop();
+            restore_tid_values();
             --label_balance;
             break;
         }
@@ -1710,6 +1761,7 @@ std::pair<Poliz::PolizType, void*> Poliz::execute(Function entry_func) {
             st.pop();
             p = func_calls.top().first + 1;
             func_calls.pop();
+            restore_tid_values();
             --label_balance;
             break;
         }
@@ -1811,4 +1863,42 @@ std::pair<Poliz::PolizType, void*> Poliz::execute(Function entry_func) {
     if (!func_calls.empty())
         throw std::exception("The return statement was not called");
     return st.empty() ? std::pair<Poliz::PolizType, void*>(Poliz::PolizType::BLANK, nullptr) : st.top();
+}
+
+void Poliz::add_tid_values(TableIdentifiers* current_tid, bool is_first) {
+    if (is_first) {
+        tid_vals.push(std::vector<std::pair<Identifier*, void*>>());
+        add_tid_values(current_tid, false);
+        return;
+    }
+
+    for (auto& u : current_tid->identifiers) {
+        tid_vals.top().push_back({ u.second, copy_value(u.second) });
+    }
+    for (auto& u : current_tid->children) {
+        add_tid_values(u, false);
+    }
+}
+
+void Poliz::clear_tid_values(TableIdentifiers* current_tid) {
+    for (auto& u : current_tid->identifiers) {
+        if (!u.second->type.is_array)
+            u.second->value = nullptr;
+        else {
+            for (int i = 0; i < u.second->type.array_size; ++i) {
+                ((std::vector<void*>*)u.second->value)->operator[](i) = nullptr;
+            }
+        }
+    }
+    for (auto& u : current_tid->children) {
+        clear_tid_values(u);
+    }
+}
+
+void Poliz::restore_tid_values() {
+    auto top = tid_vals.top();
+    tid_vals.pop();
+    for (auto& u : top) {
+        u.first->value = u.second;
+    }
 }

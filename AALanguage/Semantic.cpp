@@ -22,6 +22,7 @@ ExprType Semantic::string_to_type(std::string str) {
 
 bool Semantic::is_convertible(Type first, Type second, bool is_func) {
     if (first.is_array != second.is_array || !is_func && first.array_size != second.array_size) return false;
+    if (first == second) return true;
     switch (first.expr_type) {
     case Bool:
         return second.expr_type == ExprType::Bool;
@@ -143,7 +144,7 @@ void Semantic::create_function(std::string name, Type type, int pref, std::vecto
     for (auto& u : tid->identifiers) {
         idents.push_back(u.second->type);
     }
-    Function f = Function(name, type, idents, inits, ptrs, ptr, pref);
+    Function f = Function(name, type, tid, idents, inits, ptrs, ptr, pref);
     if (funcs.count(f) != 0)
         throw std::exception(("Function '" + f.name + "' was already declared in the current scope").c_str());
     funcs[f] = tid;

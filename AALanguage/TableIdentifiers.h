@@ -157,10 +157,12 @@ struct Function {
 	std::vector<Identifier*> params_ptrs;
 	//! Offset address of the function header in the internal program representation.
 	int ptr;
+	//! Function TID pointer.
+	TableIdentifiers* TID;
 	/**
 	* @brief A constructor that specifies the public fields of the type.
 	*/
-	Function(std::string name_, Type type_, std::vector<Type> identifiers_, std::vector<int> params_init_, std::vector<Identifier*> params_ptrs_,
+	Function(std::string name_, Type type_, TableIdentifiers* tid_, std::vector<Type> identifiers_, std::vector<int> params_init_, std::vector<Identifier*> params_ptrs_,
 		int ptr_, int not_default_pref_ = 0) {
 		name = name_;
 		type = type_;
@@ -169,6 +171,7 @@ struct Function {
 		ptr = ptr_;
 		params_init = params_init_;
 		params_ptrs = params_ptrs_;
+		TID = tid_;
 	}
 	/**
 	* @brief Type comparison operator.

@@ -74,6 +74,15 @@ public:
     * @return Token with the type corresponding to the current value of the variable.
     */
     std::pair<PolizType, void*> address_to_value(void* ptr);
+
+    /**
+    * @brief Copies and returns the current value of the variable.
+    *
+    * @param ptr A pointer that is part of a token of type ADDRESS.
+    *
+    * @return Pointer to the copied value.
+    */
+    void* copy_value(void* ptr);
     /**
     * @brief Converts ExprType to a valid PolizType.
     *
@@ -135,8 +144,13 @@ private:
     int literal_prior[12] = { 0, 2, 1, 11, 7, 5, 9, 3, 0, 6, 10, 12 };
     std::stack<std::pair<int, PolizType>> func_calls;
     std::vector<std::pair<PolizType, void*>> global_lexes;
+    std::stack<std::vector<std::pair<Identifier*, void*>>> tid_vals;
     std::mt19937 rnd;
     Type* current_function;
 
     ExprType string_to_type(std::string str);
+    std::string ReplaceAll(std::string str, const std::string& from, const std::string& to);
+    void add_tid_values(TableIdentifiers* current_tid, bool is_first = true);
+    void clear_tid_values(TableIdentifiers* current_tid);
+    void restore_tid_values();
 };

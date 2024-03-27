@@ -322,6 +322,7 @@ check_function_brace:
         current_token = lex.get_token();
         if (func_type.expr_type == ExprType::Void)
             prog.put_lex({ Poliz::PolizType::NORET, nullptr });
+        semantic.current_function = Type();
         may_be_semicolon(lex);
     } else {
         parameter_list(lex);
