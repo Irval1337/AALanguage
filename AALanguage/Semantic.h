@@ -74,6 +74,8 @@ public:
     void create_table(bool new_func = false);
     /**
     * @brief Creates a new function and adds it to the TID of functions.
+    * 
+    * Before adding a function to the hash table, it checks if the same hash exists. If an identical function was added earlier, it raises an exception.
     *
     * @param name Function name
     * @param type Returnable type

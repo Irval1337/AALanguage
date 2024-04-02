@@ -145,19 +145,19 @@ struct TableIdentifiers {
 struct Function {
 	//! Function name
 	std::string name;
-	//! Function parameter prefix without default value.
+	//! Function parameter prefix without default value
 	int not_default_pref = 0;
-	//! Return type of the function.
+	//! Return type of the function
 	Type type;
-	//! Identifiers types for function parameters.
+	//! Identifiers types for function parameters
 	std::vector<Type> identifiers;
-	//! Initialization addresses of each parameter in the internal program view.
+	//! Initialization addresses of each parameter in the internal program view
 	std::vector<int> params_init;
-	//! A vector-array of pointers to the Identifier of each argument.
+	//! A vector-array of pointers to the Identifier of each argument
 	std::vector<Identifier*> params_ptrs;
-	//! Offset address of the function header in the internal program representation.
+	//! Offset address of the function header in the internal program representation
 	int ptr;
-	//! Function TID pointer.
+	//! Function TID pointer
 	TableIdentifiers* TID;
 	/**
 	* @brief A constructor that specifies the public fields of the type.
@@ -178,7 +178,7 @@ struct Function {
 	*
 	* Compares the names of functions and the types of all their parameters..
 	*
-	* @param other Another function to compare.
+	* @param other Another function to compare
 	*/
 	bool operator==(const Function& f) const {
 		if (identifiers.size() != f.identifiers.size()) return false;
@@ -199,7 +199,7 @@ public:
 	*
 	* Hashes the types of the function arguments and the function name.
 	*
-	* @param f Function for hashing.
+	* @param f Function for hashing
 	* 
 	* @return Hash value in unsigned size_t type.
 	*/

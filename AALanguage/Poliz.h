@@ -74,7 +74,6 @@ public:
     * @return Token with the type corresponding to the current value of the variable.
     */
     std::pair<PolizType, void*> address_to_value(void* ptr);
-
     /**
     * @brief Copies and returns the current value of the variable.
     *
@@ -115,7 +114,7 @@ public:
     /**
     * @brief Executes a function call subject to stack constraint (recursion depth 5*10^5).
     * 
-    * The CALL token is used to determine how many parameters will have the specified value and how many will receive the default value.
+    * The CALL token is used to determine how many parameters will have the specified value and how many will receive the default value. For this prefix, sets the values in the TID of the function and changes the pointer to the current instruction.
     *
     * @param st Reference to the stack of expression calculation results,
     * @param p Reference to an integer offset pointer in internal representation
@@ -123,6 +122,8 @@ public:
     void call_function(std::stack<std::pair<PolizType, void*>>& st, int& p);
     /**
     * @brief The main function that performs a walkthrough of the POLIZ token array.
+    * 
+    * Each instruction is analyzed according to its POLIZ type.
     *
     * @param entry_func The function that is the entry point of the program. By default it has the name main.
     *
