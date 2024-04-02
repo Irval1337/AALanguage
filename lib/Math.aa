@@ -23,7 +23,7 @@ double sqrt(double x) {
     return L;
 }
 
-double cqrt(double x) {
+double cbrt(double x) {
     double L = 0, R = x, M;
     for(int iters = 0; iters < 100; ++iters) {
         M = L + (R - L) / 2;
