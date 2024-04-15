@@ -1,12 +1,12 @@
 <br/>
-<p align="center">
+<p align="left">
   <a href="https://github.com/Irval1337/AALanguage">
     <img src="https://i.ibb.co/qxj6LjS/o2p5rr-Qap-Uo.jpg" alt="Logo" width="80" height="80">
   </a>
 
-  <h3 align="center">AALanguage</h3>
+  <h3 align="left">AALanguage</h3>
 
-  <p align="center">
+  <p align="left">
     The best programming language for people with intellectual disabilities
     <br/>
     <br/>
@@ -16,6 +16,8 @@
     <a href="https://github.com/Irval1337/AALanguage/issues">Report Bug</a>
     .
     <a href="https://github.com/Irval1337/AALanguage/issues">Request Feature</a>
+    .
+    <a href="https://opposite-tin-24d.notion.site/AA-Language-ab1732d997b8481c929405af68cf7988">Formal grammar</a>
   </p>
 </p>
 
