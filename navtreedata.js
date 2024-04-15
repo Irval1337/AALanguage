@@ -24,36 +24,12 @@
 */
 var NAVTREE =
 [
-  [ "AALanguage", "index.html", [
-    [ "Deprecated List", "deprecated.html", null ],
-    [ "Classes", "annotated.html", [
-      [ "Class List", "annotated.html", "annotated_dup" ],
-      [ "Class Index", "classes.html", null ],
-      [ "Class Members", "functions.html", [
-        [ "All", "functions.html", "functions_dup" ],
-        [ "Functions", "functions_func.html", null ],
-        [ "Variables", "functions_vars.html", null ],
-        [ "Enumerations", "functions_enum.html", null ],
-        [ "Enumerator", "functions_eval.html", null ]
-      ] ]
-    ] ],
-    [ "Files", "files.html", [
-      [ "File List", "files.html", "files_dup" ],
-      [ "File Members", "globals.html", [
-        [ "All", "globals.html", null ],
-        [ "Functions", "globals_func.html", null ],
-        [ "Enumerations", "globals_enum.html", null ],
-        [ "Enumerator", "globals_eval.html", null ],
-        [ "Macros", "globals_defs.html", null ]
-      ] ]
-    ] ]
-  ] ]
+  [ "AALanguage", "index.html", ]
 ];
 
 var NAVTREEINDEX =
 [
-"_analyzer_8cpp.html",
-"class_semantic.html#a7d94c35dce3537ff73935e488298963b"
+"index.html"
 ];
 
 var SYNCONMSG = 'click to disable panel synchronisation';

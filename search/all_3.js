@@ -1,28 +1,4 @@
 var searchData=
 [
-  ['calc_5fexpr_5ftype_0',['calc_expr_type',['../class_semantic.html#a5ea7293b070e649f41f6cfd5873a7437',1,'Semantic']]],
-  ['call_1',['CALL',['../class_poliz.html#a0ffbb08ddda8c76e41b71b9d880668cba0f652a3cb3f14cb8e30fb16bb13caddf',1,'Poliz']]],
-  ['call_5ffunction_2',['call_function',['../class_poliz.html#aca705f4a3ce126a61dca268cbb49ef3e',1,'Poliz']]],
-  ['char_3',['Char',['../_table_identifiers_8h.html#a3e262b377dc15baba6e58438868decb7adf35c44092249df12865ec3ca08eb000',1,'TableIdentifiers.h']]],
-  ['char_5fliteral_4',['CHAR_LITERAL',['../class_poliz.html#a0ffbb08ddda8c76e41b71b9d880668cba85663a1bc1e4c8d5d27a0ecaf9b97995',1,'Poliz']]],
-  ['check_5foperation_5',['check_operation',['../class_semantic.html#a7bd8009847650ea999b54ee4b7a9287e',1,'Semantic']]],
-  ['children_6',['children',['../struct_table_identifiers.html#a47a9fe986f446d33258a8906b1c7ae47',1,'TableIdentifiers']]],
-  ['clear_7',['clear',['../class_trie.html#a4d0e1db753c924e7f93497ea2db1866d',1,'Trie']]],
-  ['clear_5ftid_5fvalues_8',['clear_tid_values',['../class_poliz.html#a259f5eb2b94fabf3bbe32183e436e620',1,'Poliz']]],
-  ['cmp_9',['CMP',['../class_poliz.html#a0ffbb08ddda8c76e41b71b9d880668cbad7ef7df7b9ec5ed80a05575daa1b8af3',1,'Poliz']]],
-  ['comma_10',['comma',['../class_lexical_analyzer.html#ab01d4e0b952670c843e514a252894710a4b23776428ec71f184c352e6cd133656',1,'LexicalAnalyzer']]],
-  ['comma_11',['COMMA',['../class_poliz.html#a0ffbb08ddda8c76e41b71b9d880668cba50606ca45d0f44e8b40a567747a83605',1,'Poliz']]],
-  ['comment_12',['comment',['../class_lexical_analyzer.html#ab01d4e0b952670c843e514a252894710a75da6c5d03e9ffad5d52e0736142b962',1,'LexicalAnalyzer']]],
-  ['comparison_5fexpression_13',['comparison_expression',['../class_analyzer.html#aaf847ff0ea7dceffcf9a4ef93c1c1292',1,'Analyzer']]],
-  ['construct_5fexpression_14',['construct_expression',['../class_analyzer.html#a9a2e441a6c0e4219bd14e563241f7ab5',1,'Analyzer']]],
-  ['continue_5fptr_15',['continue_ptr',['../class_semantic.html#a1b15e501af471d5d1516c7b980f6f1ef',1,'Semantic']]],
-  ['convert_16',['CONVERT',['../class_poliz.html#a0ffbb08ddda8c76e41b71b9d880668cbaa0af0554c2e658e415d772fa63d9284a',1,'Poliz']]],
-  ['convert_17',['convert',['../class_poliz.html#a044946abe6df1a4516ae80f071de583d',1,'Poliz']]],
-  ['convert_5fstatement_18',['convert_statement',['../class_analyzer.html#a449ec6f7f318a1f9fee19cfeebf88044',1,'Analyzer']]],
-  ['copy_5fvalue_19',['copy_value',['../class_poliz.html#a4cd1219576972b871c00835a3480d29d',1,'Poliz']]],
-  ['create_5ffunction_20',['create_function',['../class_semantic.html#a27ae9a1fbb266d2080b1f32d2cc28edc',1,'Semantic']]],
-  ['create_5ftable_21',['create_table',['../class_semantic.html#a330c83b9a2e8daf71ec16debde704166',1,'Semantic']]],
-  ['curr_5f_22',['curr_',['../class_lexical_analyzer.html#a8d830eb0e7dbe087e3af30064ac625c4',1,'LexicalAnalyzer']]],
-  ['current_5ffunction_23',['current_function',['../class_poliz.html#a30f1f6587738d33b912102d05157d19e',1,'Poliz::current_function'],['../class_semantic.html#a5ef3284f36da8ca206c2c45bd7e68b78',1,'Semantic::current_function']]],
-  ['current_5ftoken_24',['current_token',['../class_analyzer.html#ad8957919c0c6855c71641c627266d73e',1,'Analyzer']]]
+  ['getting_20started_0',['Getting Started',['../index.html#autotoc_md3',1,'']]]
 ];

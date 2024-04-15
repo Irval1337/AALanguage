@@ -1,32 +1,4 @@
 var searchData=
 [
-  ['label_0',['LABEL',['../class_poliz.html#a0ffbb08ddda8c76e41b71b9d880668cba9ae0b7fb501c53451284445b7a1a95ee',1,'Poliz']]],
-  ['large_1',['large',['../classlarge.html',1,'large'],['../classlarge.html#ae92cc19f8881997b40dfe1bd276985e8',1,'large::large()'],['../classlarge.html#aa84939dbbbf428c4dba09e790aed912a',1,'large::large(std::string str)'],['../classlarge.html#ad13448a3dc4f49ca5a7b4c09bd78641d',1,'large::large(long long value)']]],
-  ['large_2',['Large',['../_table_identifiers_8h.html#a3e262b377dc15baba6e58438868decb7a453e3722bbf55ee0aae801a69be04d38',1,'TableIdentifiers.h']]],
-  ['large_2ecpp_3',['Large.cpp',['../_large_8cpp.html',1,'']]],
-  ['large_2eh_4',['Large.h',['../_large_8h.html',1,'']]],
-  ['large_5fliteral_5',['LARGE_LITERAL',['../class_poliz.html#a0ffbb08ddda8c76e41b71b9d880668cba15486f11ffd8a854bc67f1c7014e5b9c',1,'Poliz']]],
-  ['lexes_6',['lexes',['../class_poliz.html#a5f4942a0ed12aef67b9f8558decc7cb0',1,'Poliz']]],
-  ['lexicalanalyzer_7',['LexicalAnalyzer',['../class_lexical_analyzer.html',1,'LexicalAnalyzer'],['../class_lexical_analyzer.html#a935e012eedd7017772f1b14f30f9e81f',1,'LexicalAnalyzer::LexicalAnalyzer()']]],
-  ['lexicalanalyzer_2ecpp_8',['LexicalAnalyzer.cpp',['../_lexical_analyzer_8cpp.html',1,'']]],
-  ['lexicalanalyzer_2eh_9',['LexicalAnalyzer.h',['../_lexical_analyzer_8h.html',1,'']]],
-  ['libparser_10',['LibParser',['../class_lib_parser.html',1,'LibParser'],['../class_lib_parser.html#ac334df67d7e7d0cf9210301471f4191a',1,'LibParser::LibParser()']]],
-  ['libparser_2ecpp_11',['LibParser.cpp',['../_lib_parser_8cpp.html',1,'']]],
-  ['libparser_2eh_12',['LibParser.h',['../_lib_parser_8h.html',1,'']]],
-  ['libs_13',['libs',['../class_lib_parser.html#ad4ce55415d62b2113ee5eef220052f91',1,'LibParser']]],
-  ['line_14',['line',['../struct_token.html#a4b96c2a31d7c374fd2bd1986794f80dd',1,'Token']]],
-  ['line_5f_15',['line_',['../class_lexical_analyzer.html#a612bfefcb316bef18811330b174e7144',1,'LexicalAnalyzer']]],
-  ['list_16',['Deprecated List',['../deprecated.html',1,'']]],
-  ['literal_17',['literal',['../class_lexical_analyzer.html#ab01d4e0b952670c843e514a252894710a485a8a87e69543fefa04d63814bbf86b',1,'LexicalAnalyzer']]],
-  ['literal_18',['LITERAL',['../class_poliz.html#a0ffbb08ddda8c76e41b71b9d880668cba64984ce58e026b03ec1b968922edaa84',1,'Poliz']]],
-  ['literal_5fprior_19',['literal_prior',['../class_poliz.html#a7911db7f93855b3d9c861e72cfa9f044',1,'Poliz']]],
-  ['literal_5fto_5ftype_20',['literal_to_type',['../class_semantic.html#a25ed69e1f6fef097037bd904fb59ae06',1,'Semantic']]],
-  ['literal_5ftype_21',['literal_type',['../class_lexical_analyzer.html#a1a9f386d3c7b56f53ac42cf1296a748a',1,'LexicalAnalyzer']]],
-  ['logical_22',['logical',['../class_lexical_analyzer.html#a1a9f386d3c7b56f53ac42cf1296a748aa59cb9340ab5db6e37205758e03efcdc9',1,'LexicalAnalyzer']]],
-  ['logical_5fand_23',['LOGICAL_AND',['../class_poliz.html#a0ffbb08ddda8c76e41b71b9d880668cbaa8e9cfce811d717e1f519516904a5884',1,'Poliz']]],
-  ['logical_5fand_5fexpression_24',['logical_and_expression',['../class_analyzer.html#aeb40336f12ce0acb9154ee6b256f7d8b',1,'Analyzer']]],
-  ['logical_5for_25',['LOGICAL_OR',['../class_poliz.html#a0ffbb08ddda8c76e41b71b9d880668cba19b9ac77b8aa2f1dafe6daf1dfe1c024',1,'Poliz']]],
-  ['logical_5for_5fexpression_26',['logical_or_expression',['../class_analyzer.html#a31e2f9161cd875e05b96c915f9a07985',1,'Analyzer']]],
-  ['long_27',['Long',['../_table_identifiers_8h.html#a3e262b377dc15baba6e58438868decb7afbe5087b942deaaa3202c7ca87dbc327',1,'TableIdentifiers.h']]],
-  ['long_5fliteral_28',['LONG_LITERAL',['../class_poliz.html#a0ffbb08ddda8c76e41b71b9d880668cbae7e824109cc294d48028fbbe046107e1',1,'Poliz']]]
+  ['started_0',['Getting Started',['../index.html#autotoc_md3',1,'']]]
 ];

@@ -1,24 +1,6 @@
 var searchData=
 [
-  ['identifier_0',['Identifier',['../struct_identifier.html',1,'']]],
-  ['identifier_1',['identifier',['../class_lexical_analyzer.html#ab01d4e0b952670c843e514a252894710a67e225b8ab68175525ca7b5a6e8bd3cc',1,'LexicalAnalyzer']]],
-  ['identifier_2',['Identifier',['../struct_identifier.html#aa3042a1f32ada7c6750e6e5afb831da8',1,'Identifier']]],
-  ['identifiers_3',['identifiers',['../struct_table_identifiers.html#a5b74817fab6acf2a9f8cdc093381936d',1,'TableIdentifiers::identifiers'],['../struct_function.html#afc0874fa2c0dac064ec13a066da29137',1,'Function::identifiers']]],
-  ['if_5fstatement_4',['if_statement',['../class_analyzer.html#a5e97b1202b81c2550d76971cb21b51b8',1,'Analyzer']]],
-  ['init_5farray_5',['init_array',['../class_semantic.html#a2bfc9c69df9d70b2c665f28cd8c86f06',1,'Semantic']]],
-  ['int_6',['Int',['../_table_identifiers_8h.html#a3e262b377dc15baba6e58438868decb7a637b69dea56f804278aa50e975337e01',1,'TableIdentifiers.h']]],
-  ['int_5fliteral_7',['INT_LITERAL',['../class_poliz.html#a0ffbb08ddda8c76e41b71b9d880668cbace3c0087f423c8e02099be7acfb87c4c',1,'Poliz']]],
-  ['integer_8',['integer',['../class_lexical_analyzer.html#a1a9f386d3c7b56f53ac42cf1296a748aa9a2320c3568a879e60bf53adfe7c72ed',1,'LexicalAnalyzer']]],
-  ['is_5farray_9',['is_array',['../struct_type.html#a62729fe97b7ad9716cc5bab3be46a3e9',1,'Type']]],
-  ['is_5fbrace_10',['is_brace',['../class_lexical_analyzer.html#a3871682e23a423e63299264ee3c99d63',1,'LexicalAnalyzer']]],
-  ['is_5fcomma_11',['is_comma',['../class_lexical_analyzer.html#a941db07f85592cd17f27a60c4436d79a',1,'LexicalAnalyzer']]],
-  ['is_5fcomment_12',['is_comment',['../class_lexical_analyzer.html#a154fe51ddd7236ba3e521476f8981d83',1,'LexicalAnalyzer']]],
-  ['is_5fconst_13',['is_const',['../struct_type.html#ab786ba3406b7a29c561bc0eecfef39fa',1,'Type']]],
-  ['is_5fconvertible_14',['is_convertible',['../class_semantic.html#ad316b507cbd20cc924b62b992fe8cf26',1,'Semantic']]],
-  ['is_5fidentifier_15',['is_identifier',['../class_lexical_analyzer.html#a028ead19f76309dbebe2132a5aa4fa36',1,'LexicalAnalyzer']]],
-  ['is_5fin_5ffunction_5fheader_16',['is_in_function_header',['../class_semantic.html#ab4a3525a644f9bee870ff3607edfbd6e',1,'Semantic']]],
-  ['is_5fliteral_17',['is_literal',['../class_lexical_analyzer.html#a3cda7650c37099af4c8555f7581c5b7c',1,'LexicalAnalyzer']]],
-  ['is_5foperation_18',['is_operation',['../class_lexical_analyzer.html#a6ef51a16e211a43daeaae936eb4b93ee',1,'LexicalAnalyzer']]],
-  ['is_5fpunctuation_19',['is_punctuation',['../class_lexical_analyzer.html#ab16fa0fc69df54cbd51d701e610afbfb',1,'LexicalAnalyzer']]],
-  ['is_5fservice_20',['is_service',['../class_lexical_analyzer.html#a3ca68b475526c5c4d635a0c196816bc6',1,'LexicalAnalyzer']]]
+  ['readme_2emd_0',['README.md',['../_r_e_a_d_m_e_8md.html',1,'']]],
+  ['request_1',['Creating A Pull Request',['../index.html#autotoc_md8',1,'']]],
+  ['roadmap_2',['Roadmap',['../index.html#autotoc_md6',1,'']]]
 ];
