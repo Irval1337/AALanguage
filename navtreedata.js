@@ -24,12 +24,67 @@
 */
 var NAVTREE =
 [
-  [ "AALanguage", "index.html", ]
+  [ "AALanguage", "index.html", [
+    [ "README", "md__d_1_2_git_hub_2_a_a_language2_2_r_e_a_d_m_e.html", [
+      [ "Table Of Contents", "index.html#autotoc_md12", null ],
+      [ "About The Project", "index.html#autotoc_md13", null ],
+      [ "Built With", "index.html#autotoc_md14", null ],
+      [ "Getting Started", "index.html#autotoc_md15", [
+        [ "Prerequisites", "index.html#autotoc_md16", null ],
+        [ "Installation", "index.html#autotoc_md17", null ]
+      ] ],
+      [ "Roadmap", "index.html#autotoc_md18", null ],
+      [ "Contributing", "index.html#autotoc_md19", [
+        [ "Creating A Pull Request", "index.html#autotoc_md20", null ]
+      ] ],
+      [ "License", "index.html#autotoc_md21", null ],
+      [ "Authors", "index.html#autotoc_md22", null ],
+      [ "Acknowledgements", "index.html#autotoc_md23", [
+        [ "Table Of Contents", "md__d_1_2_git_hub_2_a_a_language2_2_r_e_a_d_m_e.html#autotoc_md0", null ],
+        [ "About The Project", "md__d_1_2_git_hub_2_a_a_language2_2_r_e_a_d_m_e.html#autotoc_md1", null ],
+        [ "Built With", "md__d_1_2_git_hub_2_a_a_language2_2_r_e_a_d_m_e.html#autotoc_md2", null ],
+        [ "Getting Started", "md__d_1_2_git_hub_2_a_a_language2_2_r_e_a_d_m_e.html#autotoc_md3", [
+          [ "Prerequisites", "md__d_1_2_git_hub_2_a_a_language2_2_r_e_a_d_m_e.html#autotoc_md4", null ],
+          [ "Installation", "md__d_1_2_git_hub_2_a_a_language2_2_r_e_a_d_m_e.html#autotoc_md5", null ]
+        ] ],
+        [ "Roadmap", "md__d_1_2_git_hub_2_a_a_language2_2_r_e_a_d_m_e.html#autotoc_md6", null ],
+        [ "Contributing", "md__d_1_2_git_hub_2_a_a_language2_2_r_e_a_d_m_e.html#autotoc_md7", [
+          [ "Creating A Pull Request", "md__d_1_2_git_hub_2_a_a_language2_2_r_e_a_d_m_e.html#autotoc_md8", null ]
+        ] ],
+        [ "License", "md__d_1_2_git_hub_2_a_a_language2_2_r_e_a_d_m_e.html#autotoc_md9", null ],
+        [ "Authors", "md__d_1_2_git_hub_2_a_a_language2_2_r_e_a_d_m_e.html#autotoc_md10", null ],
+        [ "Acknowledgements", "md__d_1_2_git_hub_2_a_a_language2_2_r_e_a_d_m_e.html#autotoc_md11", null ]
+      ] ]
+    ] ],
+    [ "Deprecated List", "deprecated.html", null ],
+    [ "Classes", "annotated.html", [
+      [ "Class List", "annotated.html", "annotated_dup" ],
+      [ "Class Index", "classes.html", null ],
+      [ "Class Members", "functions.html", [
+        [ "All", "functions.html", "functions_dup" ],
+        [ "Functions", "functions_func.html", null ],
+        [ "Variables", "functions_vars.html", null ],
+        [ "Enumerations", "functions_enum.html", null ],
+        [ "Enumerator", "functions_eval.html", null ]
+      ] ]
+    ] ],
+    [ "Files", "files.html", [
+      [ "File List", "files.html", "files_dup" ],
+      [ "File Members", "globals.html", [
+        [ "All", "globals.html", null ],
+        [ "Functions", "globals_func.html", null ],
+        [ "Enumerations", "globals_enum.html", null ],
+        [ "Enumerator", "globals_eval.html", null ],
+        [ "Macros", "globals_defs.html", null ]
+      ] ]
+    ] ]
+  ] ]
 ];
 
 var NAVTREEINDEX =
 [
-"index.html"
+"_analyzer_8cpp.html",
+"class_semantic.html#a7d94c35dce3537ff73935e488298963b"
 ];
 
 var SYNCONMSG = 'click to disable panel synchronisation';
