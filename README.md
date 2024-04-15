@@ -30,7 +30,6 @@
 * [Getting Started](#getting-started)
   * [Prerequisites](#prerequisites)
   * [Installation](#installation)
-* [Usage](#usage)
 * [Roadmap](#roadmap)
 * [Contributing](#contributing)
 * [License](#license)
@@ -58,8 +57,6 @@ A list of commonly used resources that I find helpful are listed in the acknowle
 
 ## Built With
 
-
-
 * [С++ 20 STL](https://en.cppreference.com/w/cpp/)
 * [Formal grammars and languages. Elements of translation theory](https://al.cs.msu.ru/files/formal.languages.translation.theory.pdf)
 
@@ -73,31 +70,14 @@ Install Visual Studio 2022 with the package v143: https://visualstudio.microsoft
 
 ### Installation
 
-1. Get a free API Key at [https://example.com](https://example.com)
-
-2. Clone the repo
-
+1. Clone the repo
 ```sh
-git clone https://github.com/your_username_/Project-Name.git
+git clone https://github.com/Irval1337/AALanguage.git
 ```
-
-3. Install NPM packages
-
-```sh
-npm install
-```
-
-4. Enter your API in `config.js`
-
-```JS
-const API_KEY = 'ENTER YOUR API';
-```
-
-## Usage
-
-Use this space to show useful examples of how a project can be used. Additional screenshots, code examples and demos work well in this space. You may also link to more resources.
-
-_For more examples, please refer to the [Documentation](https://example.com)_
+2. Remove the `TESTING_MODE` define if you wish to interpret AALanguage scripts by specifying the library path and directory each time.
+3. Set `path` and `lib_path` if there is a `TESTING_MODE` define:
+   * `path` - Path to the script file.
+   * `lib_path` - A directory with built-in libraries. Each must have the .aa format.
 
 ## Roadmap
 
@@ -125,10 +105,9 @@ Distributed under the MIT License. See [LICENSE](https://github.com/Irval1337/AA
 
 ## Authors
 
-* **Shaan Khan** - *Comp Sci Student* - [Shaan Khan](https://github.com/ShaanCoding/) - *Built ReadME Template*
+* **Emelyanov Alexander** - *Leading developer* - [Irval1337](https://github.com/Irval1337)
+* **Lyazer Stepan** - *Helping developer, tester* - [StepanYL](https://github.com/StepanYL)
 
 ## Acknowledgements
 
-* [ShaanCoding](https://github.com/ShaanCoding/)
-* [Othneil Drew](https://github.com/othneildrew/Best-README-Template)
-* [ImgShields](https://shields.io/)
+* [Formal grammars and languages. Elements of translation theory](https://al.cs.msu.ru/files/formal.languages.translation.theory.pdf)
