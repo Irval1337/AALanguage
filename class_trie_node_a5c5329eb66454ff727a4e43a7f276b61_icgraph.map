@@ -1,0 +1,11 @@
+<map id="TrieNode::get_count" name="TrieNode::get_count">
+<area shape="rect" id="Node000001" title="Gets the number of strings ending in subtrees." alt="" coords="363,63,500,89"/>
+<area shape="rect" id="Node000002" href="$class_trie.html#a3e1c7137a85ecd183fcd7ce85cae501a" title="Adding a new word to the trie." alt="" coords="230,37,301,64"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="347,66,301,59,302,53,348,61"/>
+<area shape="rect" id="Node000004" href="$class_trie.html#a7ab88c7f63cec31fe66451143fade058" title="Gets the number of rows added to the trie." alt="" coords="216,88,315,115"/>
+<area shape="poly" id="edge5_Node000001_Node000004" title=" " alt="" coords="348,91,316,96,315,91,347,86"/>
+<area shape="poly" id="edge2_Node000002_Node000002" title=" " alt="" coords="293,24,284,18,265,16,248,18,239,23,237,28,241,36,237,38,232,29,235,19,247,13,265,11,285,13,296,20"/>
+<area shape="rect" id="Node000003" href="$class_lexical_analyzer.html#a935e012eedd7017772f1b14f30f9e81f" title="A class constructor that performs lexical analysis on the specified file." alt="" coords="5,29,168,72"/>
+<area shape="poly" id="edge3_Node000002_Node000003" title=" " alt="" coords="214,53,168,53,168,48,214,48"/>
+<area shape="poly" id="edge4_Node000003_Node000003" title=" " alt="" coords="115,16,104,10,86,8,70,10,60,14,56,21,57,28,52,29,51,19,56,10,68,5,87,3,106,5,118,11"/>
+</map>

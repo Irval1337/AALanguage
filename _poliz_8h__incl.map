@@ -1,0 +1,28 @@
+<map id="D:/GitHub/AALanguage/AALanguage/Poliz.h" name="D:/GitHub/AALanguage/AALanguage/Poliz.h">
+<area shape="rect" id="Node000001" title=" " alt="" coords="293,5,449,48"/>
+<area shape="rect" id="Node000002" title=" " alt="" coords="140,171,195,197"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="325,51,285,72,246,98,214,129,187,160,183,156,210,125,243,94,282,67,322,46"/>
+<area shape="rect" id="Node000003" title=" " alt="" coords="345,96,398,123"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="374,49,374,80,369,80,369,49"/>
+<area shape="rect" id="Node000004" href="$_table_identifiers_8h.html" title=" " alt="" coords="64,96,182,123"/>
+<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="308,51,178,93,176,88,306,46"/>
+<area shape="rect" id="Node000007" title=" " alt="" coords="422,96,494,123"/>
+<area shape="poly" id="edge7_Node000001_Node000007" title=" " alt="" coords="395,47,435,83,431,87,392,51"/>
+<area shape="rect" id="Node000008" href="$_large_8h.html" title=" " alt="" coords="256,96,321,123"/>
+<area shape="poly" id="edge8_Node000001_Node000008" title=" " alt="" coords="352,51,314,87,310,83,348,47"/>
+<area shape="rect" id="Node000011" title=" " alt="" coords="517,96,577,123"/>
+<area shape="poly" id="edge13_Node000001_Node000011" title=" " alt="" coords="418,46,507,87,505,92,415,51"/>
+<area shape="rect" id="Node000012" title=" " alt="" coords="602,96,666,123"/>
+<area shape="poly" id="edge14_Node000001_Node000012" title=" " alt="" coords="440,46,588,91,586,96,438,51"/>
+<area shape="poly" id="edge4_Node000004_Node000002" title=" " alt="" coords="133,122,154,156,149,159,129,125"/>
+<area shape="rect" id="Node000005" title=" " alt="" coords="5,171,116,197"/>
+<area shape="poly" id="edge5_Node000004_Node000005" title=" " alt="" coords="114,125,83,161,79,157,110,121"/>
+<area shape="rect" id="Node000006" title=" " alt="" coords="219,171,273,197"/>
+<area shape="poly" id="edge6_Node000004_Node000006" title=" " alt="" coords="146,121,212,160,210,165,143,126"/>
+<area shape="poly" id="edge10_Node000008_Node000002" title=" " alt="" coords="269,126,203,165,200,160,266,121"/>
+<area shape="poly" id="edge9_Node000008_Node000006" title=" " alt="" coords="283,125,263,159,259,156,279,122"/>
+<area shape="rect" id="Node000009" title=" " alt="" coords="390,171,464,197"/>
+<area shape="poly" id="edge11_Node000008_Node000009" title=" " alt="" coords="314,121,391,161,388,165,311,126"/>
+<area shape="rect" id="Node000010" title=" " alt="" coords="297,171,365,197"/>
+<area shape="poly" id="edge12_Node000008_Node000010" title=" " alt="" coords="298,122,318,156,314,159,294,125"/>
+</map>

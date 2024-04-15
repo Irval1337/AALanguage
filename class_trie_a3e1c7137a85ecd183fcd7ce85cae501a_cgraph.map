@@ -1,0 +1,10 @@
+<map id="Trie::add" name="Trie::add">
+<area shape="rect" id="Node000001" title="Adding a new word to the trie." alt="" coords="5,56,77,83"/>
+<area shape="poly" id="edge1_Node000001_Node000001" title=" " alt="" coords="14,57,10,47,13,38,24,32,41,29,60,32,69,39,66,43,58,37,41,35,25,37,17,41,15,47,19,54"/>
+<area shape="rect" id="Node000002" href="$class_trie_node.html#a5c5329eb66454ff727a4e43a7f276b61" title="Gets the number of strings ending in subtrees." alt="" coords="125,5,262,32"/>
+<area shape="poly" id="edge2_Node000001_Node000002" title=" " alt="" coords="76,55,136,35,138,40,78,60"/>
+<area shape="rect" id="Node000003" href="$class_trie_node.html#a7d75487f99f9fbf934f2e359deff70cc" title="Gets the number of strings ending in the given node." alt="" coords="127,56,260,83"/>
+<area shape="poly" id="edge3_Node000001_Node000003" title=" " alt="" coords="77,67,111,67,111,72,77,72"/>
+<area shape="rect" id="Node000004" href="$class_trie_node.html#a67a9bc000e73af079bf869c80ebddfa3" title="Gets transitions to child nodes." alt="" coords="128,107,259,133"/>
+<area shape="poly" id="edge4_Node000001_Node000004" title=" " alt="" coords="78,79,138,99,136,104,76,84"/>
+</map>

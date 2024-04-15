@@ -1,0 +1,5 @@
+<map id="Poliz::convert" name="Poliz::convert">
+<area shape="rect" id="Node000001" title="Converts an internal type 1 value to a type 2 value." alt="" coords="5,5,105,32"/>
+<area shape="rect" id="Node000002" href="$class_poliz.html#ade18de50de43977621aefecfb4c58612" title="Converts a token of type ADDRESS to a token with a pointer to its value." alt="" coords="153,5,311,32"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="105,16,137,16,137,21,105,21"/>
+</map>

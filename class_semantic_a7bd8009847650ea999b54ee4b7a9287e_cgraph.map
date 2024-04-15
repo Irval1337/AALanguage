@@ -1,0 +1,5 @@
+<map id="Semantic::check_operation" name="Semantic::check_operation">
+<area shape="rect" id="Node000001" title="Checks whether the operation is applicable to two operand types." alt="" coords="5,5,185,32"/>
+<area shape="rect" id="Node000002" href="$class_semantic.html#ad316b507cbd20cc924b62b992fe8cf26" title="Checks if implicit type conversion is possible." alt="" coords="233,5,395,32"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="185,16,217,16,217,21,185,21"/>
+</map>

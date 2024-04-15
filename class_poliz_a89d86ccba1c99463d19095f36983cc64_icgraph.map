@@ -1,0 +1,10 @@
+<map id="Poliz::ReplaceAll" name="Poliz::ReplaceAll">
+<area shape="rect" id="Node000001" title=" " alt="" coords="429,5,550,32"/>
+<area shape="rect" id="Node000002" href="$class_poliz.html#abc00b73b9d4a0dea2405a8b503032f0c" title="The main function that performs a walkthrough of the POLIZ token array." alt="" coords="277,5,381,32"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="414,21,382,21,382,16,414,16"/>
+<area shape="rect" id="Node000003" href="$class_analyzer.html#a87ffcf98ab106642c8cea5672a33af98" title="A function that starts full analysis and generation of a file with specified parameters." alt="" coords="103,5,229,32"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="261,21,229,21,229,16,261,16"/>
+<area shape="rect" id="Node000004" href="$_source_8cpp.html#a0ddf1224851353fc92bfbff6f499fa97" title="Entry point." alt="" coords="5,5,55,32"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="87,30,55,28,55,23,87,25"/>
+<area shape="poly" id="edge4_Node000004_Node000003" title=" " alt="" coords="70,8,102,7,102,12,70,13"/>
+</map>

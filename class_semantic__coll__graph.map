@@ -1,0 +1,8 @@
+<map id="Semantic" name="Semantic">
+<area shape="rect" id="Node000001" title="A helper class that performs basic actions on the semantics of the language." alt="" coords="55,112,131,139"/>
+<area shape="rect" id="Node000002" href="$struct_type.html" title="A class to represent an expression type." alt="" coords="5,5,55,32"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="27,47,28,68,34,87,45,99,59,109,56,114,41,103,29,89,22,69,22,47"/>
+<area shape="rect" id="Node000003" href="$struct_table_identifiers.html" title="Identifier table used for semantic analysis." alt="" coords="103,5,210,32"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="150,48,130,89,109,113,105,110,125,87,145,45"/>
+<area shape="poly" id="edge3_Node000003_Node000003" title=" " alt="" coords="227,9,237,19,229,28,211,31,210,26,226,23,232,19,224,13"/>
+</map>

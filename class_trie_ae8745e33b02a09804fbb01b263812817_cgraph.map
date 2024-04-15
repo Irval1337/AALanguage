@@ -1,0 +1,8 @@
+<map id="Trie::find" name="Trie::find">
+<area shape="rect" id="Node000001" title="Searching for a string in the trie." alt="" coords="5,31,76,57"/>
+<area shape="poly" id="edge1_Node000001_Node000001" title=" " alt="" coords="14,31,10,22,13,12,24,6,41,4,59,7,68,13,65,18,57,12,40,9,25,11,17,16,15,21,19,29"/>
+<area shape="rect" id="Node000002" href="$class_trie_node.html#a7d75487f99f9fbf934f2e359deff70cc" title="Gets the number of strings ending in the given node." alt="" coords="124,5,257,32"/>
+<area shape="poly" id="edge2_Node000001_Node000002" title=" " alt="" coords="76,35,108,30,109,35,76,41"/>
+<area shape="rect" id="Node000003" href="$class_trie_node.html#a67a9bc000e73af079bf869c80ebddfa3" title="Gets transitions to child nodes." alt="" coords="125,56,256,83"/>
+<area shape="poly" id="edge3_Node000001_Node000003" title=" " alt="" coords="76,47,110,53,109,58,76,53"/>
+</map>

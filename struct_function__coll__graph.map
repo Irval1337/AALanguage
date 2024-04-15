@@ -1,0 +1,8 @@
+<map id="Function" name="Function">
+<area shape="rect" id="Node000001" title="A class to represent a function in semantic." alt="" coords="24,96,95,123"/>
+<area shape="rect" id="Node000002" href="$struct_type.html" title="A class to represent an expression type." alt="" coords="5,5,55,32"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="42,46,58,95,53,96,37,48"/>
+<area shape="rect" id="Node000003" href="$struct_table_identifiers.html" title="Identifier table used for semantic analysis." alt="" coords="79,5,186,32"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="115,46,72,97,68,94,110,42"/>
+<area shape="poly" id="edge3_Node000003_Node000003" title=" " alt="" coords="204,10,213,19,205,27,187,30,186,24,202,22,208,19,200,14"/>
+</map>

@@ -1,0 +1,38 @@
+<map id="Poliz::blank" name="Poliz::blank">
+<area shape="rect" id="Node000001" title="Adds a new blank token." alt="" coords="1486,143,1575,169"/>
+<area shape="rect" id="Node000002" href="$class_analyzer.html#aeb09a5bc0bb6d3234a1ee0337576f657" title=" " alt="" coords="1279,143,1438,169"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="1470,159,1438,159,1438,153,1470,153"/>
+<area shape="rect" id="Node000010" href="$class_analyzer.html#a5e97b1202b81c2550d76971cb21b51b8" title=" " alt="" coords="854,92,1005,119"/>
+<area shape="poly" id="edge19_Node000001_Node000010" title=" " alt="" coords="1470,141,1438,133,1320,116,1202,107,1094,104,1005,105,1005,100,1094,99,1202,102,1321,111,1438,128,1472,136"/>
+<area shape="rect" id="Node000011" href="$class_analyzer.html#a2e7aa8026195eb9dfaccb5d8b4850f7e" title=" " alt="" coords="838,143,1020,169"/>
+<area shape="poly" id="edge22_Node000001_Node000011" title=" " alt="" coords="1475,177,1438,184,1335,195,1253,198,1172,193,1068,184,993,173,993,167,1069,179,1172,188,1254,193,1334,190,1438,179,1473,171"/>
+<area shape="rect" id="Node000012" href="$class_analyzer.html#a5e73d8b9a5a43e504608d5fb7437b1b5" title=" " alt="" coords="842,193,1016,220"/>
+<area shape="poly" id="edge23_Node000001_Node000012" title=" " alt="" coords="1495,180,1468,193,1439,203,1326,221,1211,227,1105,226,1017,219,1017,214,1105,220,1211,222,1325,216,1437,197,1466,188,1493,175"/>
+<area shape="rect" id="Node000013" href="$class_analyzer.html#a65fdd0f50091cfc4122417c25f9ac205" title=" " alt="" coords="1068,17,1231,44"/>
+<area shape="poly" id="edge20_Node000001_Node000013" title=" " alt="" coords="1510,132,1479,96,1459,79,1437,65,1386,46,1332,35,1279,29,1231,28,1231,23,1280,24,1333,29,1388,41,1439,60,1462,74,1482,92,1514,128"/>
+<area shape="rect" id="Node000003" href="$class_analyzer.html#ab760c26d525a7374feb3d66a4b316fd0" title=" " alt="" coords="1080,143,1219,169"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="1263,168,1219,167,1219,162,1263,162"/>
+<area shape="poly" id="edge3_Node000003_Node000002" title=" " alt="" coords="1234,144,1278,145,1278,150,1234,150"/>
+<area shape="poly" id="edge14_Node000003_Node000003" title=" " alt="" coords="1185,130,1173,124,1149,121,1128,123,1116,128,1113,133,1119,141,1114,144,1108,134,1112,124,1126,118,1150,116,1174,119,1188,125"/>
+<area shape="rect" id="Node000004" href="$class_analyzer.html#ae28ae94785a2b90e84eb94a0c1611631" title=" " alt="" coords="867,29,992,56"/>
+<area shape="poly" id="edge4_Node000003_Node000004" title=" " alt="" coords="1113,136,1019,82,966,59,968,54,1022,78,1115,132"/>
+<area shape="poly" id="edge12_Node000003_Node000010" title=" " alt="" coords="1065,148,961,122,963,117,1066,143"/>
+<area shape="poly" id="edge15_Node000003_Node000011" title=" " alt="" coords="1065,167,1021,168,1021,162,1065,162"/>
+<area shape="poly" id="edge17_Node000003_Node000012" title=" " alt="" coords="1103,177,1017,198,1016,193,1101,172"/>
+<area shape="rect" id="Node000005" href="$class_analyzer.html#a5ce7b18447024efc7f5f537a74876d0f" title=" " alt="" coords="663,21,790,64"/>
+<area shape="poly" id="edge5_Node000004_Node000005" title=" " alt="" coords="851,45,791,45,791,40,851,40"/>
+<area shape="rect" id="Node000006" href="$class_analyzer.html#a987d59bb453c68ffdd34ae0bfcf9088e" title=" " alt="" coords="452,29,615,56"/>
+<area shape="poly" id="edge6_Node000005_Node000006" title=" " alt="" coords="647,45,615,45,615,40,647,40"/>
+<area shape="poly" id="edge11_Node000006_Node000006" title=" " alt="" coords="566,16,555,10,533,8,513,10,503,15,500,20,505,27,501,30,495,21,499,11,512,5,534,3,557,5,569,12"/>
+<area shape="rect" id="Node000007" href="$class_analyzer.html#a7a263cc28b24a12e945bb4e21b7cfd8b" title="PROGRAM PLS." alt="" coords="277,29,404,56"/>
+<area shape="poly" id="edge7_Node000006_Node000007" title=" " alt="" coords="437,45,405,45,405,40,437,40"/>
+<area shape="rect" id="Node000008" href="$class_analyzer.html#a87ffcf98ab106642c8cea5672a33af98" title="A function that starts full analysis and generation of a file with specified parameters." alt="" coords="103,29,229,56"/>
+<area shape="poly" id="edge8_Node000007_Node000008" title=" " alt="" coords="262,45,229,45,229,40,262,40"/>
+<area shape="rect" id="Node000009" href="$_source_8cpp.html#a0ddf1224851353fc92bfbff6f499fa97" title="Entry point." alt="" coords="5,29,55,56"/>
+<area shape="poly" id="edge9_Node000008_Node000009" title=" " alt="" coords="87,54,55,52,55,47,87,49"/>
+<area shape="poly" id="edge10_Node000009_Node000008" title=" " alt="" coords="70,32,102,31,102,36,70,37"/>
+<area shape="poly" id="edge13_Node000010_Node000003" title=" " alt="" coords="1021,115,1117,139,1116,145,1020,120"/>
+<area shape="poly" id="edge16_Node000011_Node000003" title=" " alt="" coords="1036,144,1080,145,1080,150,1036,150"/>
+<area shape="poly" id="edge18_Node000012_Node000003" title=" " alt="" coords="976,186,1079,161,1081,166,977,191"/>
+<area shape="poly" id="edge21_Node000013_Node000004" title=" " alt="" coords="1053,39,992,42,992,37,1053,33"/>
+</map>

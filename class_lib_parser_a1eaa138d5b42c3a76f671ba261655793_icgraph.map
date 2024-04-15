@@ -1,0 +1,11 @@
+<map id="LibParser::name_to_path" name="LibParser::name_to_path">
+<area shape="rect" id="Node000001" title="Converts the standard library name to its file path." alt="" coords="400,63,566,89"/>
+<area shape="rect" id="Node000002" href="$class_lib_parser.html#a66adc6892fb9035d05a3540328e694bd" title="Adds the new library to the list of libraries in use, if necessary." alt="" coords="221,12,347,39"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="412,61,339,42,340,37,414,56"/>
+<area shape="rect" id="Node000003" href="$class_lexical_analyzer.html#a935e012eedd7017772f1b14f30f9e81f" title="A class constructor that performs lexical analysis on the specified file." alt="" coords="5,29,168,72"/>
+<area shape="poly" id="edge4_Node000001_Node000003" title=" " alt="" coords="384,72,168,58,168,53,385,67"/>
+<area shape="rect" id="Node000004" href="$class_lib_parser.html#adf32cf7e54c957e722c5bb2734a61743" title="Reads all text from the library file." alt="" coords="216,113,352,140"/>
+<area shape="poly" id="edge5_Node000001_Node000004" title=" " alt="" coords="414,96,340,115,339,110,412,91"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="206,38,169,43,168,38,206,33"/>
+<area shape="poly" id="edge3_Node000003_Node000003" title=" " alt="" coords="118,16,106,10,86,8,68,10,57,15,52,21,54,28,49,29,47,19,53,10,67,5,87,3,108,5,121,11"/>
+</map>

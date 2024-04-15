@@ -1,0 +1,6 @@
+<map id="LibParser::add_lib" name="LibParser::add_lib">
+<area shape="rect" id="Node000001" title="Adds the new library to the list of libraries in use, if necessary." alt="" coords="216,37,341,64"/>
+<area shape="rect" id="Node000002" href="$class_lexical_analyzer.html#a935e012eedd7017772f1b14f30f9e81f" title="A class constructor that performs lexical analysis on the specified file." alt="" coords="5,29,168,72"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="200,53,168,53,168,48,200,48"/>
+<area shape="poly" id="edge2_Node000002_Node000002" title=" " alt="" coords="117,16,106,10,86,8,69,10,58,15,53,21,55,28,50,29,48,19,54,10,67,5,87,3,107,5,120,11"/>
+</map>

@@ -1,0 +1,6 @@
+<map id="Poliz::add_tid_values" name="Poliz::add_tid_values">
+<area shape="rect" id="Node000001" title=" " alt="" coords="5,29,149,56"/>
+<area shape="poly" id="edge1_Node000001_Node000001" title=" " alt="" coords="46,30,40,21,44,11,57,5,77,3,99,5,110,12,108,16,97,10,77,8,58,10,48,15,46,20,51,28"/>
+<area shape="rect" id="Node000002" href="$class_poliz.html#a4cd1219576972b871c00835a3480d29d" title="Copies and returns the current value of the variable." alt="" coords="197,29,319,56"/>
+<area shape="poly" id="edge2_Node000001_Node000002" title=" " alt="" coords="149,40,181,40,181,45,149,45"/>
+</map>

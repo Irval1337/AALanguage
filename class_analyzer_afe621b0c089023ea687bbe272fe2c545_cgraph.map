@@ -1,0 +1,13 @@
+<map id="Analyzer::semicolon" name="Analyzer::semicolon">
+<area shape="rect" id="Node000001" title=" " alt="" coords="5,79,145,105"/>
+<area shape="rect" id="Node000002" href="$class_lexical_analyzer.html#aed4aa4f180b4fdee6e401f9af7645795" title="Getting the next token from the generated array." alt="" coords="433,5,572,48"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="100,76,142,56,192,39,250,28,310,22,418,20,418,25,310,28,251,34,193,44,144,61,102,81"/>
+<area shape="rect" id="Node000003" href="$class_analyzer.html#ad55d42cbba7af53431ce02d594f1c9be" title=" " alt="" coords="193,53,385,80"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="145,81,177,77,177,83,145,86"/>
+<area shape="rect" id="Node000004" href="$class_poliz.html#a4f5fa5368b221be0d872f7c5b34d3400" title="Adds a new token &#45; value pair (POLIZ expression type, pointer to value)." alt="" coords="453,83,553,109"/>
+<area shape="poly" id="edge6_Node000001_Node000004" title=" " alt="" coords="145,90,437,93,437,98,145,95"/>
+<area shape="rect" id="Node000005" href="$class_lexical_analyzer.html#a36d4bd309588c18cbf363e96f95b4547" title="Getting the previous token from the generated array." alt="" coords="217,155,361,197"/>
+<area shape="poly" id="edge5_Node000001_Node000005" title=" " alt="" coords="112,103,219,146,217,151,110,108"/>
+<area shape="poly" id="edge3_Node000003_Node000002" title=" " alt="" coords="364,50,417,40,418,45,365,55"/>
+<area shape="poly" id="edge4_Node000003_Node000004" title=" " alt="" coords="386,77,438,84,437,90,385,83"/>
+</map>

@@ -1,0 +1,5 @@
+<map id="Semantic::literal_to_type" name="Semantic::literal_to_type">
+<area shape="rect" id="Node000001" title="Converts a string containing a literal to a Type." alt="" coords="5,13,171,40"/>
+<area shape="rect" id="Node000002" href="$class_lexical_analyzer.html#a3cda7650c37099af4c8555f7581c5b7c" title="Checks if the string is a valid literal from the language grammar." alt="" coords="219,5,350,48"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="171,24,204,24,204,29,171,29"/>
+</map>

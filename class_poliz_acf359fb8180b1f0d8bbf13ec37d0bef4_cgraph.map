@@ -1,0 +1,7 @@
+<map id="Poliz::make_same" name="Poliz::make_same">
+<area shape="rect" id="Node000001" title="Performs transformations of two POLYZ tokens, bringing their values to the same type." alt="" coords="5,5,135,32"/>
+<area shape="rect" id="Node000002" href="$class_poliz.html#a044946abe6df1a4516ae80f071de583d" title="Converts an internal type 1 value to a type 2 value." alt="" coords="183,5,282,32"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="135,16,167,16,167,21,135,21"/>
+<area shape="rect" id="Node000003" href="$class_poliz.html#ade18de50de43977621aefecfb4c58612" title="Converts a token of type ADDRESS to a token with a pointer to its value." alt="" coords="330,5,488,32"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="283,16,315,16,315,21,283,21"/>
+</map>

@@ -1,0 +1,5 @@
+<map id="Trie::get_size" name="Trie::get_size">
+<area shape="rect" id="Node000001" title="Gets the number of rows added to the trie." alt="" coords="5,5,105,32"/>
+<area shape="rect" id="Node000002" href="$class_trie_node.html#a5c5329eb66454ff727a4e43a7f276b61" title="Gets the number of strings ending in subtrees." alt="" coords="153,5,290,32"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="105,16,137,16,137,21,105,21"/>
+</map>

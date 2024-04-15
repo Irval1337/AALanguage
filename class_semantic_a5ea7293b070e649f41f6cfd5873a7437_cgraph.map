@@ -1,0 +1,5 @@
+<map id="Semantic::calc_expr_type" name="Semantic::calc_expr_type">
+<area shape="rect" id="Node000001" title="Calculates the result of a conversion of two types." alt="" coords="5,5,178,32"/>
+<area shape="rect" id="Node000002" href="$class_semantic.html#ad316b507cbd20cc924b62b992fe8cf26" title="Checks if implicit type conversion is possible." alt="" coords="226,5,388,32"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="178,16,210,16,210,21,178,21"/>
+</map>

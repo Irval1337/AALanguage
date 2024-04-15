@@ -1,0 +1,7 @@
+<map id="large::operator&#45;" name="large::operator&#45;">
+<area shape="rect" id="Node000001" title="A minus operation that uses subtraction in a column." alt="" coords="5,31,114,57"/>
+<area shape="rect" id="Node000002" href="$classlarge.html#ac89c388ea730e56a98918ec55d3cf319" title=" " alt="" coords="162,5,267,32"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="114,33,146,27,147,32,114,38"/>
+<area shape="rect" id="Node000003" href="$classlarge.html#ae92cc19f8881997b40dfe1bd276985e8" title="Default constructor, absolute number value is set to 0." alt="" coords="172,56,257,83"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="114,50,156,57,156,62,114,55"/>
+</map>

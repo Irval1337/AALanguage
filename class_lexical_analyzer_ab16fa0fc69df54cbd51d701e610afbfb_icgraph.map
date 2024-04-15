@@ -1,0 +1,12 @@
+<map id="LexicalAnalyzer::is_punctuation" name="LexicalAnalyzer::is_punctuation">
+<area shape="rect" id="Node000001" title=" " alt="" coords="597,59,729,101"/>
+<area shape="rect" id="Node000002" href="$class_lexical_analyzer.html#aec20a5a7481e77eeb3726c763bf0a1b5" title=" " alt="" coords="410,29,549,72"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="581,70,549,64,550,59,582,64"/>
+<area shape="rect" id="Node000003" href="$class_lexical_analyzer.html#a935e012eedd7017772f1b14f30f9e81f" title="A class constructor that performs lexical analysis on the specified file." alt="" coords="5,29,168,72"/>
+<area shape="poly" id="edge6_Node000001_Node000003" title=" " alt="" coords="582,90,413,97,314,95,215,87,158,75,159,70,216,81,314,90,413,92,582,85"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="399,27,362,20,289,14,216,20,159,31,158,26,215,15,289,8,362,15,400,22"/>
+<area shape="rect" id="Node000004" href="$class_lexical_analyzer.html#a41ea2af5bd63e42ed44a9e431c37d9ef" title=" " alt="" coords="216,29,362,72"/>
+<area shape="poly" id="edge4_Node000002_Node000004" title=" " alt="" coords="394,53,362,53,362,48,394,48"/>
+<area shape="poly" id="edge3_Node000003_Node000003" title=" " alt="" coords="119,16,107,10,86,8,68,10,56,15,51,21,53,28,48,29,46,19,53,10,66,5,87,3,108,5,121,11"/>
+<area shape="poly" id="edge5_Node000004_Node000003" title=" " alt="" coords="200,53,168,53,168,48,200,48"/>
+</map>

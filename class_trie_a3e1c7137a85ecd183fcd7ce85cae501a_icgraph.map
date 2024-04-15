@@ -1,0 +1,7 @@
+<map id="Trie::add" name="Trie::add">
+<area shape="rect" id="Node000001" title="Adding a new word to the trie." alt="" coords="216,37,287,64"/>
+<area shape="poly" id="edge1_Node000001_Node000001" title=" " alt="" coords="279,24,269,18,251,16,234,18,225,23,223,28,227,36,223,38,218,29,221,19,233,13,251,11,271,13,282,20"/>
+<area shape="rect" id="Node000002" href="$class_lexical_analyzer.html#a935e012eedd7017772f1b14f30f9e81f" title="A class constructor that performs lexical analysis on the specified file." alt="" coords="5,29,168,72"/>
+<area shape="poly" id="edge2_Node000001_Node000002" title=" " alt="" coords="200,53,168,53,168,48,200,48"/>
+<area shape="poly" id="edge3_Node000002_Node000002" title=" " alt="" coords="113,16,103,10,86,8,71,10,62,14,58,20,60,28,54,29,53,19,58,11,70,5,87,3,105,5,115,11"/>
+</map>

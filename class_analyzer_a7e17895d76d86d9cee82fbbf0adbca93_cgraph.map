@@ -1,0 +1,7 @@
+<map id="Analyzer::time_statement" name="Analyzer::time_statement">
+<area shape="rect" id="Node000001" title=" " alt="" coords="5,43,176,69"/>
+<area shape="rect" id="Node000002" href="$class_lexical_analyzer.html#aed4aa4f180b4fdee6e401f9af7645795" title="Getting the next token from the generated array." alt="" coords="224,5,363,48"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="176,41,208,36,209,42,177,46"/>
+<area shape="rect" id="Node000003" href="$class_poliz.html#a4f5fa5368b221be0d872f7c5b34d3400" title="Adds a new token &#45; value pair (POLIZ expression type, pointer to value)." alt="" coords="243,72,344,99"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="177,66,228,73,227,79,176,71"/>
+</map>

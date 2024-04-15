@@ -1,0 +1,7 @@
+<map id="LibParser::add_lib" name="LibParser::add_lib">
+<area shape="rect" id="Node000001" title="Adds the new library to the list of libraries in use, if necessary." alt="" coords="5,5,131,32"/>
+<area shape="rect" id="Node000002" href="$class_lib_parser.html#a1eaa138d5b42c3a76f671ba261655793" title="Converts the standard library name to its file path." alt="" coords="179,5,345,32"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="131,16,163,16,163,21,131,21"/>
+<area shape="rect" id="Node000003" href="$class_lib_parser.html#ae56a7c8be259f081d85270be30c601f7" title=" " alt="" coords="393,5,501,32"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="345,16,378,16,378,21,345,21"/>
+</map>

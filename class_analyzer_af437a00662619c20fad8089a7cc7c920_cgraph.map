@@ -1,0 +1,21 @@
+<map id="Analyzer::preprocessor" name="Analyzer::preprocessor">
+<area shape="rect" id="Node000001" title=" " alt="" coords="5,97,161,124"/>
+<area shape="rect" id="Node000002" href="$class_lexical_analyzer.html#aed4aa4f180b4fdee6e401f9af7645795" title="Getting the next token from the generated array." alt="" coords="636,60,776,102"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="112,94,194,61,250,42,312,25,380,11,450,4,520,5,589,16,628,30,663,49,661,54,626,35,588,21,520,10,450,9,380,17,313,30,251,47,196,66,114,99"/>
+<area shape="rect" id="Node000003" href="$class_analyzer.html#ad55d42cbba7af53431ce02d594f1c9be" title=" " alt="" coords="396,265,588,292"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="103,122,149,156,210,192,312,231,410,258,408,264,311,236,208,197,146,161,99,126"/>
+<area shape="rect" id="Node000005" href="$class_analyzer.html#a1ea4a248b2a924435089466504c6c032" title=" " alt="" coords="419,30,566,73"/>
+<area shape="poly" id="edge5_Node000001_Node000005" title=" " alt="" coords="161,97,403,62,403,67,162,102"/>
+<area shape="rect" id="Node000006" href="$class_analyzer.html#afe621b0c089023ea687bbe272fe2c545" title=" " alt="" coords="209,156,348,182"/>
+<area shape="poly" id="edge8_Node000001_Node000006" title=" " alt="" coords="131,122,218,148,216,153,129,127"/>
+<area shape="poly" id="edge3_Node000003_Node000002" title=" " alt="" coords="511,262,587,200,673,112,677,116,590,204,514,266"/>
+<area shape="rect" id="Node000004" href="$class_poliz.html#a4f5fa5368b221be0d872f7c5b34d3400" title="Adds a new token &#45; value pair (POLIZ expression type, pointer to value)." alt="" coords="656,214,756,241"/>
+<area shape="poly" id="edge4_Node000003_Node000004" title=" " alt="" coords="551,262,640,240,641,246,552,267"/>
+<area shape="poly" id="edge6_Node000005_Node000002" title=" " alt="" coords="567,59,621,67,620,72,566,64"/>
+<area shape="poly" id="edge7_Node000005_Node000004" title=" " alt="" coords="522,72,679,202,675,206,518,76"/>
+<area shape="poly" id="edge9_Node000006_Node000002" title=" " alt="" coords="323,152,395,133,513,109,621,91,622,96,514,114,397,138,325,158"/>
+<area shape="poly" id="edge10_Node000006_Node000003" title=" " alt="" coords="299,181,342,212,397,244,428,257,426,262,395,249,340,216,296,185"/>
+<area shape="poly" id="edge12_Node000006_Node000004" title=" " alt="" coords="321,180,397,200,526,216,641,223,640,229,526,222,395,205,320,185"/>
+<area shape="rect" id="Node000007" href="$class_lexical_analyzer.html#a36d4bd309588c18cbf363e96f95b4547" title="Getting the previous token from the generated array." alt="" coords="420,148,564,190"/>
+<area shape="poly" id="edge11_Node000006_Node000007" title=" " alt="" coords="348,166,405,166,405,172,348,172"/>
+</map>

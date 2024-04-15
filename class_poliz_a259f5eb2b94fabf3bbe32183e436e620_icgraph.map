@@ -1,0 +1,13 @@
+<map id="Poliz::clear_tid_values" name="Poliz::clear_tid_values">
+<area shape="rect" id="Node000001" title=" " alt="" coords="608,29,758,56"/>
+<area shape="poly" id="edge6_Node000001_Node000001" title=" " alt="" coords="715,16,704,10,683,8,663,10,653,15,650,20,655,27,651,30,645,21,649,11,662,5,683,3,705,5,717,12"/>
+<area shape="rect" id="Node000002" href="$class_poliz.html#aca705f4a3ce126a61dca268cbb49ef3e" title="Executes a function call subject to stack constraint (recursion depth 5*10^5)." alt="" coords="429,29,560,56"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="592,45,560,45,560,40,592,40"/>
+<area shape="rect" id="Node000003" href="$class_poliz.html#abc00b73b9d4a0dea2405a8b503032f0c" title="The main function that performs a walkthrough of the POLIZ token array." alt="" coords="277,29,381,56"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="414,45,382,45,382,40,414,40"/>
+<area shape="rect" id="Node000004" href="$class_analyzer.html#a87ffcf98ab106642c8cea5672a33af98" title="A function that starts full analysis and generation of a file with specified parameters." alt="" coords="103,29,229,56"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="261,45,229,45,229,40,261,40"/>
+<area shape="rect" id="Node000005" href="$_source_8cpp.html#a0ddf1224851353fc92bfbff6f499fa97" title="Entry point." alt="" coords="5,29,55,56"/>
+<area shape="poly" id="edge4_Node000004_Node000005" title=" " alt="" coords="87,54,55,52,55,47,87,49"/>
+<area shape="poly" id="edge5_Node000005_Node000004" title=" " alt="" coords="70,32,102,31,102,36,70,37"/>
+</map>
