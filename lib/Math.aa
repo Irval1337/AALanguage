@@ -2,6 +2,13 @@ double M_INF = 2147483647;
 double M_PI = 3.14159265358979323846;
 double M_E = 2.71828182845904523536;
 
+large pow(large x, large n) {
+    if (n == 0) return 1;
+    if (n % 2 == 1) return x * pow(x, n - 1);
+    large val = pow(x, n / 2);
+    return val * val;
+}
+
 double pow(double x, long n) {
     if (n == 0) return 1;
     if (n % 2 == 1) return x * pow(x, n - 1);
