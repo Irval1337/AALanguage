@@ -10,11 +10,9 @@
     The best programming language for people with intellectual disabilities
     <br/>
     <br/>
-    <a href="https://github.com/Irval1337/AALanguage"><strong>Explore the docs »</strong></a>
+    <a href="https://irval1337.github.io/AALanguage/"><strong>Explore the docs »</strong></a>
     <br/>
     <br/>
-    <a href="https://github.com/Irval1337/AALanguage">View Demo</a>
-    .
     <a href="https://github.com/Irval1337/AALanguage/issues">Report Bug</a>
     .
     <a href="https://github.com/Irval1337/AALanguage/issues">Request Feature</a>
