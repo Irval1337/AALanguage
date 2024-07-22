@@ -83,6 +83,15 @@ public:
     */
     void* copy_value(void* ptr);
     /**
+    * @brief Copies and returns the current value of literal.
+    *
+    * @param ptr A pointer that to literal's value.
+    * @param type Literal type.
+    *
+    * @return Pointer to the copied value.
+    */
+    void* copy_literal(void* ptr, Poliz::PolizType type);
+    /**
     * @brief Converts ExprType to a valid PolizType.
     *
     * @param type Source type of expression
@@ -154,4 +163,5 @@ private:
     void add_tid_values(TableIdentifiers* current_tid, bool is_first = true);
     void clear_tid_values(TableIdentifiers* current_tid);
     void restore_tid_values();
+    void* copy_value_(void* ptr);
 };

@@ -580,6 +580,41 @@ std::pair<Poliz::PolizType, void*> Poliz::address_to_value(void* ptr) {
     }
 }
 void* Poliz::copy_value(void* ptr) {
+    auto val = copy_value_(ptr);
+    Identifier* ident = (Identifier*)ptr; 
+    return new Identifier(ident->name, ident->type, val);
+}
+void* Poliz::copy_literal(void* ptr, Poliz::PolizType type) {
+    switch (type) {
+    case Poliz::BOOL_LITERAL:
+        return new bool(*(bool*)ptr);
+    case Poliz::BYTE_LITERAL:
+        return new uint8_t(*(uint8_t*)ptr);
+    case Poliz::CHAR_LITERAL:
+        return new char(*(char*)ptr);
+    case Poliz::DOUBLE_LITERAL:
+        return new double(*(double*)ptr);
+    case Poliz::FLOAT_LITERAL:
+        return new float(*(float*)ptr);
+    case Poliz::INT_LITERAL:
+        return new int(*(int*)ptr);
+    case Poliz::LONG_LITERAL:
+        return new long long(*(long long*)ptr);
+    case Poliz::SHORT_LITERAL:
+        return new short(*(short*)ptr);
+    case Poliz::STRING_LITERAL:
+        return new std::string(*(std::string*)ptr);
+    case Poliz::UINT_LITERAL:
+        return new uint32_t(*(uint32_t*)ptr);
+    case Poliz::ULONG_LITERAL:
+        return new uint64_t(*(uint64_t*)ptr);
+    case Poliz::LARGE_LITERAL:
+        return new large(*(large*)ptr);
+    default:
+        return nullptr;
+    }
+}
+void* Poliz::copy_value_(void* ptr) {
     Identifier* ident = (Identifier*)ptr;
     if (ident->value == nullptr)
         return nullptr;
@@ -1344,14 +1379,19 @@ void Poliz::call_function(std::stack<std::pair<Poliz::PolizType, void*>>& st, in
     st.pop();
     Function* func = (Function*)st.top().second;
     add_tid_values(func->TID);
-    clear_tid_values(func->TID);
     st.pop();
     p = func->ptr;
     std::stack<std::pair<Poliz::PolizType, void*>> args;
     for (int i = 0; i < sz; ++i) {
-        args.push(st.top());
+        auto val = st.top();
+        if (val.first == PolizType::ADDRESS)
+            val.second = copy_value(val.second);
+        else
+            val.second = copy_literal(val.second, val.first);
+        args.push(val);
         st.pop();
     }
+    clear_tid_values(func->TID);
     st.push({ Poliz::PolizType::STACK_PLUG, nullptr });
     int q = 0;
     while (!args.empty()) {
@@ -1873,7 +1913,7 @@ void Poliz::add_tid_values(TableIdentifiers* current_tid, bool is_first) {
     }
 
     for (auto& u : current_tid->identifiers) {
-        tid_vals.top().push_back({ u.second, copy_value(u.second) });
+        tid_vals.top().push_back({ u.second, copy_value_(u.second) });
     }
     for (auto& u : current_tid->children) {
         add_tid_values(u, false);
