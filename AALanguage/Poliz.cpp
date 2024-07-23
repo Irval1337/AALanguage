@@ -1386,8 +1386,6 @@ void Poliz::call_function(std::stack<std::pair<Poliz::PolizType, void*>>& st, in
         auto val = st.top();
         if (val.first == PolizType::ADDRESS)
             val.second = copy_value(val.second);
-        else
-            val.second = copy_literal(val.second, val.first);
         args.push(val);
         st.pop();
     }
